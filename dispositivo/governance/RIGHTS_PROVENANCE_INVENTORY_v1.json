@@ -1,0 +1,95 @@
+{
+  "inventory_version": 1,
+  "verification_date": "2026-09-03",
+  "status": "PARTIAL_RIGHTS_INVENTORY / TECHNICAL_GOVERNANCE / NON_LEGAL_DETERMINATION",
+  "blanket_license_status": "BLOCKED_PENDING_RIGHTS_AUDIT",
+  "principles": [
+    "SOURCE_LICENSE_STATUS_DOES_NOT_AUTOMATICALLY_LICENSE_PROJECT_DERIVATIVES",
+    "PUBLIC_AVAILABILITY_DOES_NOT_EQUAL_OPEN_LICENSE",
+    "UNKNOWN_RIGHTS_DO_NOT_MEAN FORBIDDEN_OR_PERMITTED",
+    "DO_NOT_DELETE_PROVENANCE_CRITICAL_ARTIFACTS_TO_SIMPLIFY_LICENSING"
+  ],
+  "families": [
+    {
+      "family_id": "DICTIONARIA_DIDXAZA_GENERAL",
+      "external_source": "Didxazá–Spanish–English Dictionary, Dictionaria",
+      "external_url": "https://dictionaria.clld.org/contributions/didxazageneral",
+      "external_rights_evidence": "Dictionaria contribution and entry pages display Creative Commons Attribution 4.0 International License",
+      "external_rights_status": "OPEN_LICENSE_NOTICE_VERIFIED_CC_BY_4_0",
+      "local_artifacts": [
+        "dispositivo/runtime/v0_2_15_3/DICTIONARIA_entries_v0_2_15_2.csv",
+        "dispositivo/runtime/v0_2_15_3/DICTIONARIA_senses_v0_2_15_2.csv",
+        "dispositivo/runtime/v0_2_15_3/DICTIONARIA_examples_v0_2_15_2.csv",
+        "dispositivo/analyzer/DIC_VERB_2385_v0_1.csv"
+      ],
+      "local_rights_status": "ATTRIBUTION_CHAIN_AND_TRANSFORMATION_MAPPING_REQUIRED",
+      "notes": "The three DICTIONARIA CSVs are preserved as exact runtime inputs. DIC_VERB_2385 is a structured verb inventory whose fields align with the Dictionaria general dictionary. Verify source/export identity and required attribution before assigning any repository-wide license."
+    },
+    {
+      "family_id": "BUENO_HOLLE_2019",
+      "external_source": "Juan José Bueno Holle, Information structure in Isthmus Zapotec narrative and conversation, Language Science Press, 2019",
+      "external_url": "https://langsci-press.org/catalog/book/219",
+      "external_rights_evidence": "Publisher page and source front matter state Creative Commons Attribution 4.0 International License",
+      "external_rights_status": "OPEN_LICENSE_VERIFIED_CC_BY_4_0",
+      "local_artifacts": [
+        "dispositivo/migracion/fuentes/BH2019_SOURCE_PROVENANCE_v0_36_1.json",
+        "dispositivo/migracion/fuentes/BIB065_BUENO_HOLLE_INGESTION_MATRIX_v0_36_1.md",
+        "dispositivo/migracion/fuentes/BIB065_BUENO_HOLLE_INGESTION_MATRIX_v0_36_1.csv",
+        "dispositivo/migracion/fuentes/BH2019_READING_STATE_CLOSED_v0_36_1.md"
+      ],
+      "local_rights_status": "SOURCE_LICENSE_VERIFIED / PROJECT_DERIVATIVE_AUTHORSHIP_SEPARATION_REQUIRED",
+      "notes": "Internal provenance already reports CC BY 4.0. Project-created matrices and reading-state metadata should be distinguished from any copied or adapted source expression when licensing local files."
+    },
+    {
+      "family_id": "PICKETT_VOCABULARIO",
+      "external_source": "Velma Pickett and collaborators, Vocabulario zapoteco del Istmo, fifth electronic edition / later print listing",
+      "external_urls": [
+        "https://mexico.sil.org/resources/archives/35335",
+        "https://www.lulu.com/shop/velma-pickett/vocabulario-zapoteco-del-istmo/paperback/product-21584671.html"
+      ],
+      "external_rights_evidence": "SIL archive offers the 2007 electronic edition but does not display an open license on the archive record; the current Lulu publisher listing states All Rights Reserved - Standard Copyright License",
+      "external_rights_status": "NO_OPEN_LICENSE_VERIFIED / STANDARD_COPYRIGHT_NOTICE_OBSERVED",
+      "local_artifacts": [
+        "dispositivo/runtime/v0_2_15_3/PICKETT_LEXICON_BACKFILL_v0_1.csv",
+        "dispositivo/runtime/v0_2_15_3/didxaza_runtime_v0_2_11_pickett_backfill.py",
+        "dispositivo/runtime/v0_2_15_3/didxaza_runtime_v0_2_12_pickett_cross_source.py"
+      ],
+      "local_rights_status": "HIGH_PRIORITY_RIGHTS_REVIEW_REQUIRED_BEFORE_OPEN_REDISTRIBUTION",
+      "notes": "PICKETT_LEXICON_BACKFILL contains structured headwords, Spanish glosses and raw entry-line fields attributed to BIB003_PICKETT_VOCABULARIO. Do not infer permission to relicence this extracted dataset from public availability alone."
+    },
+    {
+      "family_id": "MIXED_RUNTIME_DATABASES_AND_OUTPUTS",
+      "external_source": "Mixed derived runtime state",
+      "external_rights_status": "MIXED_ORIGIN",
+      "local_artifacts": [
+        "dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_SURFACE_SEMANTICS_v2_20.sqlite",
+        "dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_EVIDENCE_INTEGRITY_v2_19.sqlite",
+        "dispositivo/runtime/v0_2_15_3/COR001_REPLAY_DETAILED_v0_2_15_3.jsonl",
+        "dispositivo/runtime/v0_2_15_3/COR001_REPLAY_SUMMARY_v0_2_15_3.csv"
+      ],
+      "local_rights_status": "TABLE_FIELD_AND_OUTPUT_COMPOSITION_AUDIT_REQUIRED",
+      "notes": "Runtime databases and outputs combine project state with source-derived evidence. Exact technical reproducibility does not answer redistribution or relicensing rights."
+    },
+    {
+      "family_id": "PROJECT_TECHNICAL_CODE_AND_DOCUMENTATION",
+      "external_source": null,
+      "external_rights_status": "NOT_APPLICABLE_AS_SINGLE_EXTERNAL_SOURCE",
+      "local_artifacts": [
+        "README.md",
+        "REENTRY_TECNICO.md",
+        "dispositivo/**/*.py",
+        "dispositivo/**/*.md",
+        ".github/workflows/*.yml"
+      ],
+      "local_rights_status": "AUTHORSHIP_AND_THIRD_PARTY_EMBEDDING_INVENTORY_INCOMPLETE",
+      "notes": "Do not assume every technical/documentation file can receive one license until files containing source excerpts, migrated historical material or third-party-derived expression are separated from purely project-authored code and metadata."
+    }
+  ],
+  "next_actions": [
+    "Map Dictionaria local exports and derived verb inventory to required CC BY 4.0 attribution metadata",
+    "Resolve permission or distribution strategy for PICKETT_LEXICON_BACKFILL before any blanket open-source release",
+    "Audit SQLite tables and replay outputs for source-derived fields or text fragments",
+    "Inventory project-authored code separately from migrated historical/source-derived documentation",
+    "Only then decide between repository-wide license, per-subtree licenses, per-file notices, or a mixed strategy"
+  ]
+}
