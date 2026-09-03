@@ -5,12 +5,15 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/import-device.yml'
+  issues:
+    types: [opened]
 
 permissions:
   contents: write
 
 jobs:
   import:
+    if: github.event_name == 'issues' || github.event_name == 'push'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout destination
