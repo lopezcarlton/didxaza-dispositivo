@@ -3,8 +3,8 @@
 
 This tool is intentionally narrow. It inventories table/column structure, row
 counts, and source/provenance/attribution/origin/license metadata. It does not
-emit lexical surfaces, glosses, examples, definitions, raw text, or other
-content fields.
+emit lexical surfaces, glosses, examples, definitions, raw text, original
+content, or other content fields.
 """
 
 from __future__ import annotations
@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -25,8 +26,11 @@ DEFAULT_DB = (
     / "BASE_CORRECTOR_DIDXAZA_SURFACE_SEMANTICS_v2_20.sqlite"
 )
 
-METADATA_MARKERS = ("source", "provenance", "attribution", "origin", "license")
-CONTENT_MARKERS = (
+# Match these as whole identifier tokens, never as arbitrary substrings.
+# This is important because `origin` must not match content fields such as
+# `didxaza_original`.
+METADATA_TOKENS = {"source", "provenance", "attribution", "origin", "license"}
+CONTENT_TOKENS = {
     "text",
     "raw",
     "surface",
@@ -38,7 +42,8 @@ CONTENT_MARKERS = (
     "comment",
     "note",
     "payload",
-)
+    "original",
+}
 MAX_DISTINCT_SAMPLE = 40
 MAX_VALUE_LENGTH = 240
 
@@ -55,12 +60,17 @@ def quote_identifier(name: str) -> str:
     return '"' + name.replace('"', '""') + '"'
 
 
+def identifier_tokens(column_name: str) -> set[str]:
+    return {
+        token
+        for token in re.split(r"[^a-z0-9]+", column_name.lower())
+        if token
+    }
+
+
 def metadata_candidate(column_name: str) -> bool:
-    lowered = column_name.lower()
-    return (
-        any(marker in lowered for marker in METADATA_MARKERS)
-        and not any(marker in lowered for marker in CONTENT_MARKERS)
-    )
+    tokens = identifier_tokens(column_name)
+    return bool(tokens & METADATA_TOKENS) and not bool(tokens & CONTENT_TOKENS)
 
 
 def normalize_value(value: Any) -> Any:
@@ -90,6 +100,7 @@ def audit_database(path: Path) -> dict[str, Any]:
 
         tables: list[dict[str, Any]] = []
         candidate_columns_total = 0
+        selected_content_columns: list[str] = []
         for table_name in table_names:
             qtable = quote_identifier(table_name)
             row_count = int(connection.execute(f"SELECT COUNT(*) FROM {qtable}").fetchone()[0])
@@ -108,6 +119,10 @@ def audit_database(path: Path) -> dict[str, Any]:
             for column in columns:
                 name = str(column["name"])
                 if not metadata_candidate(name):
+                    continue
+                tokens = identifier_tokens(name)
+                if tokens & CONTENT_TOKENS:
+                    selected_content_columns.append(f"{table_name}.{name}")
                     continue
                 candidate_columns_total += 1
                 qcol = quote_identifier(name)
@@ -140,17 +155,24 @@ def audit_database(path: Path) -> dict[str, Any]:
                 }
             )
 
+        if selected_content_columns:
+            raise AssertionError(
+                "Content-bearing columns reached provenance selection: "
+                + ", ".join(selected_content_columns)
+            )
+
         return {
             "status": "READ_ONLY_PROVENANCE_METADATA_AUDIT",
             "non_legal_determination": True,
             "content_fields_emitted": False,
+            "selection_mode": "WHOLE_IDENTIFIER_TOKEN_MATCH",
             "database_path_from_repo_root": str(path.relative_to(ROOT)),
             "database_sha256": sha256(path),
             "sqlite_integrity_check": integrity,
             "table_count": len(table_names),
             "provenance_metadata_column_count": candidate_columns_total,
-            "metadata_markers": list(METADATA_MARKERS),
-            "excluded_content_markers": list(CONTENT_MARKERS),
+            "metadata_tokens": sorted(METADATA_TOKENS),
+            "excluded_content_tokens": sorted(CONTENT_TOKENS),
             "tables": tables,
         }
     finally:
