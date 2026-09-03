@@ -136,13 +136,28 @@ def audit_database(path: Path) -> dict[str, Any]:
                     f"WHERE {qcol} IS NOT NULL ORDER BY CAST({qcol} AS TEXT) LIMIT ?",
                     (MAX_DISTINCT_SAMPLE,),
                 ).fetchall()
+                sample_is_complete = distinct_count <= MAX_DISTINCT_SAMPLE
+
+                value_counts = None
+                if sample_is_complete:
+                    grouped_rows = connection.execute(
+                        f"SELECT {qcol}, COUNT(*) FROM {qtable} "
+                        f"WHERE {qcol} IS NOT NULL GROUP BY {qcol} "
+                        f"ORDER BY CAST({qcol} AS TEXT)"
+                    ).fetchall()
+                    value_counts = [
+                        {"value": normalize_value(value), "row_count": int(count)}
+                        for value, count in grouped_rows
+                    ]
+
                 provenance_columns.append(
                     {
                         "name": name,
                         "declared_type": column["type"],
                         "distinct_non_null_count": distinct_count,
-                        "sample_is_complete": distinct_count <= MAX_DISTINCT_SAMPLE,
+                        "sample_is_complete": sample_is_complete,
                         "sample_values": [normalize_value(row[0]) for row in rows],
+                        "value_counts_if_complete": value_counts,
                     }
                 )
 
@@ -173,6 +188,9 @@ def audit_database(path: Path) -> dict[str, Any]:
             "provenance_metadata_column_count": candidate_columns_total,
             "metadata_tokens": sorted(METADATA_TOKENS),
             "excluded_content_tokens": sorted(CONTENT_TOKENS),
+            "value_count_policy": (
+                "EXACT_COUNTS_EMITTED_ONLY_WHEN_DISTINCT_NON_NULL_COUNT_LE_40"
+            ),
             "tables": tables,
         }
     finally:
