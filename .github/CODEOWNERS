@@ -1,0 +1,3 @@
+# Ownership routing for repository changes.
+# This file does not itself enforce review; enforcement depends on GitHub branch/ruleset settings.
+* @lopezcarlton
