@@ -19,6 +19,7 @@ import csv
 import hashlib
 import json
 import re
+import unicodedata
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
@@ -68,6 +69,7 @@ CONTENT_TOKENS = {
     "surface",
     "didxaza",
     "spanish",
+    "espanol",
     "es",
     "translation",
     "gloss",
@@ -105,7 +107,11 @@ def sha256(path: Path) -> str:
 
 
 def tokens(name: str) -> set[str]:
-    return {token for token in re.split(r"[^a-z0-9]+", name.lower()) if token}
+    # Fold Unicode identifiers before tokenization so fields such as `Español`
+    # and `Didxazá_original` are classified reliably without reading values.
+    folded = unicodedata.normalize("NFKD", name)
+    folded = "".join(ch for ch in folded if not unicodedata.combining(ch)).lower()
+    return {token for token in re.split(r"[^a-z0-9]+", folded) if token}
 
 
 def safe_metadata_field(name: str) -> bool:
@@ -141,7 +147,11 @@ def file_base(path: Path, kind: str) -> dict[str, Any]:
 
 
 def finalize_scalar_counts(values: Iterable[Any]) -> dict[str, Any]:
-    normalized = [json.dumps(normalize_metadata_value(v), ensure_ascii=False, sort_keys=True) for v in values if v is not None]
+    normalized = [
+        json.dumps(normalize_metadata_value(v), ensure_ascii=False, sort_keys=True)
+        for v in values
+        if v is not None
+    ]
     counts = Counter(normalized)
     distinct = len(counts)
     result: dict[str, Any] = {
@@ -220,7 +230,12 @@ def audit_jsonl(path: Path) -> dict[str, Any]:
     return result
 
 
-def walk_json_schema(value: Any, path: tuple[str, ...], schema_paths: set[str], metadata: dict[str, list[Any]]) -> None:
+def walk_json_schema(
+    value: Any,
+    path: tuple[str, ...],
+    schema_paths: set[str],
+    metadata: dict[str, list[Any]],
+) -> None:
     if isinstance(value, dict):
         for key, child in value.items():
             key = str(key)
@@ -252,7 +267,9 @@ def audit_json(path: Path) -> dict[str, Any]:
             "top_level_item_count": top_level_count,
             "schema_paths": ordered_paths,
             "content_bearing_schema_paths": [
-                p for p in ordered_paths if any(content_bearing_field(part) for part in p.split("."))
+                p
+                for p in ordered_paths
+                if any(content_bearing_field(part) for part in p.split("."))
             ],
             "metadata_fields": {
                 field: finalize_scalar_counts(values)
