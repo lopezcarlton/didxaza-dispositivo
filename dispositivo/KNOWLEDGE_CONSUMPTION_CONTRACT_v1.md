@@ -1,6 +1,7 @@
 # KNOWLEDGE_CONSUMPTION_CONTRACT_v1
 
-**Estado:** `ACTIVE_TECHNICAL_CONTRACT / DERIVED_SYSTEM / NON_CANONICAL`
+**Estado:** `ACTIVE_TECHNICAL_CONTRACT / DERIVED_SYSTEM / SEPARATE_REPOSITORY`
+**Actualizado:** 2026-09-03
 
 ## Propósito
 
@@ -8,11 +9,11 @@ Definir cómo el dispositivo consume conocimiento aprobado de Voces de las Nubes
 
 ## Autoridad
 
-Este contrato implementa técnicamente:
+Este contrato implementa técnicamente reglas que viven en `lopezcarlton/vocesdelasnubes`, principalmente:
 
 - `00_ARQUITECTURA_DEL_CONOCIMIENTO.md` §3.5;
-- `01_JERARQUIA_DE_VERDAD.md` v1.1;
-- `03_REGLAS_DE_ACTUALIZACIÓN.md` v1.2;
+- `01_JERARQUIA_DE_VERDAD.md`;
+- `03_REGLAS_DE_ACTUALIZACIÓN.md`;
 - `conocimiento/decisiones/DEC-AUTORIDAD-SISTEMA-CONOCIMIENTO.md`.
 
 No puede ampliar ni modificar esas reglas.
@@ -28,6 +29,8 @@ KNOWLEDGE_SOURCE_REF = <opcional: branch/tag descriptivo>
 ```
 
 El commit es la identidad autoritativa del estado consumido. Una rama móvil como `main` puede servir para descubrimiento, pero una prueba reproducible debe registrar el commit resuelto.
+
+El pin inicial de la separación física está en `../KNOWLEDGE_SOURCE_PIN.md`.
 
 ## Dirección Voces → dispositivo
 
@@ -74,7 +77,7 @@ Cada candidato debe incluir, cuando corresponda:
 
 El dispositivo y sus desarrolladores no pueden, en calidad de desarrolladores del sistema derivado:
 
-- editar directamente `conocimiento/`;
+- editar directamente `conocimiento/` en `lopezcarlton/vocesdelasnubes`;
 - convertir un candidato en `HALL`, `DEC`, `PRIN`, `VAL` o `TEO` vigente;
 - modificar una vista canónica por el resultado de una prueba;
 - usar un artefacto técnico como sustituto de una fuente bibliográfica u oral original;
@@ -97,16 +100,21 @@ LECTURA_EN_CONTEXTO_TECNICO
 
 El caso BIB065 es la motivación histórica principal de esta regla, no una excepción a ella.
 
-## Acceso
+## Acceso físico
 
-La arquitectura objetivo es:
+La separación de contenidos quedó ejecutada el 2026-09-03:
 
 ```text
 Voces de las Nubes repository:
-  device developers = read only by default
+  lopezcarlton/vocesdelasnubes
+  canonical knowledge = here
+  active device tree = absent
 
 Device repository:
-  device developers = write according to technical governance
+  lopezcarlton/didxaza-dispositivo
+  technical implementation = here
 ```
 
-Mientras ambas capas permanezcan en un solo repositorio, esta separación es una regla de autoridad documentada pero no una garantía física completa. La separación física se rige por `migracion/DEVICE_REPOSITORY_SEPARATION_PLAN_v1.md`.
+La barrera conceptual y documental está activa. El endurecimiento final de permisos mediante branch protection/rulesets sigue siendo una configuración de GitHub separada; `CODEOWNERS` no equivale por sí solo a read-only.
+
+Ver `../SEPARATION_VERIFICATION_2026-09-03.md` y `migracion/DEVICE_REPOSITORY_SEPARATION_PLAN_v1.md`.
