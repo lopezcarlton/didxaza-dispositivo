@@ -40,7 +40,7 @@ IMPORTED_DEVICE_TREE_SHA = d92c38ec45be4e2e3176b1cfe7c288321c887d3b
 
 El SHA de árbol `d92c38ec...` identifica el snapshot **en `6d205ff`**, no el `HEAD` actual. Los cambios post-importación están trazados por Git y no alteran retroactivamente ese snapshot.
 
-El endurecimiento P0/P1 verificado hasta `e6d501c839269b878c0ae99a82aed69071e108af` añade:
+Las protecciones técnicas verificadas hasta `main@4f87a7cd44b99c8053847ee11cca3602de53612c` incluyen:
 
 ```text
 BYTE_EXACT_GITATTRIBUTES = active for 9 identified files
@@ -48,13 +48,16 @@ REPLAY_CI = push(main) + pull_request(main) + workflow_dispatch
 RELEASE_MANIFEST_ANCHOR = present
 RELEASE_MANIFEST_SHA256 = 5e3f7ff7035e8fdd6358ddae8432e37e52518cc9b50067dccfb7411c741f2304
 RELEASE_MANIFEST_GIT_BLOB = e9cbb2062385e913d5acb59427aa6c1b53b54b14
-MIGRATED_STATE_TESTS = 8/8 PASS
+MIGRATED_STATE_TESTS = 9/9 PASS
 HISTORICAL_RUNTIME_TESTS = 38/38 PASS
-LAST_VERIFIED_MAIN_PUSH_RUN = 33805988652 / success
+GENERATOR_DUPLICATE_INPUT_PAIRS = 9/9 BYTE_IDENTICAL
+LAST_VERIFIED_MAIN_PUSH_RUN = 33807666965 / success
 PERMISSION_HARDENING = pending
 ```
 
 La prueba migratoria usa 39 payloads presentes como piso monotónico contra regresión: puede subir al recuperar payloads exactos adicionales sin requerir reescribir un checkpoint rígido.
+
+`generator/INPUT_LAYOUT_CONTRACT_v1.json` declara `generator/inputs/` como el conjunto de entrada técnico activo **sólo para `generator_v0_5_migrated_adapter.py`**. Las nueve copias heredadas se preservan para genealogía y CI comprueba que continúen byte-idénticas a sus pares. Este contrato no les concede autoridad lingüística, pedagógica ni ortográfica y no reescribe el Generator histórico.
 
 La protección de branch/rulesets sigue siendo un frente de infraestructura independiente. Ver `../../SEPARATION_VERIFICATION_2026-09-03.md` y `DEVICE_REPOSITORY_SEPARATION_PLAN_v1.md`.
 
@@ -199,9 +202,19 @@ rule_discovery_assertion = false
 
 ## 4. Generator_v0.5
 
-`generator_v0_5.py` se preserva como la implementación histórica más reciente localizada. Su entrada por defecto no es ejecutable en el árbol migrado porque combina rutas de dos layouts distintos y espera `NovelRecombinationAttempt_v0_1.json`, que no está presente.
+`generator_v0_5.py` se preserva **sin modificación** como la implementación histórica más reciente localizada. Su entrada por defecto no es ejecutable en el árbol migrado porque mezcla rutas de layouts distintos.
 
-Para no alterar silenciosamente el artefacto histórico se añadió:
+El **primer bloqueo proximal verificado** ocurre al construir `GeneratorV05`: el archivo histórico fija `INPUTS = dispositivo/inputs_nc001/` y el constructor intenta cargar `ParadigmTable_v1.csv`, pero esa carpeta conserva sólo cuatro inputs históricos y no contiene ese CSV. `ParadigmTable_v1.csv` sí existe en `generator/inputs/`.
+
+Si se superara ese primer bloqueo, `main()` intenta después leer `NovelRecombinationAttempt_v0_1.json`, que tampoco está presente. Por tanto:
+
+```text
+FIRST_HISTORICAL_ENTRYPOINT_BLOCKER = dispositivo/inputs_nc001/ParadigmTable_v1.csv
+LATER_KNOWN_BLOCKER = NovelRecombinationAttempt_v0_1.json
+HISTORICAL_GENERATOR_REWRITTEN = false
+```
+
+Para no alterar silenciosamente el artefacto histórico se añadió previamente:
 
 `generator/generator_v0_5_migrated_adapter.py`
 
@@ -215,6 +228,10 @@ ACTIVE_LICENSE_CONSTRUCTIONS = C01, C02
 BLOCKED_BY_MIGRATED_INPUTS = C03, C04, C05, C06
 ```
 
+El layout técnico activo del adaptador queda explicitado en `generator/INPUT_LAYOUT_CONTRACT_v1.json`. Ese contrato no cambia la genealogía del Generator ni declara autoridad sobre el contenido de los inputs.
+
+Se verificaron nueve pares de copias heredadas entre `generator/`, `inputs_nc001/` y `generator/inputs/`. En `main@4f87a7c` los nueve pares son byte-idénticos y `test_migrated_state.py` falla si alguno diverge. Las copias no se eliminaron, renombraron ni sincronizaron destructivamente.
+
 `GENERATION_READINESS_MATRIX_v14.csv` se conserva como el snapshot más reciente localizado, pero sus capacidades C03/C05 no son reproducibles con los archivos actualmente migrados. No se rebajó ni se reescribió la matriz: queda clasificada como:
 
 `MIGRATED_SNAPSHOT_NOT_REPRODUCIBLE_WITH_CURRENT_FILES`.
@@ -227,7 +244,15 @@ Faltan `TutorCaseLicenseBindings_v0_33.jsonl` y las licencias C03/C05 enumeradas
 
 ## 6. COR001 y terminología histórica
 
-`core/JUCHITAN_LINGUISTIC_CORE_v0_27.md` conserva una referencia a “benchmarks COR001”. Esa formulación no representa la política vigente y no se usa como contrato de ejecución.
+`core/JUCHITAN_LINGUISTIC_CORE_v0_27.md` conserva **11 ocurrencias** de la cadena `benchmark`, no una referencia aislada. Entre ellas hay etiquetas clasificatorias de dominio y formulaciones operativas históricas, además de menciones a COR001.
+
+Ese vocabulario forma parte del artefacto experimental migrado y **no representa la política vigente**. Se mantiene sin reescritura para conservar genealogía, pero queda íntegramente en cuarentena respecto del contrato actual:
+
+```text
+JLC_V0_27_BENCHMARK_OCCURRENCES = 11
+HISTORICAL_BENCHMARK_TERMINOLOGY = QUARANTINED_NOT_CURRENT_POLICY
+JLC_V0_27_REWRITTEN_FOR_POLICY = false
+```
 
 El rol actual es:
 
@@ -239,7 +264,7 @@ COR001 != REGRESSION_AUTHORITY
 COR001 != RULE_DISCOVERY_SOURCE
 ```
 
-La frase histórica no se reescribió dentro del core experimental para no alterar silenciosamente el artefacto migrado.
+Ninguna aparición histórica de `benchmark` en JLC v0.27 puede licenciar comparación contra COR001 para descubrir reglas, decidir correcciones o validar conocimiento.
 
 ## 7. Interpretación
 
@@ -247,4 +272,4 @@ Este checkpoint no decide si C03, C05, la escala P, las capas BIB065 u otra hip�
 
 Las líneas de investigación, COR002, el trabajo con hablantes y la incorporación de nueva evidencia continúan abiertas conforme a `lopezcarlton/vocesdelasnubes/conocimiento/principios/PRIN-INVESTIGACION-ABIERTA.md`.
 
-Los hallazgos P2/P3 de la auditoría técnica externa del 2026-09-03 no se adoptan por esta sincronización documental; deben verificarse por separado contra el repositorio antes de cualquier corrección adicional.
+Este checkpoint incorpora únicamente hallazgos P2 ya verificados sobre **estado técnico y documentación**: alcance real de la terminología histórica `benchmark` en JLC v0.27, causa proximal del bloqueo del Generator histórico e integridad de las copias duplicadas de inputs. No convierte ninguno de esos artefactos en fuente de conocimiento. Los demás P2/P3 de la auditoría externa siguen sujetos a verificación separada antes de cualquier corrección adicional.
