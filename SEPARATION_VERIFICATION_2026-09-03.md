@@ -88,10 +88,12 @@ Las condiciones previas fueron satisfechas y la copia activa fue retirada.
 
 ```text
 VOCES_SPLIT_COMMIT = 67aabe3ed34bc04165583f7cb45cc610f619ebc0
-VOCES_POST_CLEANUP_COMMIT = 4ba3596e2a4096254a70a29c23bc3f007451640b
+VOCES_INITIAL_POST_CLEANUP_COMMIT = 4ba3596e2a4096254a70a29c23bc3f007451640b
+VOCES_FINAL_POST_SPLIT_COMMIT = eb081b7c40ade6e017bc6ea1ac714a15461b6070
 PHYSICAL_DEVICE_COPY_RETIRED_FROM_VOCES_MAIN = true
 VOCES_TECHNICAL_REPLAY_WORKFLOW_REMOVED = true
-VOCES_TEMPORARY_SPLIT_WORKFLOW_REMOVED = true
+VOCES_TEMPORARY_SPLIT_WORKFLOWS_REMOVED = true
+ARCHITECTURE_PHYSICAL_STATE_PATCH = 0.3.1
 ```
 
 En el árbol raíz final de `vocesdelasnubes/main` no existe `dispositivo/`. Dentro de `.github/` sólo permanece `CODEOWNERS`; no hay workflows técnicos activos.
