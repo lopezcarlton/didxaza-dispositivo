@@ -40,7 +40,7 @@ IMPORTED_DEVICE_TREE_SHA = d92c38ec45be4e2e3176b1cfe7c288321c887d3b
 
 El SHA de árbol `d92c38ec...` identifica el snapshot **en `6d205ff`**, no el `HEAD` actual. Los cambios post-importación están trazados por Git y no alteran retroactivamente ese snapshot.
 
-Las protecciones técnicas verificadas hasta `main@4f87a7cd44b99c8053847ee11cca3602de53612c` incluyen:
+Las protecciones técnicas verificadas hasta `main@2a463c8d1197e185eea8b5b094aa5d2388fa6841` incluyen:
 
 ```text
 BYTE_EXACT_GITATTRIBUTES = active for 9 identified files
@@ -51,13 +51,22 @@ RELEASE_MANIFEST_GIT_BLOB = e9cbb2062385e913d5acb59427aa6c1b53b54b14
 MIGRATED_STATE_TESTS = 9/9 PASS
 HISTORICAL_RUNTIME_TESTS = 38/38 PASS
 GENERATOR_DUPLICATE_INPUT_PAIRS = 9/9 BYTE_IDENTICAL
-LAST_VERIFIED_MAIN_PUSH_RUN = 33807666965 / success
+LOCAL_GITIGNORE = present / conservative
+CODEOWNERS = present / routing-only
+CONTRIBUTING_POLICY = present
+HISTORICAL_PROMPTS_QUARANTINE = present
+GLOBAL_LICENSE = not_declared / rights_audit_pending
+LAST_VERIFIED_MAIN_PUSH_RUN = 33815628188 / success
 PERMISSION_HARDENING = pending
 ```
 
 La prueba migratoria usa 39 payloads presentes como piso monotónico contra regresión: puede subir al recuperar payloads exactos adicionales sin requerir reescribir un checkpoint rígido.
 
 `generator/INPUT_LAYOUT_CONTRACT_v1.json` declara `generator/inputs/` como el conjunto de entrada técnico activo **sólo para `generator_v0_5_migrated_adapter.py`**. Las nueve copias heredadas se preservan para genealogía y CI comprueba que continúen byte-idénticas a sus pares. Este contrato no les concede autoridad lingüística, pedagógica ni ortográfica y no reescribe el Generator histórico.
+
+La gobernanza local ya incluye `.gitignore`, `.github/CODEOWNERS` y `CONTRIBUTING.md`. `CODEOWNERS` documenta ownership/revisión esperada pero no impone por sí mismo una barrera de escritura. No se añadió una licencia global: la auditoría de derechos y términos de materiales propios/terceros queda abierta como `DT-004` antes de declarar una licencia uniforme.
+
+`DOCUMENT_STATUS_INDEX_v1.md` registra de manera no destructiva los casos documentales verificados en P2-06: conserva estados/resultados explícitos cuando existen y marca `STATUS_NOT_DECLARED / DO_NOT_INFER` cuando el artefacto no declara un estado. Ninguno de los siete documentos auditados fue reescrito sólo para uniformar encabezados.
 
 La protección de branch/rulesets sigue siendo un frente de infraestructura independiente. Ver `../../SEPARATION_VERIFICATION_2026-09-03.md` y `DEVICE_REPOSITORY_SEPARATION_PLAN_v1.md`.
 
@@ -230,7 +239,7 @@ BLOCKED_BY_MIGRATED_INPUTS = C03, C04, C05, C06
 
 El layout técnico activo del adaptador queda explicitado en `generator/INPUT_LAYOUT_CONTRACT_v1.json`. Ese contrato no cambia la genealogía del Generator ni declara autoridad sobre el contenido de los inputs.
 
-Se verificaron nueve pares de copias heredadas entre `generator/`, `inputs_nc001/` y `generator/inputs/`. En `main@4f87a7c` los nueve pares son byte-idénticos y `test_migrated_state.py` falla si alguno diverge. Las copias no se eliminaron, renombraron ni sincronizaron destructivamente.
+Se verificaron nueve pares de copias heredadas entre `generator/`, `inputs_nc001/` y `generator/inputs/`. En `main@2a463c8` los nueve pares son byte-idénticos y `test_migrated_state.py` falla si alguno diverge. Las copias no se eliminaron, renombraron ni sincronizaron destructivamente.
 
 `GENERATION_READINESS_MATRIX_v14.csv` se conserva como el snapshot más reciente localizado, pero sus capacidades C03/C05 no son reproducibles con los archivos actualmente migrados. No se rebajó ni se reescribió la matriz: queda clasificada como:
 
@@ -266,10 +275,24 @@ COR001 != RULE_DISCOVERY_SOURCE
 
 Ninguna aparición histórica de `benchmark` en JLC v0.27 puede licenciar comparación contra COR001 para descubrir reglas, decidir correcciones o validar conocimiento.
 
+### 6.1 Prompts históricos
+
+`dispositivo/prompts/historicos/` conserva exactamente dos prompts recuperados en el checkpoint auditado. Sus nombres y blobs históricos no se modificaron; se añadió únicamente `README.md` como metadato de cuarentena.
+
+```text
+HISTORICAL_PROMPTS = PRESERVED
+HISTORICAL_PROMPTS_ACTIVE_POLICY = false
+HISTORICAL_PROMPTS_CURRENT_EXECUTION_CONTRACT = false
+```
+
+Una idea contenida en esos prompts sólo puede volver a adoptarse mediante verificación técnica actual y, cuando corresponda, contra la autoridad de conocimiento en `lopezcarlton/vocesdelasnubes`.
+
 ## 7. Interpretación
 
 Este checkpoint no decide si C03, C05, la escala P, las capas BIB065 u otra hipótesis deben mantenerse o cambiar. Tampoco interpreta un `PASS` técnico como validación lingüística. Sólo evita atribuir al repositorio capacidades que sus archivos actuales no pueden reproducir.
 
 Las líneas de investigación, COR002, el trabajo con hablantes y la incorporación de nueva evidencia continúan abiertas conforme a `lopezcarlton/vocesdelasnubes/conocimiento/principios/PRIN-INVESTIGACION-ABIERTA.md`.
 
-Este checkpoint incorpora únicamente hallazgos P2 ya verificados sobre **estado técnico y documentación**: alcance real de la terminología histórica `benchmark` en JLC v0.27, causa proximal del bloqueo del Generator histórico e integridad de las copias duplicadas de inputs. No convierte ninguno de esos artefactos en fuente de conocimiento. Los demás P2/P3 de la auditoría externa siguen sujetos a verificación separada antes de cualquier corrección adicional.
+Este checkpoint incorpora únicamente hallazgos P2 ya verificados sobre **estado técnico y documentación**: alcance real de la terminología histórica `benchmark` en JLC v0.27, causa proximal del bloqueo del Generator histórico, integridad de las copias duplicadas de inputs, gobernanza mínima local y cuarentena de prompts históricos. P2-06 queda resuelto de manera no destructiva mediante `DOCUMENT_STATUS_INDEX_v1.md`.
+
+Del frente P2 de gobernanza queda explícitamente abierto el licenciamiento global como `DT-004`, sujeto a auditoría de derechos de materiales propios y de terceros. La frontera efectiva de permisos mediante branch protection/rulesets permanece como residual de `DT-003`. Los hallazgos P3 de la auditoría externa siguen sujetos a verificación separada antes de cualquier corrección adicional.
