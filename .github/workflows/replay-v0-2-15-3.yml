@@ -19,6 +19,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verify release manifest trust anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json, subprocess
+
+          root = Path.cwd()
+          anchor_path = root / 'RELEASE_MANIFEST_ANCHOR_v0_2_15_3.json'
+          anchor = json.loads(anchor_path.read_text(encoding='utf-8'))
+          manifest_path = root / anchor['artifact_path']
+
+          actual_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+          actual_git_blob = subprocess.check_output(
+              ['git', 'hash-object', str(manifest_path)], text=True
+          ).strip()
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+
+          assert actual_sha256 == anchor['sha256'], (actual_sha256, anchor['sha256'])
+          assert actual_git_blob == anchor['git_blob_at_anchor'], (
+              actual_git_blob,
+              anchor['git_blob_at_anchor'],
+          )
+          assert len(manifest['sha256']) == anchor['release_file_count']
+          assert anchor['cor001_policy'] == 'ANALYSIS_TARGET_ONLY'
+
+          print(json.dumps({
+              'status': 'PASS',
+              'manifest_sha256': actual_sha256,
+              'manifest_git_blob': actual_git_blob,
+              'release_file_count': len(manifest['sha256']),
+              'cor001_policy': anchor['cor001_policy'],
+          }, indent=2, sort_keys=True))
+          PY
+
       - name: Run isolated historical replay audit
         shell: bash
         run: |
@@ -161,6 +197,12 @@ jobs:
           if not ok:
               sys.exit(1)
           PY
+
+      - name: Verify migrated repository state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python dispositivo/migracion/test_migrated_state.py -v
 
       - name: Upload replay evidence
         if: always()
