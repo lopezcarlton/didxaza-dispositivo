@@ -1,0 +1,17 @@
+{
+  "clean_replay_exit_code": 0,
+  "clean_tests_exit_code": 0,
+  "semantic_hashes_clean": {
+    "details": "eb68bb9a4a3d21e59fa889c5d214f6a7d108c54df228741a2920bec14f5d3d46",
+    "metrics": "336db0939a8712b101766f28ebdd841936d8c539736820510c881cf1dbb47dec",
+    "summary": "adf75622ec8062b74826535a39ab50ced989e3390bf5e88ad19738d56bb13fa5"
+  },
+  "semantic_hashes_match": true,
+  "semantic_hashes_original": {
+    "details": "eb68bb9a4a3d21e59fa889c5d214f6a7d108c54df228741a2920bec14f5d3d46",
+    "metrics": "336db0939a8712b101766f28ebdd841936d8c539736820510c881cf1dbb47dec",
+    "summary": "adf75622ec8062b74826535a39ab50ced989e3390bf5e88ad19738d56bb13fa5"
+  },
+  "status": "PASS",
+  "tests": "38/38 PASS"
+}

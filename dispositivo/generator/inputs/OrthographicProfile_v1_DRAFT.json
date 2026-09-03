@@ -1,0 +1,37 @@
+{
+  "adoption_record_ids": [
+    "AR-NC001-ORTH-001",
+    "AR-NC001-ORTH-002",
+    "AR-NC001-ORTH-003",
+    "AR-NC001-ORTH-004",
+    "AR-NC001-ORTH-005",
+    "AR-NC001-ORTH-006",
+    "AR-NC001-ORTH-007",
+    "AR-NC001-ORTH-008"
+  ],
+  "community_scope": "JUCHITAN",
+  "hard_prohibitions": [
+    "STRIP_TONE_TO_SURFACE",
+    "STRIP_ACCENT_TO_SURFACE",
+    "PDLMA_TO_SURFACE",
+    "NEAR_MATCH_TO_SURFACE",
+    "DESTRUCTIVE_NORMALIZATION",
+    "GLOBAL_CLITIC_JOIN_SEPARATE",
+    "GLOBAL_COMPOUND_JOIN_SEPARATE"
+  ],
+  "normative_authority": "NONE_CLAIMED",
+  "policy_vector": {
+    "clitic_spacing_policy": "OPEN_SOURCE_PRESERVED",
+    "compound_surface_policy": "OPEN_EXACT_SURFACE_ONLY",
+    "glottal_policy": "PRESERVE_OBSERVED_NO_GLOBAL_CODEPOINT_CANONICALIZATION",
+    "tone_policy": "PRESERVE_OBSERVED_NO_STRIP_NO_INFER; OUTPUT_CELL_SPECIFIC",
+    "variant_policy": "PRESERVE_DISTINCT; CHOICE_REQUIRES_ADOPTION_RECORD",
+    "vowel_length_policy": "PRESERVE_OBSERVED; NO_COLLAPSE_SIMPLE_CUT_REARTICULATED"
+  },
+  "profile_id": "OrthographicProfile_v1_DRAFT_NC001",
+  "profile_type": "PROJECT_SLICE_DRAFT",
+  "project_adoption_status": "PARTIAL_CONSERVATIVE_GUARDS_ONLY",
+  "register_scope": "CONTEMPORARY_EVERYDAY_CONVERSATIONAL",
+  "scope_note": "Contains only policies required to keep NC001 evidence and generation conservative. It is not a general orthographic norm.",
+  "status": "DRAFT_POLICY_VECTOR_NOT_GLOBAL_NORM"
+}

@@ -1,0 +1,37 @@
+{
+  "accepted_exact_spans_total": 190,
+  "actions": {
+    "RT-B-PARTIAL": 75,
+    "RT-E-PRESERVE": 32
+  },
+  "analysis_open_total": 129,
+  "analysis_review_total": 2,
+  "analysis_vector_scope": "ALL_TOKENS_NOT_ONLY_ORTHOGRAPHIC_UNRESOLVED",
+  "auto_correct_enabled": false,
+  "candidate_edits_total": 0,
+  "claim_scope_counts": {
+    "JUCHITAN": 4,
+    "JUCHITAN_HISTORICAL_SOURCE": 289,
+    "UNKNOWN": 563
+  },
+  "cross_source_exact_unique_keys": 1118,
+  "dictionaria_named_scope_claims": 0,
+  "edit_execution_enabled": false,
+  "orthographic_unresolved_total": 128,
+  "pickett_internal_ngram_occurrences": 2374,
+  "pickett_records": 2534,
+  "qualification_totals": {
+    "ANALYSIS_POSITIVE": 3,
+    "HYPOTHESIS_ONLY": 31,
+    "NONE": 86,
+    "RETRIEVAL_ONLY": 8
+  },
+  "rows": 107,
+  "runtime_version": "0.2.15.2",
+  "surface_index_example_ngrams": 75176,
+  "surface_index_examples": 9686,
+  "surface_index_headwords": 9012,
+  "utterance_validations_total": 0,
+  "verb_records_reconstructed": 2385,
+  "visible_suggestions_enabled": false
+}

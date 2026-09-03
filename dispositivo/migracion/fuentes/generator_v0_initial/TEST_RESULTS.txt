@@ -1,0 +1,16 @@
+test_attested_cell_does_not_self_license_combination (test_generator_v0.TestGeneratorV0.test_attested_cell_does_not_self_license_combination) ... ok
+test_blocked_constructions (test_generator_v0.TestGeneratorV0.test_blocked_constructions) ... ok
+test_c01_exact_attested_assembly (test_generator_v0.TestGeneratorV0.test_c01_exact_attested_assembly) ... ok
+test_c02_exact_attested_assembly (test_generator_v0.TestGeneratorV0.test_c02_exact_attested_assembly) ... ok
+test_generator_source_has_no_legacy_similarity_path (test_generator_v0.TestGeneratorV0.test_generator_source_has_no_legacy_similarity_path) ... ok
+test_mvp_review_candidate_reused_as_non_licensing (test_generator_v0.TestGeneratorV0.test_mvp_review_candidate_reused_as_non_licensing) ... ok
+test_no_paradigm_completion (test_generator_v0.TestGeneratorV0.test_no_paradigm_completion) ... ok
+test_round_trip_license_features (test_generator_v0.TestGeneratorV0.test_round_trip_license_features) ... ok
+test_scope_and_tam_guards (test_generator_v0.TestGeneratorV0.test_scope_and_tam_guards) ... ok
+test_v02_review_states_never_auto_license_generator (test_generator_v0.TestGeneratorV0.test_v02_review_states_never_auto_license_generator) ... ok
+test_existing_generator_view_is_reused_after_hash_gate (test_runtime_reuse.TestRuntimeReuse.test_existing_generator_view_is_reused_after_hash_gate) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.388s
+
+OK

@@ -1,0 +1,37 @@
+{
+  "checksums": {
+    "cor001_input": "045b3abc83ec2035f6d20895d4584f5c028b7855f0cfb198b366b24d0ea5a8e9",
+    "db_predecessor": "7006416f814a3ffbc71be7666bc68a61cd87d68f3835d821d1bfc6710e6b13a0",
+    "dictionaria_entries": "a093b8eb5087affb7d7d7f364bb0a423921c20e959d61fe7efcd85de62b249d0",
+    "dictionaria_examples": "2a6e906e8cc8dc43d69306a0a69332f257ae470b5caeb47d3aef72d17ba9af8b",
+    "dictionaria_senses": "244769e4b3d724e5373feb3ccd26405c517340d05b70d962564ed4a4142d2afb",
+    "documentary_alignment_registry": "a4103fa943d6a5770d441c8b6db82b79fd98020de4d185d0cc8b725cf58d92cf",
+    "person_possession_registry": "3f1e955a285c2ce9c66d3953def6b41fd993d6b8dd81567c5f95a28281d20bdb",
+    "pickett_backfill": "56e2372566cec9d7758b7e45b8de4e320a92eb2ee5c51b2a5e444e8165875723",
+    "repair_runtime": "bc3f966d614ba2be4549044f314c493c3e0d13fef19878d4ee621786ccff202a"
+  },
+  "environment": {
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]"
+  },
+  "excluded_inputs": [
+    "historical_candidates",
+    "manual_deltas",
+    "retrospective_classifications",
+    "exception_lists"
+  ],
+  "hard_flags": {
+    "auto_correct": false,
+    "edit_execution": false,
+    "visible_suggestions": false
+  },
+  "input_policy": "COR001_ORIGINAL_COLUMNS_ONLY",
+  "run_id": "d0d54aad-0e23-4069-a8bc-d9cf0545339e",
+  "runtime_version": "0.2.15.2",
+  "semantic_hashes": {
+    "details": "401a5f6470b5c57de543f03e447e30e0393527073caa082888aa882016d14366",
+    "metrics": "6837a660fa0fe17469114f97967f5f6dc8c6373da48e2eb83d8806bd7fb96ba5",
+    "summary": "adf75622ec8062b74826535a39ab50ced989e3390bf5e88ad19738d56bb13fa5"
+  },
+  "source_scope_policy": "DICTIONARIA_SOURCE_COVERAGE_SEPARATE_FROM_DIALECT_SCOPE"
+}

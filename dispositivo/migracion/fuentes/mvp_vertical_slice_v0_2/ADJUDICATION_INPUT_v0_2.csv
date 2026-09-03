@@ -1,0 +1,4 @@
+case_id,previous_status,project_owner_observation,owner_confidence,source_support_known,requested_transition
+FB-076,REVIEW_CANDIDATE_CHA_HUI_TO_CHAAHUI,"chaahui': despacio parece un buen candidato",medium_high,"Dictionaria + Pickett support chaahui'='despacio'",OWNER_SUPPORTED_REVIEW_CANDIDATE
+FB-079,REVIEW_CANDIDATE_ZACA_NI_TO_SACANI,"Después de revisar el diccionario, probablemente es sacani; al oír la grabación suena más s que z. La prominencia final podría ser tonal, pero no se afirma.",high,"Dictionaria exact example Pàgàla sacani = ¿Cuánto cuesta (la cosa)?; Pickett supports pagaḻa/saca",PROBABLE_TRANSCRIPTION_CORRECTION
+FB-062,VERB_UNRESOLVED_REVIEW_CANDIDATES_ONLY,"Hipótesis: la secuencia oída/transcrita zenda podría analizarse como zee + nda'",medium,"Dictionaria confirms nda' pragmatic particle; Dictionaria eeda='venir' has future z.eeda ~ z.ee*da; standalone zee does NOT mean 'venir' in current snapshot",COMPETING_SEGMENTATION_HYPOTHESES

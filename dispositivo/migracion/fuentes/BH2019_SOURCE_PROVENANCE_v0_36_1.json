@@ -1,0 +1,17 @@
+{
+  "source_id": "BH2019_BOOK",
+  "author": "Juan José Bueno Holle",
+  "year": 2019,
+  "title": "Information structure in Isthmus Zapotec narrative and conversation",
+  "publisher": "Language Science Press",
+  "license_reported_in_source": "CC BY 4.0",
+  "uploaded_filename": "Bueno Holle 219-Book Manuscript-1398-2-10-20190330(1).pdf",
+  "sha256": "fd3f5a8705d63a5a1b2849870ff51b16978e6307eb7d935af9d9573be2f4aff5",
+  "project_reading_status": "STUDIED_IN_DEPTH",
+  "automatic_rule_licensing": false,
+  "project_source_status": "HIGH_VALUE_DISCOURSE_SOURCE",
+  "normative_status": "NOT_NORMATIVE",
+  "execution_status": "PARTIALLY_EXECUTABLE",
+  "supersedes_for_current_planning": "BH2019_SOURCE_PROVENANCE_v0_35.json",
+  "matrix": "BIB065_BUENO_HOLLE_INGESTION_MATRIX_v0_36_1.csv"
+}

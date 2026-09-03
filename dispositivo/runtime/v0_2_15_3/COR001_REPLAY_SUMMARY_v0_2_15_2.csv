@@ -1,0 +1,108 @@
+﻿ID,Bloque,Español,Didxazá_original,phrase_action,accepted_exact_spans,orthographic_unresolved_tokens,analysis_open_tokens,analysis_review_tokens,candidate_edits,utterance_validation
+1,Saludos y despedidas,Hola. / Buenos días. / Buenas tardes. / Buenas noches.,padiuxhi,RT-E-PRESERVE,0,1,0,0,0,False
+2,Saludos y despedidas,¿Cómo estás?,xhi'nu xhou,RT-E-PRESERVE,0,2,2,0,0,False
+3,Saludos y despedidas,"Estoy bien, gracias.",nazaca nua',RT-B-PARTIAL,1,1,2,0,0,False
+4,Saludos y despedidas,¿Y tú?,lii ya',RT-E-PRESERVE,2,0,2,0,0,False
+5,Saludos y despedidas,Yo también estoy bien.,na laca nazaca nua',RT-B-PARTIAL,3,1,4,0,0,False
+6,Saludos y despedidas,Hasta luego.,tinda guidu'ya nu,RT-B-PARTIAL,1,2,1,0,0,False
+7,Saludos y despedidas,Hasta mañana.,tica idxi,RT-B-PARTIAL,1,1,0,0,0,False
+8,Saludos y despedidas,Adiós.,ma zia' ndi,RT-B-PARTIAL,2,1,2,0,0,False
+9,Saludos y despedidas,Bienvenido.,sicaru' bedu,RT-E-PRESERVE,0,2,1,0,0,False
+10,Saludos y despedidas,Que te vaya bien.,sicaru' cheu,RT-E-PRESERVE,0,2,1,0,0,False
+11,Presentación personal,¿Cómo te llamas?,tu la'lu,RT-B-PARTIAL,1,1,1,0,0,False
+12,Presentación personal,Me llamo Vicente.,na' laya Vicente,RT-B-PARTIAL,2,1,1,0,0,False
+13,Presentación personal,¿De dónde eres?,pade lii,RT-B-PARTIAL,1,1,1,0,0,False
+14,Presentación personal,Soy de Juchitán.,"binni xavizende na, binni yoo na, binni guidxi guie' na",RT-B-PARTIAL,9,1,8,0,0,False
+15,Presentación personal,¿Cuántos años tienes?,panda iza napú,RT-B-PARTIAL,2,1,1,0,0,False
+16,Presentación personal,Tengo treinta años.,napa gande ne chi iza,RT-E-PRESERVE,5,0,0,0,0,False
+17,Presentación personal,¿Hablas zapoteco?,riniu didxa'zaa la',RT-B-PARTIAL,1,2,3,0,0,False
+18,Presentación personal,Estoy aprendiendo zapoteco.,cazide' didxa'za,RT-E-PRESERVE,0,2,0,0,0,False
+19,La familia,Ella es mi mamá.,labe nga jñaa,RT-E-PRESERVE,3,0,0,0,0,False
+20,La familia,Él es mi papá.,labe nga bixhoze,RT-E-PRESERVE,3,0,0,0,0,False
+21,La familia,Tengo un hermano.,napa ti biche,RT-B-PARTIAL,2,1,1,0,0,False
+22,La familia,Tengo una hermana.,napa ti bizana,RT-B-PARTIAL,2,1,1,0,0,False
+23,La familia,¿Tienes hijos?,napu xhiñu la',RT-B-PARTIAL,1,2,3,0,0,False
+24,La familia,Tengo dos hijos.,napa chupa xhiñe,RT-B-PARTIAL,2,1,1,0,0,False
+25,La familia,Mi abuela se llama Lidia.,jñaa bida la Lidia,RT-B-PARTIAL,2,2,1,0,0,False
+26,La familia,Mi familia es de Juchitán.,xavizende guira' binni lidxe,RT-B-PARTIAL,3,2,4,0,0,False
+27,La familia,Vivimos juntos.,tobi zi ra nabeza'du,RT-B-PARTIAL,2,2,0,0,0,False
+28,La familia,Te quiero mucho.,nadxie' lii stale,RT-B-PARTIAL,2,1,0,0,0,False
+29,El cuerpo,Esta es mi mano.,naya ndi,RT-E-PRESERVE,0,2,0,0,0,False
+30,El cuerpo,Este es mi pie.,ñe ndi,RT-E-PRESERVE,0,2,0,0,0,False
+31,El cuerpo,Esta es mi cabeza.,ique ndi,RT-B-PARTIAL,1,1,0,0,0,False
+32,El cuerpo,Este es mi corazón.,ladxi'dua ndi,RT-E-PRESERVE,0,2,0,0,0,False
+33,El cuerpo,Tengo hambre.,canda'na,RT-E-PRESERVE,0,1,0,0,0,False
+34,El cuerpo,Tengo sed.,cayate nisa,RT-B-PARTIAL,1,1,0,0,0,False
+35,El cuerpo,Estoy cansado.,ma bidxa'ga,RT-B-PARTIAL,1,1,1,0,0,False
+36,El cuerpo,Me duele la cabeza.,cayuba ique',RT-E-PRESERVE,0,2,0,0,0,False
+37,Comida y bebida istmeña,El agua está fresca.,naganda nu nisa'ca,RT-B-PARTIAL,1,2,1,0,0,False
+38,Comida y bebida istmeña,Quiero un poco de agua.,cului na cadxi nisa,RT-B-PARTIAL,3,1,0,0,0,False
+39,Comida y bebida istmeña,La tortilla está caliente.,nanda' nu gueta ca',RT-E-PRESERVE,4,0,4,0,0,False
+40,Comida y bebida istmeña,El pescado está muy rico.,nanixhe nu benda'di,RT-B-PARTIAL,1,2,1,0,0,False
+41,Comida y bebida istmeña,Me gusta el mole de camarón.,riuladxe guiña'doo benda bua,RT-B-PARTIAL,1,3,0,0,0,False
+42,Comida y bebida istmeña,¿Quieres café?,zeu café la',RT-B-PARTIAL,2,1,3,0,0,False
+43,Comida y bebida istmeña,El bupu es una bebida de maíz y cacao.,xhuba ne bisia nga racane' bupu,RT-B-PARTIAL,4,2,6,0,0,False
+44,Comida y bebida istmeña,Lávense las manos.,laqui'bi na,RT-B-PARTIAL,1,1,0,0,0,False
+45,Comida y bebida istmeña,Vamos a comer.,chu doo gueta,RT-E-PRESERVE,3,0,0,0,0,False
+46,Comida y bebida istmeña,Ya está la comida,ma' nu guenda roo di',RT-E-PRESERVE,5,0,3,0,0,False
+47,Comida y bebida istmeña,Gracias por la comida.,diuxhquixhe zaca guenda roo ca',RT-B-PARTIAL,4,1,5,0,0,False
+48,Comida y bebida istmeña,Está muy sabroso.,nabe nanixhe ni,RT-B-PARTIAL,2,1,1,0,0,False
+49,"El entorno: casa, pueblo, milpa",Esta es mi casa.,rari nga lidxe,RT-B-PARTIAL,1,2,0,0,0,False
+50,"El entorno: casa, pueblo, milpa",La casa es grande.,na roba yoo'di,RT-B-PARTIAL,1,2,0,0,0,False
+51,"El entorno: casa, pueblo, milpa",El río está cerca.,gaxha nu gui'gu,RT-B-PARTIAL,2,1,1,0,0,False
+52,"El entorno: casa, pueblo, milpa",Este árbol da sombra.,yaga di' ru'di bacanda,RT-B-PARTIAL,2,2,1,0,0,False
+53,"El entorno: casa, pueblo, milpa",La milpa está creciendo.,ca'roba guela,RT-B-PARTIAL,1,1,0,0,0,False
+54,"El entorno: casa, pueblo, milpa",El maíz es vida.,xhuba nga guenda nabani,RT-B-PARTIAL,3,1,4,1,0,False
+55,"El entorno: casa, pueblo, milpa",Vivo en el centro del pueblo.,nabeza gala hui guidxi,RT-B-PARTIAL,3,1,1,1,0,False
+56,"El entorno: casa, pueblo, milpa",El mercado está lleno,dxha' binni luguia,RT-B-PARTIAL,1,2,1,0,0,False
+57,"El entorno: casa, pueblo, milpa",Las flores son hermosas.,sicaru nga ca' guie ca',RT-E-PRESERVE,5,0,5,0,0,False
+58,"El entorno: casa, pueblo, milpa",El mar está lejos.,zitu nu nisa doo,RT-E-PRESERVE,4,0,1,0,0,False
+59,"El entorno: casa, pueblo, milpa",El viento sopla fuerte.,nadipa nu bi,RT-B-PARTIAL,2,1,1,0,0,False
+60,"El entorno: casa, pueblo, milpa",La tierra es nuestra.,sti'nu layu di',RT-B-PARTIAL,2,1,1,0,0,False
+61,Verbos de acción cotidiana,Voy al mercado.,cha luguia,RT-B-PARTIAL,1,1,0,0,0,False
+62,Verbos de acción cotidiana,Vengo de la milpa.,zenda de ra ñaa,RT-B-PARTIAL,4,1,1,0,0,False
+63,Verbos de acción cotidiana,Estoy haciendo la comida,cayune guenda roo,RT-B-PARTIAL,2,1,0,0,0,False
+64,Verbos de acción cotidiana,ya estoy comiendo.,ma cayagua gueta,RT-B-PARTIAL,2,1,1,0,0,False
+65,Verbos de acción cotidiana,Estoy durmiendo,nizia se',RT-E-PRESERVE,0,2,0,0,0,False
+66,Verbos de acción cotidiana,Estoy trabajando.,cayune dxiña,RT-B-PARTIAL,1,1,0,0,0,False
+67,Verbos de acción cotidiana,Voy a caminar.,cha chi zaya,RT-B-PARTIAL,2,1,0,0,0,False
+68,Verbos de acción cotidiana,Quiero descansar.,chi guizi ladxe,RT-B-PARTIAL,1,2,0,0,0,False
+69,Verbos de acción cotidiana,Estoy escuchando.,cayuna diaga,RT-E-PRESERVE,2,0,0,0,0,False
+70,Verbos de acción cotidiana,Estoy hablando con mi mamá.,canie nia jñaa,RT-B-PARTIAL,1,2,0,0,0,False
+71,Preguntas esenciales,¿Qué es esto?,xhi ndi,RT-B-PARTIAL,1,1,2,0,0,False
+72,Preguntas esenciales,¿Qué estás haciendo?,xhi cayunu,RT-B-PARTIAL,1,1,2,0,0,False
+73,Preguntas esenciales,¿A dónde vas?,para cheu,RT-B-PARTIAL,1,1,0,0,0,False
+74,Preguntas esenciales,¿De dónde vienes?,para guye' lu,RT-B-PARTIAL,2,1,0,0,0,False
+75,Preguntas esenciales,¿Cómo se dice en zapoteco?,xhi lani didxa'zaa,RT-B-PARTIAL,2,1,3,0,0,False
+76,Preguntas esenciales,¿Puedes repetirlo más despacio?,zanda guiniu' ni stobi cha hui ga' la,RT-B-PARTIAL,7,1,8,0,0,False
+77,Preguntas esenciales,¿Qué significa esa palabra?,xhina didxa'ca,RT-E-PRESERVE,0,2,2,0,0,False
+78,Preguntas esenciales,¿Dónde está el mercado?,para nu luguia,RT-B-PARTIAL,2,1,1,0,0,False
+79,Preguntas esenciales,¿Cuánto cuesta?,pagala zaca ni',RT-B-PARTIAL,2,1,3,0,0,False
+80,Números y tiempo básico,"Uno, dos, tres.","tobi, chupa, chona",RT-E-PRESERVE,3,0,0,0,0,False
+81,Números y tiempo básico,"Cuatro, cinco, seis.","tapa, gayu, xhopa",RT-B-PARTIAL,1,2,1,0,0,False
+82,Números y tiempo básico,"Siete, ocho, nueve, diez.","gadxe, xhono, ga', chi",RT-E-PRESERVE,4,0,4,0,0,False
+83,Números y tiempo básico,Hoy es lunes.,yana dxi lunes,RT-B-PARTIAL,1,2,0,0,0,False
+84,Números y tiempo básico,Mañana es martes.,idxi martes,RT-B-PARTIAL,1,1,0,0,0,False
+85,Números y tiempo básico,Ayer fue domingo.,negue domingo,RT-E-PRESERVE,0,2,0,0,0,False
+86,Números y tiempo básico,Son las siete de la mañana.,gadxe lu xhigaba ziado,RT-B-PARTIAL,2,2,3,0,0,False
+87,Números y tiempo básico,Son las tres de la tarde.,chona lu xhigaba guadxi,RT-B-PARTIAL,2,2,2,0,0,False
+88,Números y tiempo básico,Son las nueve de la noche.,ga lu xhigaba guaxhini,RT-B-PARTIAL,3,2,2,0,0,False
+89,Números y tiempo básico,Es muy temprano.,ziado pe ndi',RT-B-PARTIAL,1,2,0,0,0,False
+90,Números y tiempo básico,Es muy tarde.,ma guadxi ndi,RT-B-PARTIAL,1,2,1,0,0,False
+91,Expresiones de cortesía y afecto,Con permiso.,zanda tide la',RT-B-PARTIAL,2,1,3,0,0,False
+92,Expresiones de cortesía y afecto,Está bien.,jneza,RT-E-PRESERVE,1,0,0,0,0,False
+93,Expresiones de cortesía y afecto,No hay problema.,cadi guiza ladxu,RT-B-PARTIAL,1,2,1,0,0,False
+94,Expresiones de cortesía y afecto,Qué bonito.,pabia sicaru,RT-B-PARTIAL,1,1,0,0,0,False
+95,Expresiones de cortesía y afecto,Me gusta mucho este lugar.,nabe riu'ladxe rari,RT-B-PARTIAL,1,2,0,0,0,False
+96,Expresiones de cortesía y afecto,Quiero aprender más.,guizide shcadxi,RT-E-PRESERVE,0,2,0,0,0,False
+97,Negación y rechazo,No.,co,RT-E-PRESERVE,1,0,0,0,0,False
+98,Negación y rechazo,No sé.,qui gana,RT-B-PARTIAL,1,1,1,0,0,False
+99,Negación y rechazo,No entiendo.,qui riene,RT-E-PRESERVE,2,0,1,0,0,False
+100,Negación y rechazo,No lo conozco.,qui rune' biaya,RT-B-PARTIAL,2,1,1,0,0,False
+101,Negación y rechazo,No hablo zapoteco.,qui rinie didxa'zaa,RT-B-PARTIAL,1,2,1,0,0,False
+102,Negación y rechazo,Todavía no.,caru'ma di,RT-B-PARTIAL,1,1,0,0,0,False
+103,Negación y rechazo,Ya no.,ma' co,RT-E-PRESERVE,2,0,1,0,0,False
+104,Negación y rechazo,No tengo.,qui gapa,RT-E-PRESERVE,2,0,1,0,0,False
+105,Negación y rechazo,"No, gracias.",co' diuxhquixhe lii,RT-B-PARTIAL,2,1,0,0,0,False
+106,Negación y rechazo,No me gusta.,qui riu ladxe',RT-B-PARTIAL,2,1,1,0,0,False
+107,Negación y rechazo,No quiero.,co,RT-E-PRESERVE,1,0,0,0,0,False

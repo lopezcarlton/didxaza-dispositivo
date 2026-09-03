@@ -1,0 +1,108 @@
+﻿ID,Bloque,Español,Didxazá_original
+1,Saludos y despedidas,Hola. / Buenos días. / Buenas tardes. / Buenas noches.,padiuxhi
+2,Saludos y despedidas,¿Cómo estás?,xhi'nu xhou
+3,Saludos y despedidas,"Estoy bien, gracias.",nazaca nua'
+4,Saludos y despedidas,¿Y tú?,lii ya'
+5,Saludos y despedidas,Yo también estoy bien.,na laca nazaca nua'
+6,Saludos y despedidas,Hasta luego.,tinda guidu'ya nu
+7,Saludos y despedidas,Hasta mañana.,tica idxi
+8,Saludos y despedidas,Adiós.,ma zia' ndi
+9,Saludos y despedidas,Bienvenido.,sicaru' bedu
+10,Saludos y despedidas,Que te vaya bien.,sicaru' cheu
+11,Presentación personal,¿Cómo te llamas?,tu la'lu
+12,Presentación personal,Me llamo Vicente.,na' laya Vicente
+13,Presentación personal,¿De dónde eres?,pade lii
+14,Presentación personal,Soy de Juchitán.,"binni xavizende na, binni yoo na, binni guidxi guie' na"
+15,Presentación personal,¿Cuántos años tienes?,panda iza napú
+16,Presentación personal,Tengo treinta años.,napa gande ne chi iza
+17,Presentación personal,¿Hablas zapoteco?,riniu didxa'zaa la'
+18,Presentación personal,Estoy aprendiendo zapoteco.,cazide' didxa'za
+19,La familia,Ella es mi mamá.,labe nga jñaa
+20,La familia,Él es mi papá.,labe nga bixhoze
+21,La familia,Tengo un hermano.,napa ti biche
+22,La familia,Tengo una hermana.,napa ti bizana
+23,La familia,¿Tienes hijos?,napu xhiñu la'
+24,La familia,Tengo dos hijos.,napa chupa xhiñe
+25,La familia,Mi abuela se llama Lidia.,jñaa bida la Lidia
+26,La familia,Mi familia es de Juchitán.,xavizende guira' binni lidxe
+27,La familia,Vivimos juntos.,tobi zi ra nabeza'du
+28,La familia,Te quiero mucho.,nadxie' lii stale
+29,El cuerpo,Esta es mi mano.,naya ndi
+30,El cuerpo,Este es mi pie.,ñe ndi
+31,El cuerpo,Esta es mi cabeza.,ique ndi
+32,El cuerpo,Este es mi corazón.,ladxi'dua ndi
+33,El cuerpo,Tengo hambre.,canda'na
+34,El cuerpo,Tengo sed.,cayate nisa
+35,El cuerpo,Estoy cansado.,ma bidxa'ga
+36,El cuerpo,Me duele la cabeza.,cayuba ique'
+37,Comida y bebida istmeña,El agua está fresca.,naganda nu nisa'ca
+38,Comida y bebida istmeña,Quiero un poco de agua.,cului na cadxi nisa
+39,Comida y bebida istmeña,La tortilla está caliente.,nanda' nu gueta ca'
+40,Comida y bebida istmeña,El pescado está muy rico.,nanixhe nu benda'di
+41,Comida y bebida istmeña,Me gusta el mole de camarón.,riuladxe guiña'doo benda bua
+42,Comida y bebida istmeña,¿Quieres café?,zeu café la'
+43,Comida y bebida istmeña,El bupu es una bebida de maíz y cacao.,xhuba ne bisia nga racane' bupu
+44,Comida y bebida istmeña,Lávense las manos.,laqui'bi na
+45,Comida y bebida istmeña,Vamos a comer.,chu doo gueta
+46,Comida y bebida istmeña,Ya está la comida,ma' nu guenda roo di'
+47,Comida y bebida istmeña,Gracias por la comida.,diuxhquixhe zaca guenda roo ca'
+48,Comida y bebida istmeña,Está muy sabroso.,nabe nanixhe ni
+49,"El entorno: casa, pueblo, milpa",Esta es mi casa.,rari nga lidxe
+50,"El entorno: casa, pueblo, milpa",La casa es grande.,na roba yoo'di
+51,"El entorno: casa, pueblo, milpa",El río está cerca.,gaxha nu gui'gu
+52,"El entorno: casa, pueblo, milpa",Este árbol da sombra.,yaga di' ru'di bacanda
+53,"El entorno: casa, pueblo, milpa",La milpa está creciendo.,ca'roba guela
+54,"El entorno: casa, pueblo, milpa",El maíz es vida.,xhuba nga guenda nabani
+55,"El entorno: casa, pueblo, milpa",Vivo en el centro del pueblo.,nabeza gala hui guidxi
+56,"El entorno: casa, pueblo, milpa",El mercado está lleno,dxha' binni luguia
+57,"El entorno: casa, pueblo, milpa",Las flores son hermosas.,sicaru nga ca' guie ca'
+58,"El entorno: casa, pueblo, milpa",El mar está lejos.,zitu nu nisa doo
+59,"El entorno: casa, pueblo, milpa",El viento sopla fuerte.,nadipa nu bi
+60,"El entorno: casa, pueblo, milpa",La tierra es nuestra.,sti'nu layu di'
+61,Verbos de acción cotidiana,Voy al mercado.,cha luguia
+62,Verbos de acción cotidiana,Vengo de la milpa.,zenda de ra ñaa
+63,Verbos de acción cotidiana,Estoy haciendo la comida,cayune guenda roo
+64,Verbos de acción cotidiana,ya estoy comiendo.,ma cayagua gueta
+65,Verbos de acción cotidiana,Estoy durmiendo,nizia se'
+66,Verbos de acción cotidiana,Estoy trabajando.,cayune dxiña
+67,Verbos de acción cotidiana,Voy a caminar.,cha chi zaya
+68,Verbos de acción cotidiana,Quiero descansar.,chi guizi ladxe
+69,Verbos de acción cotidiana,Estoy escuchando.,cayuna diaga
+70,Verbos de acción cotidiana,Estoy hablando con mi mamá.,canie nia jñaa
+71,Preguntas esenciales,¿Qué es esto?,xhi ndi
+72,Preguntas esenciales,¿Qué estás haciendo?,xhi cayunu
+73,Preguntas esenciales,¿A dónde vas?,para cheu
+74,Preguntas esenciales,¿De dónde vienes?,para guye' lu
+75,Preguntas esenciales,¿Cómo se dice en zapoteco?,xhi lani didxa'zaa
+76,Preguntas esenciales,¿Puedes repetirlo más despacio?,zanda guiniu' ni stobi cha hui ga' la
+77,Preguntas esenciales,¿Qué significa esa palabra?,xhina didxa'ca
+78,Preguntas esenciales,¿Dónde está el mercado?,para nu luguia
+79,Preguntas esenciales,¿Cuánto cuesta?,pagala zaca ni'
+80,Números y tiempo básico,"Uno, dos, tres.","tobi, chupa, chona"
+81,Números y tiempo básico,"Cuatro, cinco, seis.","tapa, gayu, xhopa"
+82,Números y tiempo básico,"Siete, ocho, nueve, diez.","gadxe, xhono, ga', chi"
+83,Números y tiempo básico,Hoy es lunes.,yana dxi lunes
+84,Números y tiempo básico,Mañana es martes.,idxi martes
+85,Números y tiempo básico,Ayer fue domingo.,negue domingo
+86,Números y tiempo básico,Son las siete de la mañana.,gadxe lu xhigaba ziado
+87,Números y tiempo básico,Son las tres de la tarde.,chona lu xhigaba guadxi
+88,Números y tiempo básico,Son las nueve de la noche.,ga lu xhigaba guaxhini
+89,Números y tiempo básico,Es muy temprano.,ziado pe ndi'
+90,Números y tiempo básico,Es muy tarde.,ma guadxi ndi
+91,Expresiones de cortesía y afecto,Con permiso.,zanda tide la'
+92,Expresiones de cortesía y afecto,Está bien.,jneza
+93,Expresiones de cortesía y afecto,No hay problema.,cadi guiza ladxu
+94,Expresiones de cortesía y afecto,Qué bonito.,pabia sicaru
+95,Expresiones de cortesía y afecto,Me gusta mucho este lugar.,nabe riu'ladxe rari
+96,Expresiones de cortesía y afecto,Quiero aprender más.,guizide shcadxi
+97,Negación y rechazo,No.,co
+98,Negación y rechazo,No sé.,qui gana
+99,Negación y rechazo,No entiendo.,qui riene
+100,Negación y rechazo,No lo conozco.,qui rune' biaya
+101,Negación y rechazo,No hablo zapoteco.,qui rinie didxa'zaa
+102,Negación y rechazo,Todavía no.,caru'ma di
+103,Negación y rechazo,Ya no.,ma' co
+104,Negación y rechazo,No tengo.,qui gapa
+105,Negación y rechazo,"No, gracias.",co' diuxhquixhe lii
+106,Negación y rechazo,No me gusta.,qui riu ladxe'
+107,Negación y rechazo,No quiero.,co
