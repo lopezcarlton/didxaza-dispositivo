@@ -27,6 +27,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
+      - name: Verify rights governance invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest dispositivo/governance/test_rights_governance.py -v
+
       - name: Audit runtime SQLite provenance metadata
         shell: bash
         run: |

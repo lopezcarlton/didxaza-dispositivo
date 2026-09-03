@@ -78,18 +78,46 @@ La consulta del endpoint clásico de branch protection sigue bloqueada para esta
 
 ## DT-004 — Auditar derechos de materiales y definir estrategia de licenciamiento
 
-**Estado:** `OPEN / RIGHTS_AUDIT_REQUIRED_BEFORE_BLANKET_LICENSE`  
+**Estado:** `IN_PROGRESS / SOURCE_IDENTITIES_AND_V2_20_PROVENANCE_MAPPED / DISTRIBUTION_ARCHITECTURE_PENDING`  
 **Prioridad:** Antes de declarar una licencia global o ampliar redistribución externa
 
-La auditoría técnica detectó que el repositorio no tiene `LICENSE`. No debe resolverse escogiendo una licencia genérica mientras el árbol contenga artefactos derivados o relacionados con fuentes de terceros cuyos términos no estén inventariados.
+La ausencia de `LICENSE` no debe resolverse escogiendo una licencia genérica mientras el árbol contenga artefactos derivados o relacionados con fuentes de terceros cuyos términos son distintos o todavía requieren adjudicación.
 
-Trabajo pendiente:
+### Ejecutado y verificado
 
-- inventariar artefactos propios y de terceros con provenance suficiente;
-- identificar licencias, permisos, restricciones o estados no resueltos cuando existan;
-- separar código original del proyecto de corpus, diccionarios, bases derivadas, documentación u otros materiales con derechos potencialmente distintos;
-- decidir si procede una licencia global, licencias por subárbol/archivo o una combinación;
-- documentar explícitamente cualquier material cuyo derecho de redistribución o relicenciamiento permanezca sin resolver.
+- inventario inicial de derechos/provenance materializado;
+- auditor read-only de SQLite creado y ejecutado en CI;
+- SQLite v2.20 mapeada parcialmente a nivel tabla → source ID → número de filas sin modificar el binario histórico;
+- Dictionaria (`BIB054_DICTIONARIA`) verificada como fuente de varias tablas de runtime;
+- NOTICE concreto de Dictionaria materializado, preservando requisito técnico de mantener attribution codes/columns por registro;
+- Bueno Holle 2019 verificado como fuente `CC BY 4.0` conforme a publisher/provenance local;
+- Pickett Vocabulary separado en dos IDs históricas: `BIB003_PICKETT_VOCABULARIO` y `BIB055_PICKETT_VOCABULARIO`, sin fusionarlas por inferencia;
+- `BIB004_GRAMATICA_POPULAR` identificado como *Gramática popular del zapoteco del Istmo*, segunda edición electrónica 2001; aviso `D.R.` observado y ninguna licencia abierta verificada;
+- `BIB059_PBK2016` triangulado como Pérez Báez & Kaufman 2016, *Verb Classes in Juchitán Zapotec*, DOI `10.1353/anl.2016.0030`; aviso `All rights reserved` observado;
+- hueco histórico de `source_profile` verificado para BIB003/BIB055/BIB059;
+- `SOURCE_PROFILE_SUPPLEMENT_v1.json` creado como capa derivada no destructiva; la SQLite exacta no se modificó;
+- `THIRD_PARTY_ATTRIBUTION_v1.md` creado;
+- checkpoint actual de auditoría: `governance/RIGHTS_PROVENANCE_AUDIT_v2.md`;
+- inventario actual: `governance/RIGHTS_PROVENANCE_INVENTORY_v2.json`.
+
+### Residual pendiente
+
+- resolver genealogía exacta `BIB003` ↔ `BIB055` para notices/packaging sin colapsar IDs prematuramente;
+- definir tratamiento distribuible de `PICKETT_LEXICON_BACKFILL_v0_1.csv` y datos derivados de Pickett;
+- definir tratamiento de alineamientos/ejemplos derivados de `BIB004_GRAMATICA_POPULAR`;
+- definir tratamiento de las expresiones/registros derivados de `BIB059_PBK2016`, distinguiendo hechos lingüísticos abstractos de expresión fuente;
+- auditar SQLite v2.19 por separado;
+- auditar outputs de replay por contenido/provenance, sin convertir COR001 en benchmark ni autoridad;
+- inventariar alcance de código/documentación originales del proyecto frente a material migrado o source-derived;
+- decidir arquitectura final: licencia(s) por subárbol/archivo, NOTICE, exclusiones de paquete distribuible o estrategia mixta;
+- sólo entonces decidir si tiene sentido algún `LICENSE` en raíz y cuál sería su alcance exacto.
+
+```text
+PUBLIC_ACCESS != OPEN_LICENSE
+TECHNICAL_REPRODUCIBILITY != REDISTRIBUTION_PERMISSION
+SOURCE_LICENSE != WHOLE_REPOSITORY_LICENSE
+THIRD_PARTY_NOTICE != BLANKET_LICENSE
+```
 
 No asumir que la presencia histórica de un archivo concede permiso para relicenciarlo. Tampoco eliminar o transformar artefactos sólo para simplificar la elección de licencia sin evaluar antes su función de provenance/reproducibilidad.
 

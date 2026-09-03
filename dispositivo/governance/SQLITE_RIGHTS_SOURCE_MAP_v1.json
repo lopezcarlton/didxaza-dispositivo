@@ -1,7 +1,7 @@
 {
-  "map_version": 1,
+  "map_version": 2,
   "verification_date": "2026-09-03",
-  "status": "VERIFIED_TABLE_LEVEL_PROVENANCE_MAP / PARTIAL_RIGHTS_CLASSIFICATION / NON_LEGAL_DETERMINATION",
+  "status": "VERIFIED_TABLE_LEVEL_PROVENANCE_MAP / RIGHTS_CLASSIFICATION_ADVANCED / NON_LEGAL_DETERMINATION",
   "database": {
     "path": "dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_SURFACE_SEMANTICS_v2_20.sqlite",
     "sha256": "2379773426baf4e3eace87c61ec17f7a1e1b9164421e56cf736d35eb64a5ebed",
@@ -26,41 +26,31 @@
       "table": "verb_lexeme_class_v023",
       "table_rows": 2385,
       "source_column": "source_id",
-      "source_counts": [
-        {"source_id": "BIB054_DICTIONARIA", "row_count": 2385}
-      ]
+      "source_counts": [{"source_id": "BIB054_DICTIONARIA", "row_count": 2385}]
     },
     {
       "table": "bound_entry_v024",
       "table_rows": 6600,
       "source_column": "source_id",
-      "source_counts": [
-        {"source_id": "BIB054_DICTIONARIA", "row_count": 6600}
-      ]
+      "source_counts": [{"source_id": "BIB054_DICTIONARIA", "row_count": 6600}]
     },
     {
       "table": "causative_inventory_v025",
       "table_rows": 869,
       "source_column": "source_id",
-      "source_counts": [
-        {"source_id": "BIB054_DICTIONARIA", "row_count": 869}
-      ]
+      "source_counts": [{"source_id": "BIB054_DICTIONARIA", "row_count": 869}]
     },
     {
       "table": "derivation_inventory_v025",
       "table_rows": 1064,
       "source_column": "source_id",
-      "source_counts": [
-        {"source_id": "BIB054_DICTIONARIA", "row_count": 1064}
-      ]
+      "source_counts": [{"source_id": "BIB054_DICTIONARIA", "row_count": 1064}]
     },
     {
       "table": "surface_attestation_v029",
       "table_rows": 84188,
       "source_column": "source_id",
-      "source_counts": [
-        {"source_id": "BIB054_DICTIONARIA", "row_count": 84188}
-      ],
+      "source_counts": [{"source_id": "BIB054_DICTIONARIA", "row_count": 84188}],
       "source_kind_counts": [
         {"source_kind": "EXAMPLE_NGRAM", "row_count": 75176},
         {"source_kind": "HEADWORD", "row_count": 9012}
@@ -70,12 +60,8 @@
       "table": "pickett_lexical_record_v0211",
       "table_rows": 2534,
       "source_column": "source_id",
-      "source_counts": [
-        {"source_id": "BIB003_PICKETT_VOCABULARIO", "row_count": 2534}
-      ],
-      "source_edition_counts": [
-        {"source_edition_extracted": "2007_FIFTH_ELECTRONIC", "row_count": 2534}
-      ]
+      "source_counts": [{"source_id": "BIB003_PICKETT_VOCABULARIO", "row_count": 2534}],
+      "source_edition_counts": [{"source_edition_extracted": "2007_FIFTH_ELECTRONIC", "row_count": 2534}]
     },
     {
       "table": "cross_source_exact_surface_v0212",
@@ -102,17 +88,13 @@
       "table": "person_possession_exact_v0214",
       "table_rows": 100,
       "source_column": "source_id",
-      "source_counts": [
-        {"source_id": "BIB004_GRAMATICA_POPULAR", "row_count": 100}
-      ]
+      "source_counts": [{"source_id": "BIB004_GRAMATICA_POPULAR", "row_count": 100}]
     },
     {
       "table": "morphology_rule_registry_v023",
       "table_rows": 11,
       "source_column": "source_id",
-      "source_counts": [
-        {"source_id": "BIB059_PBK2016", "row_count": 11}
-      ]
+      "source_counts": [{"source_id": "BIB059_PBK2016", "row_count": 11}]
     }
   ],
   "mixed_or_named_source_metadata_tables": [
@@ -123,21 +105,9 @@
       "distinct_non_null_values": 17,
       "classification": "MIXED_NAMED_EVIDENCE_SOURCES / RIGHTS_NOT_CLASSIFIED_BY_THIS_MAP"
     },
-    {
-      "table": "bound_source_snapshot_v024",
-      "table_rows": 3,
-      "classification": "SOURCE_SNAPSHOT_REFERENCES"
-    },
-    {
-      "table": "morphology_source_snapshot_v023",
-      "table_rows": 3,
-      "classification": "SOURCE_SNAPSHOT_REFERENCES"
-    },
-    {
-      "table": "morphology_ii_source_snapshot_v025",
-      "table_rows": 4,
-      "classification": "SOURCE_SNAPSHOT_REFERENCES"
-    },
+    {"table": "bound_source_snapshot_v024", "table_rows": 3, "classification": "SOURCE_SNAPSHOT_REFERENCES"},
+    {"table": "morphology_source_snapshot_v023", "table_rows": 3, "classification": "SOURCE_SNAPSHOT_REFERENCES"},
+    {"table": "morphology_ii_source_snapshot_v025", "table_rows": 4, "classification": "SOURCE_SNAPSHOT_REFERENCES"},
     {
       "table": "surface_semantics_integrity_v0153",
       "table_rows": 7,
@@ -160,20 +130,22 @@
       "BIB055_PICKETT_VOCABULARIO",
       "BIB059_PBK2016"
     ],
-    "status": "PROVENANCE_PROFILE_COVERAGE_GAP"
+    "status": "PROVENANCE_PROFILE_COVERAGE_GAP / NON_DESTRUCTIVE_SUPPLEMENT_PRESENT",
+    "supplement": "SOURCE_PROFILE_SUPPLEMENT_v1.json"
   },
   "rights_classification": {
-    "BIB054_DICTIONARIA": "EXTERNAL_CC_BY_4_0_NOTICE_VERIFIED / LOCAL_ATTRIBUTION_MAPPING_REQUIRED",
+    "BIB054_DICTIONARIA": "CC_BY_4_0_SITE_NOTICE_VERIFIED / PER_RECORD_ATTRIBUTION_MUST_BE_PRESERVED / THIRD_PARTY_NOTICE_PRESENT",
     "BIB003_PICKETT_VOCABULARIO": "NO_OPEN_LICENSE_VERIFIED / HIGH_PRIORITY_RIGHTS_REVIEW_REQUIRED",
-    "BIB055_PICKETT_VOCABULARIO": "SAME_TITLE_FAMILY_SUSPECTED_BUT_IDENTITY_NOT_MERGED / RIGHTS_REVIEW_REQUIRED",
-    "BIB004_GRAMATICA_POPULAR": "RIGHTS_STATUS_NOT_YET_VERIFIED_IN_DT004",
-    "BIB059_PBK2016": "RIGHTS_STATUS_NOT_YET_VERIFIED_IN_DT004"
+    "BIB055_PICKETT_VOCABULARIO": "WORK_FAMILY_AND_LOCATION_VERIFIED / EXACT_EDITION_GENEALOGY_UNRESOLVED / RIGHTS_REVIEW_REQUIRED",
+    "BIB004_GRAMATICA_POPULAR": "IDENTITY_VERIFIED / D_R_RIGHTS_NOTICE_OBSERVED / NO_OPEN_LICENSE_VERIFIED / DISTRIBUTION_REVIEW_REQUIRED",
+    "BIB059_PBK2016": "IDENTITY_TRIANGULATED / ALL_RIGHTS_RESERVED_NOTICE_OBSERVED / DERIVED_RULE_RELICENSING_REVIEW_REQUIRED"
   },
+  "supporting_notice": "THIRD_PARTY_ATTRIBUTION_v1.md",
+  "current_rights_inventory": "RIGHTS_PROVENANCE_INVENTORY_v2.json",
   "next_actions": [
     "Resolve genealogy between BIB003_PICKETT_VOCABULARIO and BIB055_PICKETT_VOCABULARIO without collapsing IDs by inference",
-    "Verify rights status of BIB004_GRAMATICA_POPULAR and BIB059_PBK2016",
-    "Decide whether source_profile should gain non-destructive profiles for source IDs already materialized elsewhere",
-    "Map the Dictionaria attribution chain into a concrete NOTICE/attribution artifact",
-    "Continue field-level review only where table-level provenance is insufficient"
+    "Define distribution treatment for Pickett vocabulary data, BIB004 alignments/examples and BIB059-derived rule expression",
+    "Audit v2.19 and replay outputs separately",
+    "Inventory project-authored scope and design final mixed licensing/NOTICE/packaging architecture"
   ]
 }
