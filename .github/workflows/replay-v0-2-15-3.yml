@@ -2,15 +2,12 @@ name: replay-v0-2-15-3-reproducibility
 
 on:
   workflow_dispatch:
-  issues:
-    types: [opened]
 
 permissions:
   contents: read
 
 jobs:
   replay:
-    if: github.event_name == 'workflow_dispatch' || github.event.issue.title == 'Trigger replay verification'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -39,6 +36,8 @@ jobs:
           clean_reference = json.loads((src/'CLEAN_REPLAY_VERIFICATION_v0_2_15_3.json').read_text(encoding='utf-8'))
           expected_semantic = clean_reference['semantic_hashes_original']
 
+          # Verify the complete local import closure of the historical replay runner,
+          # rather than a manually curated subset of Python modules.
           modules = {p.stem: p for p in src.glob('*.py')}
           closure = set()
           def visit(stem):
