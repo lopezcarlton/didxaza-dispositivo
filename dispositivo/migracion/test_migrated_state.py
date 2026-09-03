@@ -105,7 +105,7 @@ class MigratedStateTests(unittest.TestCase):
     def test_exact_dictionaria_inputs(self) -> None:
         expected = {
             "DICTIONARIA_entries_v0_2_15_2.csv": (
-                "a093b8eb5087affb7d7f364bb0a423921c20e959d61fe7efcd85de62b249d0",
+                "a093b8eb5087affb7d7d7f364bb0a423921c20e959d61fe7efcd85de62b249d0",
                 9012,
             ),
             "DICTIONARIA_senses_v0_2_15_2.csv": (
