@@ -1,6 +1,6 @@
 # SEPARATION VERIFICATION — 2026-09-03
 
-**Estado:** `PASS / DEVICE_SNAPSHOT_VERIFIED / SAFE_TO_RETIRE_SOURCE_COPY_AFTER_VOCES_REFERENCES_UPDATE`
+**Estado:** `PASS / PHYSICAL_SPLIT_COMPLETE / DEVICE_SNAPSHOT_VERIFIED`
 
 ## Identidad de origen
 
@@ -82,12 +82,22 @@ KNOWLEDGE_SOURCE_COMMIT = 22e3c088a97150453f28d03b31613ff9d9491d9a
 
 La rama móvil `main` de Voces puede consultarse para descubrimiento; una ejecución reproducible debe fijar el commit real consumido.
 
-## Condición para retirar la copia de Voces
+## Cierre físico en Voces
 
-La copia activa `dispositivo/` puede retirarse de `vocesdelasnubes/main` una vez que:
+Las condiciones previas fueron satisfechas y la copia activa fue retirada.
 
-1. la reentrada general de Voces apunte a este repositorio para trabajo técnico;
-2. las menciones físicas que quedarían falsas se actualicen;
-3. el workflow técnico de replay salga del repositorio de Voces.
+```text
+VOCES_SPLIT_COMMIT = 67aabe3ed34bc04165583f7cb45cc610f619ebc0
+VOCES_POST_CLEANUP_COMMIT = 4ba3596e2a4096254a70a29c23bc3f007451640b
+PHYSICAL_DEVICE_COPY_RETIRED_FROM_VOCES_MAIN = true
+VOCES_TECHNICAL_REPLAY_WORKFLOW_REMOVED = true
+VOCES_TEMPORARY_SPLIT_WORKFLOW_REMOVED = true
+```
 
-La historia Git de Voces y los checkpoints anteriores preservan la genealogía; retirar la copia activa no borra el dispositivo histórico.
+En el árbol raíz final de `vocesdelasnubes/main` no existe `dispositivo/`. Dentro de `.github/` sólo permanece `CODEOWNERS`; no hay workflows técnicos activos.
+
+La historia Git de Voces y los commits previos preservan la genealogía. Retirar la copia activa no borró el dispositivo histórico.
+
+## Estado residual
+
+La separación física y la reproducibilidad están completas. Queda como configuración independiente el endurecimiento de permisos mediante branch protection/rulesets. Ambas ramas `main` continúan actualmente sin protección de rama; `CODEOWNERS` no sustituye esa barrera.
