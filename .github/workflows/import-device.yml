@@ -1,0 +1,72 @@
+name: import-device-from-voces
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import-device.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout destination
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone pinned Voces source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none --no-checkout https://github.com/lopezcarlton/vocesdelasnubes.git "$RUNNER_TEMP/voces"
+          cd "$RUNNER_TEMP/voces"
+          git checkout 22e3c088a97150453f28d03b31613ff9d9491d9a
+
+      - name: Import complete device tree and replay workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC="$RUNNER_TEMP/voces"
+          rm -rf dispositivo
+          cp -a "$SRC/dispositivo" ./dispositivo
+          mkdir -p .github/workflows
+          cp "$SRC/.github/workflows/replay-v0-2-15-3.yml" .github/workflows/replay-v0-2-15-3.yml
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('.github/workflows/replay-v0-2-15-3.yml')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('on:\n  workflow_dispatch:\n', "on:\n  workflow_dispatch:\n  push:\n    branches: [main]\n    paths:\n      - 'dispositivo/runtime/v0_2_15_3/**'\n")
+          p.write_text(s, encoding='utf-8')
+          PY
+          cat > MIGRATION_ORIGIN.md <<'EOF'
+          # Migration origin
+
+          SOURCE_REPOSITORY = lopezcarlton/vocesdelasnubes
+          SOURCE_COMMIT = 22e3c088a97150453f28d03b31613ff9d9491d9a
+          SOURCE_PATH = dispositivo/
+          IMPORT_DATE = 2026-09-03
+
+          The imported `dispositivo/` tree is a technical derivative. Canonical linguistic, pedagogical, methodological and community knowledge remains in `lopezcarlton/vocesdelasnubes`.
+          EOF
+          cat > KNOWLEDGE_SOURCE_PIN.md <<'EOF'
+          # Knowledge source pin
+
+          KNOWLEDGE_SOURCE_REPOSITORY = lopezcarlton/vocesdelasnubes
+          KNOWLEDGE_SOURCE_COMMIT = 22e3c088a97150453f28d03b31613ff9d9491d9a
+
+          This pin identifies the exact canonical knowledge state associated with the initial physical repository split. A moving `main` may be consulted for discovery, but reproducible technical work must record the exact resolved commit used.
+          EOF
+
+      - name: Commit imported snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add dispositivo .github/workflows/replay-v0-2-15-3.yml MIGRATION_ORIGIN.md KNOWLEDGE_SOURCE_PIN.md
+          git commit -m 'Import device snapshot from vocesdelasnubes@22e3c088'
+          git push origin HEAD:main
