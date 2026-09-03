@@ -1,7 +1,7 @@
 # DEVICE_REPOSITORY_SEPARATION_PLAN_v1
 
-**Estado:** `PHYSICAL_SPLIT_COMPLETE / REPLAY_PASS / PERMISSION_HARDENING_PENDING`  
-**Versión interna:** 1.5  
+**Estado:** `PHYSICAL_SPLIT_COMPLETE / REPLAY_PASS / INTEGRITY_HARDENED / PERMISSION_HARDENING_PENDING`  
+**Versión interna:** 1.6  
 **Fecha:** 2026-09-03
 
 ## Resultado
@@ -23,10 +23,12 @@ SOURCE_COMMIT = 22e3c088a97150453f28d03b31613ff9d9491d9a
 SOURCE_DEVICE_TREE_SHA = d92c38ec45be4e2e3176b1cfe7c288321c887d3b
 INITIAL_IMPORT_COMMIT = 6d205ffe0a0fe660229cd7a958fe43c9a5b51508
 IMPORTED_DEVICE_TREE_SHA = d92c38ec45be4e2e3176b1cfe7c288321c887d3b
-TREE_IDENTITY = PASS
+TREE_IDENTITY_AT_INITIAL_IMPORT = PASS
 ```
 
-La igualdad del SHA del subárbol Git demuestra que el snapshot inicial importado fue idéntico al árbol `dispositivo/` de origen.
+La igualdad del SHA del subárbol Git demuestra que el snapshot inicial importado en `6d205ff` fue idéntico al árbol `dispositivo/` de origen.
+
+Ese SHA no debe compararse contra el `HEAD` actual como si el subárbol tuviera que permanecer congelado. Después de la importación existen cambios técnicos y documentales legítimos, cada uno trazado por Git. La genealogía del snapshot original permanece intacta.
 
 El historial anterior a la separación sigue disponible en Git de Voces y el snapshot exacto permanece identificable por los commits anteriores. La retirada de `dispositivo/` de `vocesdelasnubes/main` no borró genealogía.
 
@@ -66,16 +68,16 @@ MASS_ADJUDICATION_REQUIRED_BEFORE_SPLIT = false
 
 ## Verificación técnica
 
-La verificación completa se documenta en la raíz de este repositorio:
+La verificación de la separación se documenta en la raíz de este repositorio:
 
 `SEPARATION_VERIFICATION_2026-09-03.md`
 
-Resultado:
+El replay histórico continúa verificando:
 
 ```text
 DEVICE_REPO_REPLAY = PASS
 DEVICE_REPO_TECHNICAL_TESTS = PASS
-TEST_COUNT = 38
+HISTORICAL_RUNTIME_TEST_COUNT = 38
 BAD_CLOSURE_HASHES = 0
 BAD_DATA_HASHES = 0
 SEMANTIC_HASHES_MATCH = true
@@ -87,7 +89,23 @@ Workflow permanente:
 
 `.github/workflows/replay-v0-2-15-3.yml`
 
-El workflow quedó en `workflow_dispatch` manual únicamente.
+Desde el endurecimiento post-separación el workflow se ejecuta en:
+
+```text
+workflow_dispatch
+push -> main
+pull_request -> main
+```
+
+Además:
+
+- `.gitattributes` protege con `-text` los nueve artefactos byte-críticos identificados;
+- `RELEASE_MANIFEST_ANCHOR_v0_2_15_3.json` ancla la identidad del manifiesto v0.2.15.3;
+- el workflow verifica su SHA-256 `5e3f7ff7035e8fdd6358ddae8432e37e52518cc9b50067dccfb7411c741f2304` y Git blob `e9cbb2062385e913d5acb59427aa6c1b53b54b14`;
+- `dispositivo/migracion/test_migrated_state.py` forma parte de CI y pasa 8/8 verificaciones en el checkpoint post-separación;
+- el conteo de 39 payloads presentes funciona como piso monotónico: nuevas recuperaciones exactas no vuelven obsoleta la prueba, pero una regresión por debajo de ese checkpoint falla.
+
+El merge del Bloque 2 de endurecimiento quedó en `e6d501c839269b878c0ae99a82aed69071e108af`; su ejecución automática por `push` en `main` concluyó `success` (Run ID `33805988652`).
 
 ## Estado de Voces después del corte
 
@@ -98,7 +116,7 @@ El workflow quedó en `workflow_dispatch` manual únicamente.
 
 Su reentrada general apunta al repositorio técnico separado sólo cuando el trabajo sea explícitamente técnico. El conocimiento y las fuentes siguen siendo reconstruibles sin ejecutar el dispositivo.
 
-## Estructura inicial del repositorio técnico
+## Estructura actual del repositorio técnico
 
 El subdirectorio `dispositivo/` se mantiene por ahora dentro de este repositorio para preservar rutas históricas y evitar mezclar la separación física con un refactor de paths.
 
@@ -108,16 +126,17 @@ didxaza-dispositivo/
 ├── REENTRY_TECNICO.md
 ├── KNOWLEDGE_SOURCE_PIN.md
 ├── MIGRATION_ORIGIN.md
+├── RELEASE_MANIFEST_ANCHOR_v0_2_15_3.json
 ├── SEPARATION_VERIFICATION_2026-09-03.md
-├── dispositivo/            # snapshot/rutas técnicas heredadas
-└── .github/workflows/      # replay manual histórico
+├── dispositivo/            # rutas técnicas heredadas + desarrollo post-split
+└── .github/workflows/      # replay automático + manual
 ```
 
 Un refactor futuro de esa estructura es una tarea técnica independiente y no debe cambiar autoridad ni procedencia.
 
 ## Único frente de separación todavía pendiente: permisos
 
-La separación física de contenidos está completa. Queda endurecer permisos/rulesets para reflejar plenamente:
+La separación física de contenidos y el endurecimiento de integridad están completos. Queda endurecer permisos/rulesets para reflejar plenamente:
 
 ```text
 vocesdelasnubes:
@@ -128,13 +147,19 @@ didxaza-dispositivo:
   approved device developers = write
 ```
 
-`CODEOWNERS` por sí solo no constituye una barrera de escritura. La configuración de branch protection/rulesets debe hacerse en GitHub cuando esté disponible.
+`CODEOWNERS` por sí solo no constituye una barrera de escritura. El `CODEOWNERS` de Voces existe; este repositorio técnico todavía no tiene uno propio. La consulta del endpoint clásico de branch protection sigue devolviendo `403` para la integración disponible, y la consulta de rulesets de `didxaza-dispositivo` devolvió `[]` durante la revisión del 2026-09-03.
+
+La configuración efectiva de branch protection/rulesets debe hacerse en GitHub con permisos suficientes antes de incorporar desarrolladores externos.
 
 ## Criterio de éxito
 
 ```text
 DEVICE_REPO_REPLAY = PASS
 DEVICE_REPO_TECHNICAL_TESTS = PASS
+BYTE_EXACT_CRITICAL_FILES_PROTECTED = true
+REPLAY_CI_ON_PUSH_AND_PR = true
+MIGRATED_STATE_TEST_IN_CI = true
+RELEASE_MANIFEST_ANCHORED = true
 KNOWLEDGE_SOURCE_COMMIT = EXPLICIT
 CRITICAL_SOURCE_IDENTITY_UNRESOLVED = 0
 RECOVERY_INDEX_AVAILABLE_FROM_VOCES = true
