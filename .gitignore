@@ -1,0 +1,30 @@
+# Local Python artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local environments and secrets
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# Editors and operating-system metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Explicit local scratch directories
+.tmp/
+tmp/
+scratch/
+
+# Intentionally NOT ignored: CSV, JSON/JSONL, SQLite, ZIP, Markdown and other
+# data/document formats used by migrated or reproducibility artifacts.
