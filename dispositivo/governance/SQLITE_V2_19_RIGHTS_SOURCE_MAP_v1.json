@@ -1,0 +1,79 @@
+{
+  "map_version": 1,
+  "verification_date": "2026-09-03",
+  "status": "VERIFIED_TABLE_LEVEL_PROVENANCE_MAP / HISTORICAL_PREDECESSOR / NON_LEGAL_DETERMINATION",
+  "database": {
+    "path": "dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_EVIDENCE_INTEGRITY_v2_19.sqlite",
+    "sha256": "c0433ff9a97fa8d4fb3d1ae5efc859b4ef2eacff1da92396fc5e8c22ff0215f4",
+    "sqlite_integrity_check": "ok",
+    "table_count": 83,
+    "provenance_metadata_column_count": 48
+  },
+  "audit_evidence": {
+    "workflow": "rights-provenance-audit",
+    "workflow_run_id": 33819805688,
+    "head_sha": "54a52eb5154645f1d14132bb6f67e9a98c2cc9cd",
+    "artifact_id": 9917844986,
+    "selection_mode": "WHOLE_IDENTIFIER_TOKEN_MATCH",
+    "content_fields_emitted": false
+  },
+  "relationship_to_v2_20": {
+    "source_bearing_shared_table_signatures": "IDENTICAL_FOR_ALL_SHARED_TABLES_WITH_NONEMPTY_PROVENANCE_METADATA",
+    "tables_only_in_v2_19": [],
+    "tables_only_in_v2_20": [
+      {"table": "canonical_state_v17", "row_count": 22},
+      {"table": "surface_semantics_integrity_v0153", "row_count": 7}
+    ],
+    "shared_table_row_count_changes": [
+      {"table": "schema_migration_log", "v2_19": 17, "v2_20": 18}
+    ],
+    "rights_interpretation": "NO_NEW_THIRD_PARTY_SOURCE_FAMILY_DETECTED_IN_V2_19_RELATIVE_TO_MAPPED_V2_20_SOURCE_TABLES"
+  },
+  "verified_source_tables": [
+    {"table": "verb_lexeme_class_v023", "row_count": 2385, "source_id": "BIB054_DICTIONARIA"},
+    {"table": "bound_entry_v024", "row_count": 6600, "source_id": "BIB054_DICTIONARIA"},
+    {"table": "causative_inventory_v025", "row_count": 869, "source_id": "BIB054_DICTIONARIA"},
+    {"table": "derivation_inventory_v025", "row_count": 1064, "source_id": "BIB054_DICTIONARIA"},
+    {"table": "surface_attestation_v029", "row_count": 84188, "source_id": "BIB054_DICTIONARIA"},
+    {
+      "table": "pickett_lexical_record_v0211",
+      "row_count": 2534,
+      "source_id": "BIB003_PICKETT_VOCABULARIO",
+      "source_edition_extracted": "2007_FIFTH_ELECTRONIC"
+    },
+    {
+      "table": "cross_source_exact_surface_v0212",
+      "row_count": 1118,
+      "source_ids": ["BIB003_PICKETT_VOCABULARIO", "BIB054_DICTIONARIA"]
+    },
+    {
+      "table": "documentary_alignment_v0210",
+      "row_count": 147,
+      "source_counts": [
+        {"source_id": "BIB004_GRAMATICA_POPULAR", "row_count": 131},
+        {"source_id": "BIB055_PICKETT_VOCABULARIO", "row_count": 16}
+      ]
+    },
+    {"table": "person_possession_exact_v0214", "row_count": 100, "source_id": "BIB004_GRAMATICA_POPULAR"},
+    {"table": "morphology_rule_registry_v023", "row_count": 11, "source_id": "BIB059_PBK2016"}
+  ],
+  "source_profile": {
+    "row_count": 6,
+    "profiled_source_ids": [
+      "BIB004_GRAMATICA_POPULAR",
+      "BIB015_ALFABETO_POPULAR_1956",
+      "BIB054_DICTIONARIA",
+      "BIB056_CUADERNO_2015",
+      "BIB063_CARDONA",
+      "BIB084_DEANDA2022"
+    ],
+    "verified_missing_but_used_source_ids": [
+      "BIB003_PICKETT_VOCABULARIO",
+      "BIB055_PICKETT_VOCABULARIO",
+      "BIB059_PBK2016"
+    ],
+    "supplement": "SOURCE_PROFILE_SUPPLEMENT_v1.json"
+  },
+  "rights_classification": "INHERITS_SAME_MAPPED_THIRD_PARTY_BOUNDARIES_AS_V2_20_FOR_SHARED_SOURCE_TABLES / HISTORICAL_BINARY_REMAINS_MIXED_ORIGIN",
+  "distribution_status": "DO_NOT_APPLY_BLANKET_OPEN_LICENSE_TO_DATABASE_BINARY"
+}
