@@ -37,7 +37,7 @@ La selección final debe consumir una versión aprobada del conocimiento, no el 
 
 ## DT-003 — Separar físicamente el repositorio técnico y hacer efectiva la frontera de permisos
 
-**Estado:** `PHYSICAL_SPLIT_EXECUTED / REPRODUCIBILITY_PROTECTED / PERMISSION_HARDENING_PENDING`  
+**Estado:** `PHYSICAL_SPLIT_EXECUTED / REPRODUCIBILITY_PROTECTED / LOCAL_GOVERNANCE_PRESENT / PERMISSION_HARDENING_PENDING`  
 **Prioridad residual:** Antes de incorporar desarrolladores externos
 
 Plan: `migracion/DEVICE_REPOSITORY_SEPARATION_PLAN_v1.md`.
@@ -53,8 +53,12 @@ Plan: `migracion/DEVICE_REPOSITORY_SEPARATION_PLAN_v1.md`.
 - workflow técnico retirado de Voces;
 - `.gitattributes` añadido para proteger los nueve artefactos byte-críticos identificados;
 - replay configurado para `push`, `pull_request` y `workflow_dispatch`;
-- `test_migrated_state.py` reparado e incorporado a CI, con 8/8 verificaciones en el checkpoint post-separación;
-- `RELEASE_MANIFEST_ANCHOR_v0_2_15_3.json` creado y verificado contra SHA-256 y Git blob del manifiesto.
+- `test_migrated_state.py` reparado e incorporado a CI, con 9/9 verificaciones en el checkpoint post-separación;
+- `RELEASE_MANIFEST_ANCHOR_v0_2_15_3.json` creado y verificado contra SHA-256 y Git blob del manifiesto;
+- `.gitignore` conservador añadido sin excluir formatos de datos/documentos usados por artefactos del repositorio;
+- `.github/CODEOWNERS` añadido con ownership general `@lopezcarlton`;
+- `CONTRIBUTING.md` añadido con frontera de conocimiento, preservación histórica y disciplina de PR/CI;
+- `dispositivo/prompts/historicos/README.md` añadido para poner los dos prompts recuperados en cuarentena explícita sin modificar sus blobs.
 
 La evidencia de separación está en `../SEPARATION_VERIFICATION_2026-09-03.md`.
 
@@ -64,13 +68,32 @@ Queda hacer efectiva la frontera de permisos mediante configuración de GitHub:
 
 - branch protection y/o rulesets apropiados sobre `main`;
 - permisos de escritura sobre `vocesdelasnubes` restringidos para futuros desarrolladores técnicos;
-- revisión de ownership y gobernanza del repositorio técnico antes de incorporar colaboradores externos.
+- hacer exigible la revisión/ownership antes de incorporar colaboradores externos.
 
-La consulta del endpoint clásico de branch protection sigue bloqueada para esta integración (`403`). En `didxaza-dispositivo` la consulta de rulesets devolvió una lista vacía durante la revisión del 2026-09-03. El `CODEOWNERS` de Voces documenta ownership, pero no constituye una barrera de escritura por sí solo; este repositorio técnico no tiene todavía un `CODEOWNERS` propio.
+La consulta del endpoint clásico de branch protection sigue bloqueada para esta integración (`403`). En `didxaza-dispositivo` la consulta de rulesets devolvió una lista vacía durante la revisión del 2026-09-03. El repositorio técnico ya tiene `CODEOWNERS`, pero ese archivo sólo enruta ownership/revisión: no constituye por sí solo una barrera de escritura ni una aprobación obligatoria.
 
 **No bloquea:** investigación, captura de fuentes, trabajo humano de documentación ni desarrollo técnico que respete la frontera de autoridad.
 
 **Sí bloquea:** considerar completada la garantía de permisos para incorporar desarrolladores externos con separación efectiva de escritura entre ambos repositorios.
+
+## DT-004 — Auditar derechos de materiales y definir estrategia de licenciamiento
+
+**Estado:** `OPEN / RIGHTS_AUDIT_REQUIRED_BEFORE_BLANKET_LICENSE`  
+**Prioridad:** Antes de declarar una licencia global o ampliar redistribución externa
+
+La auditoría técnica detectó que el repositorio no tiene `LICENSE`. No debe resolverse escogiendo una licencia genérica mientras el árbol contenga artefactos derivados o relacionados con fuentes de terceros cuyos términos no estén inventariados.
+
+Trabajo pendiente:
+
+- inventariar artefactos propios y de terceros con provenance suficiente;
+- identificar licencias, permisos, restricciones o estados no resueltos cuando existan;
+- separar código original del proyecto de corpus, diccionarios, bases derivadas, documentación u otros materiales con derechos potencialmente distintos;
+- decidir si procede una licencia global, licencias por subárbol/archivo o una combinación;
+- documentar explícitamente cualquier material cuyo derecho de redistribución o relicenciamiento permanezca sin resolver.
+
+No asumir que la presencia histórica de un archivo concede permiso para relicenciarlo. Tampoco eliminar o transformar artefactos sólo para simplificar la elección de licencia sin evaluar antes su función de provenance/reproducibilidad.
+
+Esta tarea es de gobernanza técnica y documental; no adjudica por sí misma derechos jurídicos sobre los materiales existentes.
 
 ## Regla
 
