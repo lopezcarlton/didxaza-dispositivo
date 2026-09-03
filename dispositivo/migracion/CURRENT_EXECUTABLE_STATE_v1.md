@@ -1,10 +1,9 @@
 # CURRENT_EXECUTABLE_STATE_v1 — Estado materializado del dispositivo
 
-**Proyecto:** Voces de las Nubes
-
-**Fecha:** 2026-09-02
-
-**Estado:** `CURRENT_MIGRATION_CHECKPOINT / NON_CANONICAL / REVISABLE`
+**Repositorio:** `lopezcarlton/didxaza-dispositivo`  
+**Autoridad de conocimiento:** `lopezcarlton/vocesdelasnubes`  
+**Fecha:** 2026-09-03  
+**Estado:** `CURRENT_TECHNICAL_CHECKPOINT / NON_CANONICAL / REVISABLE / POST_SPLIT`
 
 ## 1. Función
 
@@ -13,6 +12,7 @@ Este documento distingue entre:
 - artefactos presentes;
 - componentes que pueden instanciarse o ejecutarse con esos artefactos;
 - snapshots históricos más avanzados cuyas dependencias todavía no están materializadas;
+- protecciones técnicas vigentes del repositorio;
 - preguntas de investigación que permanecen abiertas.
 
 No reemplaza los estados históricos ni concede autoridad lingüística o pedagógica al código.
@@ -22,7 +22,41 @@ MIGRATED != RUNNABLE
 RUNNABLE_SUBSET != COMPLETE_COMPONENT
 HISTORICAL_READINESS != CURRENT_CAPABILITY
 TECHNICAL_CHECK != RESEARCH_CLOSURE
+VOCES = AUTHORITY_FOR_KNOWLEDGE
+DIDXAZA_DISPOSITIVO = DERIVED_TECHNICAL_SYSTEM
+UNRESOLVED != INCORRECT
 ```
+
+### 1.1 Estado post-separación del repositorio
+
+La separación física respecto de `lopezcarlton/vocesdelasnubes` se completó el 2026-09-03. El snapshot inicial exacto se conserva en:
+
+```text
+SOURCE_COMMIT = 22e3c088a97150453f28d03b31613ff9d9491d9a
+SOURCE_DEVICE_TREE_SHA = d92c38ec45be4e2e3176b1cfe7c288321c887d3b
+INITIAL_IMPORT_COMMIT = 6d205ffe0a0fe660229cd7a958fe43c9a5b51508
+IMPORTED_DEVICE_TREE_SHA = d92c38ec45be4e2e3176b1cfe7c288321c887d3b
+```
+
+El SHA de árbol `d92c38ec...` identifica el snapshot **en `6d205ff`**, no el `HEAD` actual. Los cambios post-importación están trazados por Git y no alteran retroactivamente ese snapshot.
+
+El endurecimiento P0/P1 verificado hasta `e6d501c839269b878c0ae99a82aed69071e108af` añade:
+
+```text
+BYTE_EXACT_GITATTRIBUTES = active for 9 identified files
+REPLAY_CI = push(main) + pull_request(main) + workflow_dispatch
+RELEASE_MANIFEST_ANCHOR = present
+RELEASE_MANIFEST_SHA256 = 5e3f7ff7035e8fdd6358ddae8432e37e52518cc9b50067dccfb7411c741f2304
+RELEASE_MANIFEST_GIT_BLOB = e9cbb2062385e913d5acb59427aa6c1b53b54b14
+MIGRATED_STATE_TESTS = 8/8 PASS
+HISTORICAL_RUNTIME_TESTS = 38/38 PASS
+LAST_VERIFIED_MAIN_PUSH_RUN = 33805988652 / success
+PERMISSION_HARDENING = pending
+```
+
+La prueba migratoria usa 39 payloads presentes como piso monotónico contra regresión: puede subir al recuperar payloads exactos adicionales sin requerir reescribir un checkpoint rígido.
+
+La protección de branch/rulesets sigue siendo un frente de infraestructura independiente. Ver `../../SEPARATION_VERIFICATION_2026-09-03.md` y `DEVICE_REPOSITORY_SEPARATION_PLAN_v1.md`.
 
 ## 2. Runtime v0.2.15.3
 
@@ -83,7 +117,7 @@ Estado del replay end-to-end:
 
 Una segunda pasada ejecutada sobre un checkout sin mutación previa confirmó además: 17/17 módulos en la clausura recursiva de imports con SHA histórico exacto, 8/8 dependencias de datos exactas, hashes semánticos `details/metrics/summary` idénticos al clean replay histórico, `SUMMARY`/`METRICS` byte-idénticos y 38/38 pruebas `unittest` aprobadas. La diferencia byte a byte de `DETAILED` sigue limitada a IDs efímeros.
 
-Evidencia: `dispositivo/migracion/ISOLATED_REPLAY_VERIFICATION_v0_2_15_3_2026-09-02.md`.
+Evidencia histórica: `ISOLATED_REPLAY_VERIFICATION_v0_2_15_3_2026-09-02.md`.
 
 ### 2.2 Cadena histórica de 38 pruebas
 
@@ -141,7 +175,7 @@ Presentes:
 - orquestador v0.35;
 - `DIC_VERB_2385_v0_1.csv` exacto;
 - módulos runtime v0.2.1, v0.2.3, v0.2.4 y v0.2.5;
-- SQLite v2.20 exacta con las tablas críticas verificadas.
+- SQLite v2.20 exacta con las tablas críticas verificadas;
 - `DICTIONARIA_entries_v0_2_15_2.csv`: 9,012 filas;
 - `DICTIONARIA_senses_v0_2_15_2.csv`: 9,046 filas;
 - `DICTIONARIA_examples_v0_2_15_2.csv`: 9,686 filas.
@@ -211,4 +245,6 @@ La frase histórica no se reescribió dentro del core experimental para no alter
 
 Este checkpoint no decide si C03, C05, la escala P, las capas BIB065 u otra hipótesis deben mantenerse o cambiar. Tampoco interpreta un `PASS` técnico como validación lingüística. Sólo evita atribuir al repositorio capacidades que sus archivos actuales no pueden reproducir.
 
-Las líneas de investigación, COR002, el trabajo con hablantes y la incorporación de nueva evidencia continúan abiertas conforme a `conocimiento/principios/PRIN-INVESTIGACION-ABIERTA.md`.
+Las líneas de investigación, COR002, el trabajo con hablantes y la incorporación de nueva evidencia continúan abiertas conforme a `lopezcarlton/vocesdelasnubes/conocimiento/principios/PRIN-INVESTIGACION-ABIERTA.md`.
+
+Los hallazgos P2/P3 de la auditoría técnica externa del 2026-09-03 no se adoptan por esta sincronización documental; deben verificarse por separado contra el repositorio antes de cualquier corrección adicional.
