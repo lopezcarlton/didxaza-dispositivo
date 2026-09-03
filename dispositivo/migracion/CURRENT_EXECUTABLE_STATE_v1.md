@@ -40,7 +40,7 @@ IMPORTED_DEVICE_TREE_SHA = d92c38ec45be4e2e3176b1cfe7c288321c887d3b
 
 El SHA de árbol `d92c38ec...` identifica el snapshot **en `6d205ff`**, no el `HEAD` actual. Los cambios post-importación están trazados por Git y no alteran retroactivamente ese snapshot.
 
-Las protecciones técnicas verificadas hasta `main@c9e95bcd42ca3f9931207faff4652920e692e56c` incluyen:
+Las protecciones técnicas verificadas hasta `main@1977dd548047d91b286cdd97ea36d2ae5230ff01` incluyen:
 
 ```text
 BYTE_EXACT_GITATTRIBUTES = active for 9 identified files
@@ -60,8 +60,16 @@ GITHUB_ACTIONS_EXACT_SHA_PINNING = active
 ACTIONS_CHECKOUT_SHA = 11d5960a326750d5838078e36cf38b85af677262
 ACTIONS_UPLOAD_ARTIFACT_SHA = ea165f8d65b6e75b540449e92b4886f43607fa02
 P3_AUDIT_DISPOSITION = present
-GLOBAL_LICENSE = not_declared / rights_audit_pending
-LAST_VERIFIED_MAIN_PUSH_RUN = 33816365046 / success
+RIGHTS_PROVENANCE_CI = active
+RIGHTS_GOVERNANCE_TESTS = 5/5 PASS
+THIRD_PARTY_ATTRIBUTION_NOTICE = present
+RIGHTS_INVENTORY_CURRENT = governance/RIGHTS_PROVENANCE_INVENTORY_v2.json
+RIGHTS_AUDIT_CURRENT = governance/RIGHTS_PROVENANCE_AUDIT_v2.md
+SQLITE_V2_20_RIGHTS_SOURCE_MAP = present
+SOURCE_PROFILE_SUPPLEMENT = present / non-destructive
+GLOBAL_LICENSE = not_declared / distribution_architecture_pending
+LAST_VERIFIED_RIGHTS_PUSH_RUN = 33819361739 / success
+LAST_VERIFIED_MAIN_PUSH_RUN = 33819361751 / success
 PERMISSION_HARDENING = pending
 ```
 
@@ -69,7 +77,11 @@ La prueba migratoria usa 39 payloads presentes como piso monotónico contra regr
 
 `generator/INPUT_LAYOUT_CONTRACT_v1.json` declara `generator/inputs/` como el conjunto de entrada técnico activo **sólo para `generator_v0_5_migrated_adapter.py`**. Las nueve copias heredadas se preservan para genealogía y CI comprueba que continúen byte-idénticas a sus pares. Este contrato no les concede autoridad lingüística, pedagógica ni ortográfica y no reescribe el Generator histórico.
 
-La gobernanza local ya incluye `.gitignore`, `.github/CODEOWNERS` y `CONTRIBUTING.md`. `CODEOWNERS` documenta ownership/revisión esperada pero no impone por sí mismo una barrera de escritura. No se añadió una licencia global: la auditoría de derechos y términos de materiales propios/terceros queda abierta como `DT-004` antes de declarar una licencia uniforme.
+La gobernanza local ya incluye `.gitignore`, `.github/CODEOWNERS` y `CONTRIBUTING.md`. `CODEOWNERS` documenta ownership/revisión esperada pero no impone por sí mismo una barrera de escritura.
+
+DT-004 avanzó desde inventario inicial a una fase de **arquitectura de distribución/licenciamiento**. `governance/RIGHTS_PROVENANCE_AUDIT_v2.md`, `governance/RIGHTS_PROVENANCE_INVENTORY_v2.json`, `governance/SQLITE_RIGHTS_SOURCE_MAP_v1.json`, `governance/SOURCE_PROFILE_SUPPLEMENT_v1.json` y `governance/THIRD_PARTY_ATTRIBUTION_v1.md` registran el estado materializado. El workflow `rights-provenance-audit` ejecuta cinco invariantes de gobernanza y un auditor read-only de provenance sobre la SQLite v2.20. No se añadió una licencia global: el gate permanece bloqueado hasta resolver los límites de distribución de fuentes no abiertas/mixtas y el alcance de código/documentación del proyecto.
+
+La SQLite histórica v2.20 no fue modificada para reparar el hueco de `source_profile`. Las IDs `BIB003_PICKETT_VOCABULARIO`, `BIB055_PICKETT_VOCABULARIO` y `BIB059_PBK2016`, verificadas en otras tablas pero ausentes de `source_profile`, se representan en una capa derivada no destructiva. `BIB003` y `BIB055` permanecen separadas hasta verificar su genealogía exacta.
 
 `DOCUMENT_STATUS_INDEX_v1.md` registra de manera no destructiva los casos documentales verificados en P2-06: conserva estados/resultados explícitos cuando existen y marca `STATUS_NOT_DECLARED / DO_NOT_INFER` cuando el artefacto no declara un estado. Ninguno de los siete documentos auditados fue reescrito sólo para uniformar encabezados.
 
@@ -246,7 +258,7 @@ BLOCKED_BY_MIGRATED_INPUTS = C03, C04, C05, C06
 
 El layout técnico activo del adaptador queda explicitado en `generator/INPUT_LAYOUT_CONTRACT_v1.json`. Ese contrato no cambia la genealogía del Generator ni declara autoridad sobre el contenido de los inputs.
 
-Se verificaron nueve pares de copias heredadas entre `generator/`, `inputs_nc001/` y `generator/inputs/`. En `main@c9e95bc` los nueve pares son byte-idénticos y `test_migrated_state.py` falla si alguno diverge. Las copias no se eliminaron, renombraron ni sincronizaron destructivamente.
+Se verificaron nueve pares de copias heredadas entre `generator/`, `inputs_nc001/` y `generator/inputs/`. En `main@1977dd5` los nueve pares son byte-idénticos y `test_migrated_state.py` falla si alguno diverge. Las copias no se eliminaron, renombraron ni sincronizaron destructivamente.
 
 `GENERATION_READINESS_MATRIX_v14.csv` se conserva como el snapshot más reciente localizado, pero sus capacidades C03/C05 no son reproducibles con los archivos actualmente migrados. No se rebajó ni se reescribió la matriz: queda clasificada como:
 
@@ -316,4 +328,6 @@ Los hallazgos P2 verificados quedaron incorporados de forma no destructiva: term
 
 Los P3 recuperados tienen disposición explícita en `P3_AUDIT_DISPOSITION_2026-09-03.md`: P3-01/02/03 fueron confirmados y tratados como limitaciones de subárboles archivados sin reescritura; P3-04 estaba resuelto por `.gitignore`; P3-05 quedó reparado mediante pinning exacto de GitHub Actions. P3-06 **no se considera cerrado** porque sólo se recuperó un fragmento truncado de su diagnóstico; el hecho verificable relativo al nombre histórico `verificador de ortografía` ya está cubierto por cuarentena, pero cualquier remediación adicional requiere la fuente completa.
 
-Del frente de gobernanza queda abierto el licenciamiento global como `DT-004`, sujeto a auditoría de derechos de materiales propios y de terceros. La frontera efectiva de permisos mediante branch protection/rulesets permanece como residual de `DT-003`.
+DT-004 permanece abierto, pero ya no como auditoría inicial. El estado actual es `SOURCE_IDENTITIES_AND_V2_20_PROVENANCE_MAPPED / DISTRIBUTION_ARCHITECTURE_PENDING`: Dictionaria tiene NOTICE concreto y preservación de atribución por registro; Bueno Holle 2019 conserva `CC BY 4.0`; `BIB004_GRAMATICA_POPULAR` tiene identidad verificada y aviso de derechos sin licencia abierta verificada; `BIB059_PBK2016` quedó triangulado con aviso `All rights reserved`; y el hueco BIB003/BIB055/BIB059 de `source_profile` está cubierto por un suplemento no destructivo. Siguen abiertos la genealogía BIB003↔BIB055, el tratamiento distribuible de Pickett/BIB004/BIB059, la auditoría de SQLite v2.19 y outputs de replay, el scope de código/documentación original y la arquitectura final de licencias/NOTICE/packaging. El `LICENSE` global continúa deliberadamente ausente.
+
+La frontera efectiva de permisos mediante branch protection/rulesets permanece como residual de `DT-003`.
