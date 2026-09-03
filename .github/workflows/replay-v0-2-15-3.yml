@@ -2,6 +2,12 @@ name: replay-v0-2-15-3-reproducibility
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read

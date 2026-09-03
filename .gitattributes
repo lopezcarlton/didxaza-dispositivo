@@ -1,0 +1,11 @@
+# Preserve byte-exact historical artifacts. Do not normalize line endings or BOMs.
+# These paths are identity-sensitive and are verified by SHA-256/replay checks.
+dispositivo/analyzer/DIC_VERB_2385_v0_1.csv -text
+dispositivo/generator/inputs/ParadigmTable_v1.csv -text
+dispositivo/migracion/fuentes/BIB065_BUENO_HOLLE_INGESTION_MATRIX_v0_36_1.csv -text
+dispositivo/migracion/fuentes/mvp_vertical_slice_v0_2/ADJUDICATION_RESULTS_v0_2.csv -text
+dispositivo/runtime/v0_2_15_3/COR001_REPLAY_INPUT_v0_2_15_2.csv -text
+dispositivo/runtime/v0_2_15_3/COR001_REPLAY_SUMMARY_v0_2_15_2.csv -text
+dispositivo/runtime/v0_2_15_3/DOCUMENTARY_ALIGNMENT_REGISTRY_v0_2_15_2.csv -text
+dispositivo/runtime/v0_2_15_3/PERSON_POSSESSION_EXACT_REGISTRY_v0_2_15_2.csv -text
+dispositivo/runtime/v0_2_15_3/PICKETT_LEXICON_BACKFILL_v0_1.csv -text
