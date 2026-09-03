@@ -17,6 +17,14 @@ ROOT = Path(__file__).resolve().parents[2]
 GENERATOR_DIR = ROOT / "dispositivo" / "generator"
 RUNTIME_DIR = ROOT / "dispositivo" / "runtime" / "v0_2_15_3"
 ANALYZER_DIR = ROOT / "dispositivo" / "analyzer"
+RELEASE_MANIFEST_PATH = RUNTIME_DIR / "RELEASE_FILE_MANIFEST_v0_2_15_3.json"
+RELEASE_ANCHOR_PATH = ROOT / "RELEASE_MANIFEST_ANCHOR_v0_2_15_3.json"
+
+# Monotonic floor from the verified 2026-09-03 migration checkpoint.
+# Additional exact payloads may be recovered later without making this test stale;
+# falling below this floor is a migration-state regression.
+MIGRATION_BASELINE_PRESENT_RELEASE_PAYLOADS = 39
+
 sys.path.insert(0, str(GENERATOR_DIR))
 sys.path.insert(0, str(ANALYZER_DIR))
 sys.path.insert(0, str(RUNTIME_DIR))
@@ -39,7 +47,20 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def load_release_anchor() -> dict:
+    return json.loads(RELEASE_ANCHOR_PATH.read_text(encoding="utf-8"))
+
+
 class MigratedStateTests(unittest.TestCase):
+    def test_release_manifest_matches_independent_anchor(self) -> None:
+        anchor = load_release_anchor()
+        manifest_path = ROOT / anchor["artifact_path"]
+        self.assertEqual(manifest_path.resolve(), RELEASE_MANIFEST_PATH.resolve())
+        self.assertEqual(sha256(manifest_path), anchor["sha256"])
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        self.assertEqual(len(manifest["sha256"]), anchor["release_file_count"])
+        self.assertEqual(anchor["cor001_policy"], "ANALYSIS_TARGET_ONLY")
+
     def test_exact_sqlite_and_critical_tables(self) -> None:
         path = RUNTIME_DIR / "BASE_CORRECTOR_DIDXAZA_SURFACE_SEMANTICS_v2_20.sqlite"
         self.assertEqual(
@@ -170,9 +191,8 @@ class MigratedStateTests(unittest.TestCase):
         self.assertFalse(state["user_visible_suggestions_enabled"])
 
     def test_all_present_release_payloads_are_exact(self) -> None:
-        manifest = json.loads(
-            (RUNTIME_DIR / "RELEASE_FILE_MANIFEST_v0_2_15_3.json").read_text(encoding="utf-8")
-        )
+        manifest = json.loads(RELEASE_MANIFEST_PATH.read_text(encoding="utf-8"))
+        anchor = load_release_anchor()
         expected = manifest["sha256"]
         present = {
             name: sha256(RUNTIME_DIR / name)
@@ -184,9 +204,17 @@ class MigratedStateTests(unittest.TestCase):
             for name, actual in present.items()
             if actual != expected[name]
         }
-        self.assertEqual(len(present), 29)
+        self.assertEqual(len(expected), anchor["release_file_count"])
+        self.assertGreaterEqual(
+            len(present),
+            MIGRATION_BASELINE_PRESENT_RELEASE_PAYLOADS,
+            "Migrated release payload count regressed below the verified 2026-09-03 checkpoint",
+        )
         self.assertEqual(mismatches, {})
-        self.assertEqual(len(expected) - len(present), 46)
+        self.assertLessEqual(
+            len(expected) - len(present),
+            anchor["release_file_count"] - MIGRATION_BASELINE_PRESENT_RELEASE_PAYLOADS,
+        )
 
 
 if __name__ == "__main__":
