@@ -13,7 +13,6 @@ permissions:
 
 jobs:
   import:
-    if: github.event_name == 'issues' || github.event_name == 'push'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout destination
@@ -29,22 +28,13 @@ jobs:
           cd "$RUNNER_TEMP/voces"
           git checkout 22e3c088a97150453f28d03b31613ff9d9491d9a
 
-      - name: Import complete device tree and replay workflow
+      - name: Import complete device tree
         shell: bash
         run: |
           set -euo pipefail
           SRC="$RUNNER_TEMP/voces"
           rm -rf dispositivo
           cp -a "$SRC/dispositivo" ./dispositivo
-          mkdir -p .github/workflows
-          cp "$SRC/.github/workflows/replay-v0-2-15-3.yml" .github/workflows/replay-v0-2-15-3.yml
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('.github/workflows/replay-v0-2-15-3.yml')
-          s = p.read_text(encoding='utf-8')
-          s = s.replace('on:\n  workflow_dispatch:\n', "on:\n  workflow_dispatch:\n  push:\n    branches: [main]\n    paths:\n      - 'dispositivo/runtime/v0_2_15_3/**'\n")
-          p.write_text(s, encoding='utf-8')
-          PY
           cat > MIGRATION_ORIGIN.md <<'EOF'
           # Migration origin
 
@@ -70,6 +60,10 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add dispositivo .github/workflows/replay-v0-2-15-3.yml MIGRATION_ORIGIN.md KNOWLEDGE_SOURCE_PIN.md
+          git add dispositivo MIGRATION_ORIGIN.md KNOWLEDGE_SOURCE_PIN.md
+          if git diff --cached --quiet; then
+            echo 'Device snapshot already imported.'
+            exit 0
+          fi
           git commit -m 'Import device snapshot from vocesdelasnubes@22e3c088'
           git push origin HEAD:main
