@@ -1,0 +1,174 @@
+name: replay-v0-2-15-3-reproducibility
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    if: github.event_name == 'workflow_dispatch' || github.event.issue.title == 'Trigger replay verification'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run isolated historical replay audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import ast, hashlib, json, os, platform, re, shutil, subprocess, sys
+
+          repo = Path(os.environ['GITHUB_WORKSPACE'])
+          src = repo / 'dispositivo/runtime/v0_2_15_3'
+          work = Path(os.environ['RUNNER_TEMP']) / 'replay_v0_2_15_3'
+          if work.exists():
+              shutil.rmtree(work)
+          shutil.copytree(src, work)
+
+          def sha(path):
+              return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+          release = json.loads((src/'RELEASE_FILE_MANIFEST_v0_2_15_3.json').read_text(encoding='utf-8'))
+          expected = release['sha256']
+          clean_reference = json.loads((src/'CLEAN_REPLAY_VERIFICATION_v0_2_15_3.json').read_text(encoding='utf-8'))
+          expected_semantic = clean_reference['semantic_hashes_original']
+
+          modules = {p.stem: p for p in src.glob('*.py')}
+          closure = set()
+          def visit(stem):
+              if stem in closure or stem not in modules:
+                  return
+              closure.add(stem)
+              tree = ast.parse(modules[stem].read_text(encoding='utf-8-sig'))
+              for node in ast.walk(tree):
+                  names = []
+                  if isinstance(node, ast.Import):
+                      names = [a.name.split('.')[0] for a in node.names]
+                  elif isinstance(node, ast.ImportFrom) and node.module:
+                      names = [node.module.split('.')[0]]
+                  for name in names:
+                      if name in modules:
+                          visit(name)
+          visit('run_cor001_replay_v0_2_15_3')
+          closure_files = sorted(modules[x].name for x in closure)
+          bad_closure = {
+              name: {'actual': sha(src/name), 'expected': expected.get(name)}
+              for name in closure_files
+              if sha(src/name) != expected.get(name)
+          }
+
+          data_dependencies = [
+              'COR001_REPLAY_INPUT_v0_2_15_2.csv',
+              'DICTIONARIA_entries_v0_2_15_2.csv',
+              'DICTIONARIA_senses_v0_2_15_2.csv',
+              'DICTIONARIA_examples_v0_2_15_2.csv',
+              'DOCUMENTARY_ALIGNMENT_REGISTRY_v0_2_15_2.csv',
+              'PICKETT_LEXICON_BACKFILL_v0_1.csv',
+              'PERSON_POSSESSION_EXACT_REGISTRY_v0_2_15_2.csv',
+              'BASE_CORRECTOR_DIDXAZA_EVIDENCE_INTEGRITY_v2_19.sqlite',
+              'CLEAN_REPLAY_VERIFICATION_v0_2_15_3.json',
+          ]
+          bad_data = {}
+          for name in data_dependencies:
+              path = src/name
+              actual = sha(path) if path.exists() else None
+              exp = expected.get(name)
+              if actual != exp:
+                  bad_data[name] = {'actual': actual, 'expected': exp}
+
+          replay = subprocess.run(
+              [sys.executable, 'run_cor001_replay_v0_2_15_3.py'],
+              cwd=work, capture_output=True, text=True
+          )
+          (work/'REPLAY_STDOUT.txt').write_text(replay.stdout, encoding='utf-8')
+          (work/'REPLAY_STDERR.txt').write_text(replay.stderr, encoding='utf-8')
+
+          semantic_actual = {}
+          semantic_ok = False
+          deterministic = {}
+          deterministic_ok = False
+          detailed_exact = None
+          if replay.returncode == 0:
+              run_manifest = json.loads((work/'RUN_MANIFEST_COR001_v0_2_15_3.json').read_text(encoding='utf-8'))
+              semantic_actual = run_manifest.get('semantic_hashes', {})
+              semantic_ok = semantic_actual == expected_semantic
+              for name in ['COR001_REPLAY_SUMMARY_v0_2_15_3.csv','COR001_REPLAY_METRICS_v0_2_15_3.json']:
+                  actual = sha(work/name)
+                  deterministic[name] = {
+                      'actual': actual,
+                      'expected': expected[name],
+                      'match': actual == expected[name],
+                  }
+              deterministic_ok = all(v['match'] for v in deterministic.values())
+              detailed_name = 'COR001_REPLAY_DETAILED_v0_2_15_3.jsonl'
+              detailed_exact = sha(work/detailed_name) == expected[detailed_name]
+
+          tests = subprocess.run(
+              [sys.executable, '-m', 'unittest', 'discover', '-s', '.', '-p', 'test*.py', '-v'],
+              cwd=work, capture_output=True, text=True
+          )
+          (work/'UNITTEST_STDOUT.txt').write_text(tests.stdout, encoding='utf-8')
+          (work/'UNITTEST_STDERR.txt').write_text(tests.stderr, encoding='utf-8')
+          combined = tests.stdout + '\n' + tests.stderr
+          match = re.search(r'Ran\s+(\d+)\s+tests?', combined)
+          test_count = int(match.group(1)) if match else None
+          tests_ok = tests.returncode == 0 and test_count == 38 and '\nOK' in combined
+
+          ok = (
+              not bad_closure
+              and not bad_data
+              and replay.returncode == 0
+              and semantic_ok
+              and deterministic_ok
+              and tests_ok
+          )
+          result = {
+              'status': 'PASS' if ok else 'FAIL',
+              'cor001_policy': 'ANALYSIS_TARGET_ONLY',
+              'checkout_mutated_before_replay': False,
+              'recursive_import_closure_count': len(closure_files),
+              'recursive_import_closure_files': closure_files,
+              'bad_closure_hashes': bad_closure,
+              'bad_data_hashes': bad_data,
+              'replay_exit_code': replay.returncode,
+              'semantic_hashes_expected': expected_semantic,
+              'semantic_hashes_actual': semantic_actual,
+              'semantic_hashes_match': semantic_ok,
+              'deterministic_outputs': deterministic,
+              'deterministic_outputs_match': deterministic_ok,
+              'detailed_byte_exact_match': detailed_exact,
+              'detailed_byte_exact_required': False,
+              'unittest_exit_code': tests.returncode,
+              'unittest_count': test_count,
+              'tests_38_pass': tests_ok,
+              'runner_environment': {'python': sys.version, 'platform': platform.platform()},
+          }
+          (work/'MANUAL_REPLAY_VERIFICATION.json').write_text(
+              json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True), encoding='utf-8'
+          )
+          print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+          if not ok:
+              sys.exit(1)
+          PY
+
+      - name: Upload replay evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manual-replay-v0-2-15-3-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/replay_v0_2_15_3/MANUAL_REPLAY_VERIFICATION.json
+            ${{ runner.temp }}/replay_v0_2_15_3/REPLAY_STDOUT.txt
+            ${{ runner.temp }}/replay_v0_2_15_3/REPLAY_STDERR.txt
+            ${{ runner.temp }}/replay_v0_2_15_3/UNITTEST_STDOUT.txt
+            ${{ runner.temp }}/replay_v0_2_15_3/UNITTEST_STDERR.txt
+            ${{ runner.temp }}/replay_v0_2_15_3/RUN_MANIFEST_COR001_v0_2_15_3.json
+            ${{ runner.temp }}/replay_v0_2_15_3/COR001_REPLAY_DETAILED_v0_2_15_3.jsonl
+            ${{ runner.temp }}/replay_v0_2_15_3/COR001_REPLAY_METRICS_v0_2_15_3.json
+            ${{ runner.temp }}/replay_v0_2_15_3/COR001_REPLAY_SUMMARY_v0_2_15_3.csv
