@@ -1,0 +1,73 @@
+{
+  "supplement_version": 1,
+  "verification_date": "2026-09-03",
+  "status": "DERIVED_NON_DESTRUCTIVE_SOURCE_PROFILE_SUPPLEMENT / NON_AUTHORITY / NON_LEGAL_DETERMINATION",
+  "target_historical_database": "dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_SURFACE_SEMANTICS_v2_20.sqlite",
+  "historical_source_profile_mutated": false,
+  "purpose": "Record provenance identities for source IDs verified in v2.20 but absent from its historical source_profile table.",
+  "rules": [
+    "SUPPLEMENT_DOES_NOT_MUTATE_HISTORICAL_SQLITE",
+    "SUPPLEMENT_DOES_NOT_MERGE_DISTINCT_SOURCE_IDS",
+    "BIBLIOGRAPHIC_IDENTITY_AND_RIGHTS_STATUS_ARE_SEPARATE_FIELDS",
+    "UNRESOLVED_EDITION_OR_GENEALOGY_MUST_REMAIN_UNRESOLVED"
+  ],
+  "profiles": [
+    {
+      "source_id": "BIB003_PICKETT_VOCABULARIO",
+      "identity_status": "INTERNAL_EDITION_IDENTITY_VERIFIED",
+      "work_family": "Vocabulario zapoteco del Istmo",
+      "source_edition_extracted": "2007_FIFTH_ELECTRONIC",
+      "target_edition_in_local_backfill": "2013_FIFTH_ELECTRONIC_SECOND_VERSION",
+      "local_evidence": [
+        "dispositivo/runtime/v0_2_15_3/PICKETT_LEXICON_BACKFILL_v0_1.csv",
+        "dispositivo/runtime/v0_2_15_3/didxaza_runtime_v0_2_11_pickett_backfill.py",
+        "dispositivo/governance/SQLITE_RIGHTS_SOURCE_MAP_v1.json"
+      ],
+      "verified_sqlite_usage": [
+        {"table": "pickett_lexical_record_v0211", "row_count": 2534},
+        {"table": "cross_source_exact_surface_v0212", "row_count": 1118, "role": "WITH_BIB054_DICTIONARIA"}
+      ],
+      "rights_status": "NO_OPEN_LICENSE_VERIFIED / HIGH_PRIORITY_REVIEW_REQUIRED",
+      "profile_authority": "DERIVED_GOVERNANCE_METADATA_ONLY"
+    },
+    {
+      "source_id": "BIB055_PICKETT_VOCABULARIO",
+      "identity_status": "WORK_FAMILY_AND_LOCATION_VERIFIED / EXACT_EDITION_AND_GENEALOGY_UNRESOLVED",
+      "work_family": "Vocabulario zapoteco del Istmo",
+      "verified_location": "Apéndice V, pp.123–124+",
+      "relationship_to_BIB003": "UNRESOLVED / DO_NOT_MERGE_BY_INFERENCE",
+      "local_evidence": [
+        "dispositivo/runtime/v0_2_15_3/DOCUMENTARY_ALIGNMENT_REGISTRY_v0_2_15_2.csv",
+        "dispositivo/governance/SQLITE_RIGHTS_SOURCE_MAP_v1.json"
+      ],
+      "verified_sqlite_usage": [
+        {"table": "documentary_alignment_v0210", "row_count": 16}
+      ],
+      "rights_status": "NO_OPEN_LICENSE_VERIFIED / RIGHTS_REVIEW_REQUIRED",
+      "profile_authority": "DERIVED_GOVERNANCE_METADATA_ONLY"
+    },
+    {
+      "source_id": "BIB059_PBK2016",
+      "identity_status": "IDENTITY_TRIANGULATED",
+      "citation": "Pérez Báez, Gabriela & Terrence Kaufman. 2016. Verb Classes in Juchitán Zapotec. Anthropological Linguistics 58(3):217–257.",
+      "doi": "10.1353/anl.2016.0030",
+      "external_repository": "https://repository.si.edu/handle/10088/32808",
+      "local_evidence": [
+        "dispositivo/runtime/v0_2_15_3/didxaza_runtime_v0_2_3_morphology_i.py",
+        "dispositivo/governance/SQLITE_RIGHTS_SOURCE_MAP_v1.json"
+      ],
+      "identity_triangulation": [
+        "runtime source_id BIB059_PBK2016",
+        "SQLite snapshot name PBK2016_REGLAS_MORF_VERB_v0_1.csv",
+        "11 PBK-VERB/PBK-DER rules with page references",
+        "Dictionaria bibliography Pérez Báez & Kaufman 2016",
+        "external bibliographic metadata DOI 10.1353/anl.2016.0030"
+      ],
+      "verified_sqlite_usage": [
+        {"table": "morphology_rule_registry_v023", "row_count": 11}
+      ],
+      "rights_status": "ALL_RIGHTS_RESERVED_NOTICE_OBSERVED / DERIVED_RULE_RELICENSING_REVIEW_REQUIRED",
+      "profile_authority": "DERIVED_GOVERNANCE_METADATA_ONLY"
+    }
+  ]
+}
