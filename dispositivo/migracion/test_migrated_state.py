@@ -19,6 +19,7 @@ RUNTIME_DIR = ROOT / "dispositivo" / "runtime" / "v0_2_15_3"
 ANALYZER_DIR = ROOT / "dispositivo" / "analyzer"
 RELEASE_MANIFEST_PATH = RUNTIME_DIR / "RELEASE_FILE_MANIFEST_v0_2_15_3.json"
 RELEASE_ANCHOR_PATH = ROOT / "RELEASE_MANIFEST_ANCHOR_v0_2_15_3.json"
+INPUT_LAYOUT_CONTRACT_PATH = GENERATOR_DIR / "INPUT_LAYOUT_CONTRACT_v1.json"
 
 # Monotonic floor from the verified 2026-09-03 migration checkpoint.
 # Additional exact payloads may be recovered later without making this test stale;
@@ -49,6 +50,10 @@ def sha256(path: Path) -> str:
 
 def load_release_anchor() -> dict:
     return json.loads(RELEASE_ANCHOR_PATH.read_text(encoding="utf-8"))
+
+
+def load_input_layout_contract() -> dict:
+    return json.loads(INPUT_LAYOUT_CONTRACT_PATH.read_text(encoding="utf-8"))
 
 
 class MigratedStateTests(unittest.TestCase):
@@ -159,6 +164,29 @@ class MigratedStateTests(unittest.TestCase):
         self.assertEqual(state["active_license_constructions"], ["C01", "C02"])
         self.assertEqual(sorted(state["integration_blockers"]), ["C03", "C04", "C05", "C06"])
         self.assertFalse(state["research_authority_assertion"])
+
+    def test_generator_historical_duplicate_inputs_match_active_layout(self) -> None:
+        contract = load_input_layout_contract()
+        self.assertEqual(
+            contract["canonical_active_input_dir"],
+            "dispositivo/generator/inputs",
+        )
+        self.assertEqual(
+            contract["historical_generator_layout_status"],
+            "MIXED_LAYOUT_PRESERVED_UNMODIFIED",
+        )
+        duplicates = contract["duplicate_copies"]
+        self.assertEqual(len(duplicates), 9)
+        for pair in duplicates:
+            copy_path = ROOT / pair["copy"]
+            canonical_path = ROOT / pair["canonical"]
+            self.assertTrue(copy_path.is_file(), pair["copy"])
+            self.assertTrue(canonical_path.is_file(), pair["canonical"])
+            self.assertEqual(
+                sha256(copy_path),
+                sha256(canonical_path),
+                f"Historical input copy diverged: {pair['copy']} != {pair['canonical']}",
+            )
 
     def test_exact_runtime_closure_tests_pass(self) -> None:
         completed = subprocess.run(
