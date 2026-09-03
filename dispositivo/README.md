@@ -1,21 +1,26 @@
 # DISPOSITIVO LINGÜÍSTICO — CAPA EXPERIMENTAL DERIVADA
 
-**Proyecto:** Voces de las Nubes  
-**Estado:** `DERIVED_SYSTEM / NON_CANONICAL / EXPERIMENTAL`  
+**Repositorio:** `lopezcarlton/didxaza-dispositivo`  
+**Sistema de conocimiento autoritativo:** `lopezcarlton/vocesdelasnubes`  
+**Estado:** `DERIVED_SYSTEM / NON_CANONICAL / EXPERIMENTAL / PHYSICALLY_SEPARATED`  
 **Fecha de creación:** 2026-08-31  
-**Frontera de autoridad actualizada:** 2026-09-02
+**Frontera de autoridad sincronizada:** 2026-09-03
 
 ## Reentrada técnica
 
 Para trabajo explícitamente técnico sobre Analyzer, Corrector, Tutor, Generator, runtime, tests, schemas o migración, iniciar en:
 
-`REENTRY_TECNICO.md`
+`../REENTRY_TECNICO.md`
 
-El punto de entrada general de Voces de las Nubes permanece en `../INICIAR_AQUI_CHAT_NUEVO.md` y **no carga esta capa por defecto**.
+La reentrada general de Voces de las Nubes vive en el repositorio autoritativo:
+
+`lopezcarlton/vocesdelasnubes/INICIAR_AQUI_CHAT_NUEVO.md`
+
+Este repositorio técnico no contiene `conocimiento/` ni sustituye esa reentrada.
 
 ## Propósito
 
-Esta carpeta conserva el trabajo interno desarrollado para convertir conocimiento aprobado del proyecto en capacidades operativas de:
+Esta carpeta conserva el trabajo técnico desarrollado para convertir conocimiento aprobado del proyecto en capacidades operativas de:
 
 - análisis;
 - revisión y normalización;
@@ -26,11 +31,16 @@ También preserva genealogía, hipótesis ejecutables, estados históricos y cap
 
 ## Regla fundamental de autoridad
 
-**`dispositivo/` no es una segunda fuente de verdad lingüística, pedagógica, metodológica ni comunitaria.**
+**`didxaza-dispositivo` no es una segunda fuente de verdad lingüística, pedagógica, metodológica ni comunitaria.**
 
-El Sistema de Conocimiento permanece en `conocimiento/` y en los documentos constitucionales del repositorio.
+El Sistema de Conocimiento permanece exclusivamente en `lopezcarlton/vocesdelasnubes`. Las reglas vigentes de autoridad se consultan allí, especialmente:
 
-La decisión vigente es `conocimiento/decisiones/DEC-AUTORIDAD-SISTEMA-CONOCIMIENTO.md`.
+- `00_ARQUITECTURA_DEL_CONOCIMIENTO.md`;
+- `01_JERARQUIA_DE_VERDAD.md`;
+- `03_REGLAS_DE_ACTUALIZACIÓN.md`;
+- `conocimiento/decisiones/DEC-AUTORIDAD-SISTEMA-CONOCIMIENTO.md`.
+
+El contrato técnico local es `KNOWLEDGE_CONSUMPTION_CONTRACT_v1.md`.
 
 ```text
 DEVICE_MAY_READ = true
@@ -43,9 +53,9 @@ DEVICE_MAY_PROMOTE_CANDIDATE = false
 DEVICE_MAY_WRITE_KNOWLEDGE = false
 ```
 
-La expresión **no puede escribir conocimiento** es más fuerte que “no puede modificar automáticamente”. Una persona o agente trabajando como desarrollador del dispositivo tampoco adquiere autoridad sobre `conocimiento/` por tener capacidad técnica para analizarlo.
+Una persona o agente trabajando como desarrollador del dispositivo tampoco adquiere autoridad sobre el Sistema de Conocimiento por tener capacidad técnica para analizarlo.
 
-Los futuros desarrolladores del dispositivo **no tendrán por defecto permisos de escritura sobre el Sistema de Conocimiento**. Mientras ambas capas sigan materializadas en este repositorio, `.github/CODEOWNERS` documenta ownership; la protección efectiva de ramas/rulesets debe configurarse en GitHub y no se presume activa únicamente por existir ese archivo.
+Los futuros desarrolladores del dispositivo no deben tener por defecto permisos de escritura sobre `vocesdelasnubes`. La separación física ya está hecha; el endurecimiento adicional mediante branch protection/rulesets sigue pendiente como configuración de GitHub. El `CODEOWNERS` de Voces documenta ownership, pero no sustituye una barrera de permisos. Este repositorio técnico todavía no declara un `CODEOWNERS` propio.
 
 ## Flujo correcto de descubrimientos
 
@@ -73,14 +83,17 @@ Un resultado técnico puede ser evidencia válida sobre **el comportamiento del 
 
 ## Investigación abierta
 
-El dispositivo se rige por `conocimiento/principios/PRIN-INVESTIGACION-ABIERTA.md`.
+El principio de investigación abierta se consulta en:
 
-Su función es ampliar la capacidad de investigar, no cerrar la investigación. Una representación implementada puede ser provisional, quedar superseded, ser útil sólo para una prueba o necesitar revisión posterior.
+`lopezcarlton/vocesdelasnubes/conocimiento/principios/PRIN-INVESTIGACION-ABIERTA.md`
+
+La función del dispositivo es ampliar la capacidad de investigar, no cerrar la investigación. Una representación implementada puede ser provisional, quedar superseded, ser útil sólo para una prueba o necesitar revisión posterior.
 
 ```text
 IMPLEMENTED_CAPABILITY != RESEARCH_AUTHORITY
 MIGRATED_ARTIFACT != IMMUTABLE_RULE
 CURRENT_RUNTIME != FINAL_ARCHITECTURE
+UNRESOLVED != INCORRECT
 ```
 
 La reproducibilidad exige saber qué se utilizó en una prueba concreta; no exige mantenerlo indefinidamente cuando nueva evidencia justifique cambiarlo.
@@ -123,15 +136,27 @@ Cualquier requisito futuro de generación debe derivarse de un estado aprobado d
 
 Los cuatro componentes deben consumir un núcleo lingüístico común para evitar que cada uno mantenga reglas propias incompatibles.
 
-El núcleo experimental localizado está preservado en `core/JUCHITAN_LINGUISTIC_CORE_v0_27.md`. Bases, runtimes, inventarios, pruebas y paquetes tienen grados distintos de transferencia y reproducibilidad.
+El núcleo experimental localizado está preservado en `core/JUCHITAN_LINGUISTIC_CORE_v0_27.md`. Es un artefacto técnico migrado, no una fuente canónica de Voces.
 
-La incorporación de esta carpeta **no implica que todos esos artefactos hayan sido migrados ni que todo lo migrado sea ejecutable**. `ESTADO_ACTUAL_2026-08-31.md` conserva un snapshot histórico; el inventario acumulado está en `migracion/MIGRATION_MANIFEST_v1.md` y el estado materializado más reciente en `migracion/CURRENT_EXECUTABLE_STATE_v1.md`.
+La incorporación de esta carpeta no implica que todos los artefactos históricos hayan sido migrados ni que todo lo migrado sea ejecutable. `ESTADO_ACTUAL_2026-08-31.md` conserva un snapshot histórico; el inventario acumulado está en `migracion/MIGRATION_MANIFEST_v1.md` y el estado materializado más reciente en `migracion/CURRENT_EXECUTABLE_STATE_v1.md`.
+
+## COR001
+
+```text
+COR001 = ANALYSIS_TARGET_ONLY
+COR001 != GOLD_STANDARD
+COR001 != BENCHMARK_AUTHORITY
+COR001 != REGRESSION_AUTHORITY
+COR001 != RULE_DISCOVERY_SOURCE
+```
+
+El replay COR001 se conserva para reproducibilidad técnica del runtime histórico. Un `PASS` técnico no valida lingüísticamente sus salidas.
 
 ## Discusión pedagógica surgida durante trabajo técnico
 
 La subcarpeta `pedagogia/` conserva documentos de discusión producidos durante trabajo técnico cuando puedan formular preguntas útiles para el proyecto.
 
-Estos documentos son **candidatos o genealogía**, no política pedagógica, y no pueden utilizarse como `provenance` autoritativa de una entidad de `conocimiento/`.
+Estos documentos son **candidatos o genealogía**, no política pedagógica, y no pueden utilizarse como procedencia autoritativa de una entidad de Voces.
 
 Actualmente contiene:
 
@@ -147,7 +172,11 @@ PEDAGOGICAL_DISCUSSION != AUTOMATIC_POLICY
 
 ## Backlog técnico
 
-Las tareas propias de implementación viven en `BACKLOG_TECNICO.md` y no en el backlog estructural canónico `../02_BACKLOG.md`.
+Las tareas propias de implementación viven en `BACKLOG_TECNICO.md`.
+
+El backlog estructural canónico vive fuera de este repositorio:
+
+`lopezcarlton/vocesdelasnubes/02_BACKLOG.md`
 
 ```text
 TECHNICAL_BACKLOG != KNOWLEDGE_BACKLOG
@@ -156,7 +185,7 @@ IMPLEMENTATION_TASK != PEDAGOGICAL_DECISION
 
 ## Procedencia y migración
 
-La migración puede encontrar etiquetas históricas diferentes para métodos de obtención de evidencia. No se reescribirán silenciosamente.
+La migración puede conservar etiquetas históricas diferentes para métodos de obtención de evidencia. No se reescriben silenciosamente.
 
 Referencia: `PROVENANCE_LABEL_CROSSWALK_v0_1.md`.
 
@@ -164,15 +193,39 @@ La recuperación técnica se organiza en:
 
 `migracion/MIGRATION_MANIFEST_v1.md`
 
-La migración es una línea de preservación paralela. Su incompletitud no bloquea automáticamente corpus oral, trabajo con hablantes, lectura bibliográfica ni nueva investigación segura.
+La migración es una línea de preservación paralela. Su incompletitud no bloquea automáticamente corpus oral, trabajo con hablantes, lectura bibliográfica ni nueva investigación segura en Voces.
 
-## Separación física futura
+## Separación física completada
 
-La coexistencia actual de `conocimiento/` y `dispositivo/` en el mismo repositorio se conserva temporalmente por genealogía y reproducibilidad. No representa el diseño final de permisos.
+La separación física se ejecutó y verificó el 2026-09-03. El snapshot inicial exacto está preservado por Git:
 
-La separación física futura debe seguir `migracion/DEVICE_REPOSITORY_SEPARATION_PLAN_v1.md` y preservar el replay y las identidades exactas antes de retirar el dispositivo activo de Voces de las Nubes.
+```text
+SOURCE_REPOSITORY = lopezcarlton/vocesdelasnubes
+SOURCE_COMMIT = 22e3c088a97150453f28d03b31613ff9d9491d9a
+SOURCE_DEVICE_TREE_SHA = d92c38ec45be4e2e3176b1cfe7c288321c887d3b
+INITIAL_IMPORT_COMMIT = 6d205ffe0a0fe660229cd7a958fe43c9a5b51508
+IMPORTED_DEVICE_TREE_SHA = d92c38ec45be4e2e3176b1cfe7c288321c887d3b
+```
 
-El contrato de consumo entre ambas capas se documenta en `KNOWLEDGE_CONSUMPTION_CONTRACT_v1.md`.
+Ese SHA de árbol describe el **snapshot de importación en `6d205ff`**, no el `HEAD` actual: después del corte existen cambios técnicos legítimos y trazables en este repositorio.
+
+Ver:
+
+- `../SEPARATION_VERIFICATION_2026-09-03.md`;
+- `migracion/DEVICE_REPOSITORY_SEPARATION_PLAN_v1.md`;
+- `KNOWLEDGE_CONSUMPTION_CONTRACT_v1.md`.
+
+## Protección de reproducibilidad vigente
+
+Desde el endurecimiento posterior a la auditoría externa del 2026-09-03:
+
+- `.gitattributes` fija `-text` para los nueve artefactos byte-críticos identificados;
+- `.github/workflows/replay-v0-2-15-3.yml` corre en `push` a `main`, `pull_request` hacia `main` y `workflow_dispatch`;
+- `../RELEASE_MANIFEST_ANCHOR_v0_2_15_3.json` ancla la identidad SHA-256 y Git blob del manifiesto del release;
+- `migracion/test_migrated_state.py` forma parte de CI y pasa 8/8 verificaciones en el checkpoint post-separación;
+- el replay histórico mantiene 38/38 pruebas y COR001 permanece `ANALYSIS_TARGET_ONLY`.
+
+La protección de rama/rulesets continúa pendiente y es independiente de estas barreras de integridad.
 
 ## Regla de publicación
 
