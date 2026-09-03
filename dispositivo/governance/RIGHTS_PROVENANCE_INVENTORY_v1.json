@@ -1,13 +1,14 @@
 {
-  "inventory_version": 1,
+  "inventory_version": 2,
   "verification_date": "2026-09-03",
   "status": "PARTIAL_RIGHTS_INVENTORY / TECHNICAL_GOVERNANCE / NON_LEGAL_DETERMINATION",
   "blanket_license_status": "BLOCKED_PENDING_RIGHTS_AUDIT",
   "principles": [
     "SOURCE_LICENSE_STATUS_DOES_NOT_AUTOMATICALLY_LICENSE_PROJECT_DERIVATIVES",
     "PUBLIC_AVAILABILITY_DOES_NOT_EQUAL_OPEN_LICENSE",
-    "UNKNOWN_RIGHTS_DO_NOT_MEAN FORBIDDEN_OR_PERMITTED",
-    "DO_NOT_DELETE_PROVENANCE_CRITICAL_ARTIFACTS_TO_SIMPLIFY_LICENSING"
+    "UNKNOWN_RIGHTS_DO_NOT_MEAN_FORBIDDEN_OR_PERMITTED",
+    "DO_NOT_DELETE_PROVENANCE_CRITICAL_ARTIFACTS_TO_SIMPLIFY_LICENSING",
+    "DO_NOT_MERGE_DISTINCT_SOURCE_IDS_BY_TITLE_SIMILARITY"
   ],
   "families": [
     {
@@ -22,8 +23,16 @@
         "dispositivo/runtime/v0_2_15_3/DICTIONARIA_examples_v0_2_15_2.csv",
         "dispositivo/analyzer/DIC_VERB_2385_v0_1.csv"
       ],
+      "sqlite_source_id": "BIB054_DICTIONARIA",
+      "verified_sqlite_tables": [
+        {"table": "verb_lexeme_class_v023", "row_count": 2385},
+        {"table": "bound_entry_v024", "row_count": 6600},
+        {"table": "causative_inventory_v025", "row_count": 869},
+        {"table": "derivation_inventory_v025", "row_count": 1064},
+        {"table": "surface_attestation_v029", "row_count": 84188}
+      ],
       "local_rights_status": "ATTRIBUTION_CHAIN_AND_TRANSFORMATION_MAPPING_REQUIRED",
-      "notes": "The three DICTIONARIA CSVs are preserved as exact runtime inputs. DIC_VERB_2385 is a structured verb inventory whose fields align with the Dictionaria general dictionary. Verify source/export identity and required attribution before assigning any repository-wide license."
+      "notes": "The three DICTIONARIA CSVs are preserved as exact runtime inputs. Read-only SQLite provenance auditing verifies BIB054_DICTIONARIA as the sole source_id in several derived tables. DIC_VERB_2385 is a structured verb inventory whose fields align with the Dictionaria general dictionary. Verify source/export identity and required attribution before assigning any repository-wide license."
     },
     {
       "family_id": "BUENO_HOLLE_2019",
@@ -51,11 +60,27 @@
       "external_rights_status": "NO_OPEN_LICENSE_VERIFIED / STANDARD_COPYRIGHT_NOTICE_OBSERVED",
       "local_artifacts": [
         "dispositivo/runtime/v0_2_15_3/PICKETT_LEXICON_BACKFILL_v0_1.csv",
+        "dispositivo/runtime/v0_2_15_3/DOCUMENTARY_ALIGNMENT_REGISTRY_v0_2_15_2.csv",
         "dispositivo/runtime/v0_2_15_3/didxaza_runtime_v0_2_11_pickett_backfill.py",
         "dispositivo/runtime/v0_2_15_3/didxaza_runtime_v0_2_12_pickett_cross_source.py"
       ],
+      "verified_internal_source_ids": [
+        {
+          "source_id": "BIB003_PICKETT_VOCABULARIO",
+          "role": "LEXICAL_BACKFILL",
+          "verified_rows": 2534,
+          "verified_source_edition": "2007_FIFTH_ELECTRONIC"
+        },
+        {
+          "source_id": "BIB055_PICKETT_VOCABULARIO",
+          "role": "DOCUMENTARY_ALIGNMENT_APPENDIX_V",
+          "verified_rows": 16,
+          "verified_source_location": "Apéndice V, pp.123–124+"
+        }
+      ],
+      "source_id_genealogy_status": "DISTINCT_IDS_VERIFIED / RELATIONSHIP_NOT_YET_RESOLVED / DO_NOT_MERGE_BY_INFERENCE",
       "local_rights_status": "HIGH_PRIORITY_RIGHTS_REVIEW_REQUIRED_BEFORE_OPEN_REDISTRIBUTION",
-      "notes": "PICKETT_LEXICON_BACKFILL contains structured headwords, Spanish glosses and raw entry-line fields attributed to BIB003_PICKETT_VOCABULARIO. Do not infer permission to relicence this extracted dataset from public availability alone."
+      "notes": "PICKETT_LEXICON_BACKFILL contains structured headwords, Spanish glosses and raw entry-line fields attributed to BIB003_PICKETT_VOCABULARIO. A separate BIB055_PICKETT_VOCABULARIO ID is used for 16 Appendix V alignments. Both IDs remain distinct until their genealogy is verified. Do not infer permission to relicence either local representation from public availability alone."
     },
     {
       "family_id": "MIXED_RUNTIME_DATABASES_AND_OUTPUTS",
@@ -67,8 +92,18 @@
         "dispositivo/runtime/v0_2_15_3/COR001_REPLAY_DETAILED_v0_2_15_3.jsonl",
         "dispositivo/runtime/v0_2_15_3/COR001_REPLAY_SUMMARY_v0_2_15_3.csv"
       ],
-      "local_rights_status": "TABLE_FIELD_AND_OUTPUT_COMPOSITION_AUDIT_REQUIRED",
-      "notes": "Runtime databases and outputs combine project state with source-derived evidence. Exact technical reproducibility does not answer redistribution or relicensing rights."
+      "table_level_map": "dispositivo/governance/SQLITE_RIGHTS_SOURCE_MAP_v1.json",
+      "table_level_map_status": "V2_20_TABLE_LEVEL_PROVENANCE_PARTIALLY_VERIFIED",
+      "verified_v2_20_source_ids": [
+        "BIB003_PICKETT_VOCABULARIO",
+        "BIB004_GRAMATICA_POPULAR",
+        "BIB054_DICTIONARIA",
+        "BIB055_PICKETT_VOCABULARIO",
+        "BIB059_PBK2016"
+      ],
+      "source_profile_coverage_status": "GAP_VERIFIED_FOR_BIB003_BIB055_BIB059",
+      "local_rights_status": "TABLE_LEVEL_PROVENANCE_PARTIALLY_MAPPED / FIELD_AND_OUTPUT_REVIEW_STILL_REQUIRED",
+      "notes": "The v2.20 SQLite is no longer unmapped at table level: a read-only audit verifies exact source IDs and row counts for several source-bearing tables. This does not determine copyright scope at row/field level and does not resolve v2.19 or replay-output rights."
     },
     {
       "family_id": "PROJECT_TECHNICAL_CODE_AND_DOCUMENTATION",
@@ -86,9 +121,12 @@
     }
   ],
   "next_actions": [
-    "Map Dictionaria local exports and derived verb inventory to required CC BY 4.0 attribution metadata",
-    "Resolve permission or distribution strategy for PICKETT_LEXICON_BACKFILL before any blanket open-source release",
-    "Audit SQLite tables and replay outputs for source-derived fields or text fragments",
+    "Materialize a concrete Dictionaria CC BY 4.0 attribution/NOTICE chain for local exports and derived tables",
+    "Resolve genealogy and rights treatment separately for BIB003_PICKETT_VOCABULARIO and BIB055_PICKETT_VOCABULARIO",
+    "Verify rights status for BIB004_GRAMATICA_POPULAR and BIB059_PBK2016",
+    "Decide whether source_profile should gain non-destructive profiles for source IDs already used elsewhere in v2.20",
+    "Continue field-level review where table-level provenance does not establish redistribution treatment",
+    "Audit v2.19 and replay outputs separately",
     "Inventory project-authored code separately from migrated historical/source-derived documentation",
     "Only then decide between repository-wide license, per-subtree licenses, per-file notices, or a mixed strategy"
   ]
