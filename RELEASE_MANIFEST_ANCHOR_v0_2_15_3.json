@@ -1,0 +1,11 @@
+{
+  "status": "ACTIVE_TECHNICAL_TRUST_ANCHOR / NON_LINGUISTIC_AUTHORITY",
+  "release": "v0.2.15.3",
+  "artifact_path": "dispositivo/runtime/v0_2_15_3/RELEASE_FILE_MANIFEST_v0_2_15_3.json",
+  "sha256": "5e3f7ff7035e8fdd6358ddae8432e37e52518cc9b50067dccfb7411c741f2304",
+  "git_blob_at_anchor": "e9cbb2062385e913d5acb59427aa6c1b53b54b14",
+  "release_file_count": 75,
+  "created_from_repository_head": "f0062ab07ce0550bc9ffa49b95df8ac2c71b9606",
+  "cor001_policy": "ANALYSIS_TARGET_ONLY",
+  "note": "This anchor protects technical identity only. It grants no linguistic, pedagogical, orthographic, or community authority."
+}
