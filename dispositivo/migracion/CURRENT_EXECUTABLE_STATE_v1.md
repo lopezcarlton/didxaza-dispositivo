@@ -40,7 +40,7 @@ IMPORTED_DEVICE_TREE_SHA = d92c38ec45be4e2e3176b1cfe7c288321c887d3b
 
 El SHA de árbol `d92c38ec...` identifica el snapshot **en `6d205ff`**, no el `HEAD` actual. Los cambios post-importación están trazados por Git y no alteran retroactivamente ese snapshot.
 
-Las protecciones técnicas verificadas hasta `main@2a463c8d1197e185eea8b5b094aa5d2388fa6841` incluyen:
+Las protecciones técnicas verificadas hasta `main@c9e95bcd42ca3f9931207faff4652920e692e56c` incluyen:
 
 ```text
 BYTE_EXACT_GITATTRIBUTES = active for 9 identified files
@@ -55,8 +55,13 @@ LOCAL_GITIGNORE = present / conservative
 CODEOWNERS = present / routing-only
 CONTRIBUTING_POLICY = present
 HISTORICAL_PROMPTS_QUARANTINE = present
+ARCHIVED_SOURCE_TESTS_QUARANTINED = present
+GITHUB_ACTIONS_EXACT_SHA_PINNING = active
+ACTIONS_CHECKOUT_SHA = 11d5960a326750d5838078e36cf38b85af677262
+ACTIONS_UPLOAD_ARTIFACT_SHA = ea165f8d65b6e75b540449e92b4886f43607fa02
+P3_AUDIT_DISPOSITION = present
 GLOBAL_LICENSE = not_declared / rights_audit_pending
-LAST_VERIFIED_MAIN_PUSH_RUN = 33815628188 / success
+LAST_VERIFIED_MAIN_PUSH_RUN = 33816365046 / success
 PERMISSION_HARDENING = pending
 ```
 
@@ -67,6 +72,8 @@ La prueba migratoria usa 39 payloads presentes como piso monotónico contra regr
 La gobernanza local ya incluye `.gitignore`, `.github/CODEOWNERS` y `CONTRIBUTING.md`. `CODEOWNERS` documenta ownership/revisión esperada pero no impone por sí mismo una barrera de escritura. No se añadió una licencia global: la auditoría de derechos y términos de materiales propios/terceros queda abierta como `DT-004` antes de declarar una licencia uniforme.
 
 `DOCUMENT_STATUS_INDEX_v1.md` registra de manera no destructiva los casos documentales verificados en P2-06: conserva estados/resultados explícitos cuando existen y marca `STATUS_NOT_DECLARED / DO_NOT_INFER` cuando el artefacto no declara un estado. Ninguno de los siete documentos auditados fue reescrito sólo para uniformar encabezados.
+
+`P3_AUDIT_DISPOSITION_2026-09-03.md` registra la verificación P3. Las actions del workflow vigente quedaron fijadas a los commits exactos que resolvían sus tags `v4` el 2026-09-03. Los `test_*.py` problemáticos dentro de subárboles `ARCHIVE_ONLY` se preservaron sin reescritura y sus limitaciones quedaron explicitadas mediante README local. P3-06 permanece `PARTIAL_SOURCE_ONLY / NOT_CLOSED` porque la fuente recuperada está truncada.
 
 La protección de branch/rulesets sigue siendo un frente de infraestructura independiente. Ver `../../SEPARATION_VERIFICATION_2026-09-03.md` y `DEVICE_REPOSITORY_SEPARATION_PLAN_v1.md`.
 
@@ -239,7 +246,7 @@ BLOCKED_BY_MIGRATED_INPUTS = C03, C04, C05, C06
 
 El layout técnico activo del adaptador queda explicitado en `generator/INPUT_LAYOUT_CONTRACT_v1.json`. Ese contrato no cambia la genealogía del Generator ni declara autoridad sobre el contenido de los inputs.
 
-Se verificaron nueve pares de copias heredadas entre `generator/`, `inputs_nc001/` y `generator/inputs/`. En `main@2a463c8` los nueve pares son byte-idénticos y `test_migrated_state.py` falla si alguno diverge. Las copias no se eliminaron, renombraron ni sincronizaron destructivamente.
+Se verificaron nueve pares de copias heredadas entre `generator/`, `inputs_nc001/` y `generator/inputs/`. En `main@c9e95bc` los nueve pares son byte-idénticos y `test_migrated_state.py` falla si alguno diverge. Las copias no se eliminaron, renombraron ni sincronizaron destructivamente.
 
 `GENERATION_READINESS_MATRIX_v14.csv` se conserva como el snapshot más reciente localizado, pero sus capacidades C03/C05 no son reproducibles con los archivos actualmente migrados. No se rebajó ni se reescribió la matriz: queda clasificada como:
 
@@ -287,12 +294,26 @@ HISTORICAL_PROMPTS_CURRENT_EXECUTION_CONTRACT = false
 
 Una idea contenida en esos prompts sólo puede volver a adoptarse mediante verificación técnica actual y, cuando corresponda, contra la autoridad de conocimiento en `lopezcarlton/vocesdelasnubes`.
 
+### 6.2 Pruebas dentro de fuentes archivadas
+
+Los subárboles `migracion/fuentes/generator_v0_initial/` y `migracion/fuentes/mvp_vertical_slice_v0_2/` conservan archivos con nombres `test_*.py`, pero el manifiesto los clasifica respectivamente como `ARCHIVE_ONLY / SUPERSEDED` y `ARCHIVE_ONLY / NON_AUTHORITY`.
+
+La auditoría P3 verificó que:
+
+- `generator_v0_initial/test_runtime_reuse.py` contiene rutas absolutas `/mnt/data/...` y no es portable como prueba actual;
+- `generator_v0_initial/test_generator_v0.py` depende del layout histórico incompleto del scaffold;
+- `mvp_vertical_slice_v0_2/test_adjudication_v0_2.py` ejecuta asserts a nivel de módulo y define cero casos unittest, aunque imprime un texto `PASS` cuando esos asserts históricos terminan.
+
+Ninguno fue reescrito para hacerlo pasar. Sus README locales dejan explícito que no forman parte de la suite activa. La cobertura técnica actual permanece en el workflow vigente, `migracion/test_migrated_state.py` y la cadena histórica controlada del runtime.
+
 ## 7. Interpretación
 
 Este checkpoint no decide si C03, C05, la escala P, las capas BIB065 u otra hipótesis deben mantenerse o cambiar. Tampoco interpreta un `PASS` técnico como validación lingüística. Sólo evita atribuir al repositorio capacidades que sus archivos actuales no pueden reproducir.
 
 Las líneas de investigación, COR002, el trabajo con hablantes y la incorporación de nueva evidencia continúan abiertas conforme a `lopezcarlton/vocesdelasnubes/conocimiento/principios/PRIN-INVESTIGACION-ABIERTA.md`.
 
-Este checkpoint incorpora únicamente hallazgos P2 ya verificados sobre **estado técnico y documentación**: alcance real de la terminología histórica `benchmark` en JLC v0.27, causa proximal del bloqueo del Generator histórico, integridad de las copias duplicadas de inputs, gobernanza mínima local y cuarentena de prompts históricos. P2-06 queda resuelto de manera no destructiva mediante `DOCUMENT_STATUS_INDEX_v1.md`.
+Los hallazgos P2 verificados quedaron incorporados de forma no destructiva: terminología histórica `benchmark` en cuarentena, causa proximal del Generator histórico documentada, integridad de copias duplicadas protegida, gobernanza mínima local presente, prompts históricos en cuarentena y estado documental ambiguo indexado sin inferencia.
 
-Del frente P2 de gobernanza queda explícitamente abierto el licenciamiento global como `DT-004`, sujeto a auditoría de derechos de materiales propios y de terceros. La frontera efectiva de permisos mediante branch protection/rulesets permanece como residual de `DT-003`. Los hallazgos P3 de la auditoría externa siguen sujetos a verificación separada antes de cualquier corrección adicional.
+Los P3 recuperados tienen disposición explícita en `P3_AUDIT_DISPOSITION_2026-09-03.md`: P3-01/02/03 fueron confirmados y tratados como limitaciones de subárboles archivados sin reescritura; P3-04 estaba resuelto por `.gitignore`; P3-05 quedó reparado mediante pinning exacto de GitHub Actions. P3-06 **no se considera cerrado** porque sólo se recuperó un fragmento truncado de su diagnóstico; el hecho verificable relativo al nombre histórico `verificador de ortografía` ya está cubierto por cuarentena, pero cualquier remediación adicional requiere la fuente completa.
+
+Del frente de gobernanza queda abierto el licenciamiento global como `DT-004`, sujeto a auditoría de derechos de materiales propios y de terceros. La frontera efectiva de permisos mediante branch protection/rulesets permanece como residual de `DT-003`.
