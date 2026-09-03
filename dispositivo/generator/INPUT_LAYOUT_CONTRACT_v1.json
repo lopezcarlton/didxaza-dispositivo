@@ -1,0 +1,53 @@
+{
+  "status": "ACTIVE_TECHNICAL_LAYOUT_CONTRACT / DERIVED_SYSTEM / NON_KNOWLEDGE_AUTHORITY",
+  "version": 1,
+  "scope": "migrated_generator_adapter_input_layout",
+  "active_adapter": "dispositivo/generator/generator_v0_5_migrated_adapter.py",
+  "canonical_active_input_dir": "dispositivo/generator/inputs",
+  "historical_generator": "dispositivo/generator/generator_v0_5.py",
+  "historical_generator_layout_status": "MIXED_LAYOUT_PRESERVED_UNMODIFIED",
+  "rules": [
+    "generator/inputs is the active reproducible input set for generator_v0_5_migrated_adapter.py",
+    "historical duplicate copies are preserved for genealogy and must not be edited independently",
+    "this contract does not declare linguistic, pedagogical, or orthographic authority",
+    "this contract does not rewrite or repair generator_v0_5.py"
+  ],
+  "duplicate_copies": [
+    {
+      "copy": "dispositivo/generator/AuthorizedSlotFillers_v0_33.jsonl",
+      "canonical": "dispositivo/generator/inputs/AuthorizedSlotFillers_v0_33.jsonl"
+    },
+    {
+      "copy": "dispositivo/generator/GenerationEvidenceAtoms_v0_33_c02_default_qui.jsonl",
+      "canonical": "dispositivo/generator/inputs/GenerationEvidenceAtoms_v0_33_c02_default_qui.jsonl"
+    },
+    {
+      "copy": "dispositivo/generator/GenerationLicense_v0_33_c02_default_qui.jsonl",
+      "canonical": "dispositivo/generator/inputs/GenerationLicense_v0_33_c02_default_qui.jsonl"
+    },
+    {
+      "copy": "dispositivo/generator/IntegrationBlockers_v0_1.jsonl",
+      "canonical": "dispositivo/generator/inputs/IntegrationBlockers_v0_1.jsonl"
+    },
+    {
+      "copy": "dispositivo/generator/OrthographicResolutions_v0_9.jsonl",
+      "canonical": "dispositivo/generator/inputs/OrthographicResolutions_v0_9.jsonl"
+    },
+    {
+      "copy": "dispositivo/inputs_nc001/AdoptionRecords_v1.jsonl",
+      "canonical": "dispositivo/generator/inputs/AdoptionRecords_v1.jsonl"
+    },
+    {
+      "copy": "dispositivo/inputs_nc001/ConceptMapping_v1.jsonl",
+      "canonical": "dispositivo/generator/inputs/ConceptMapping_v1.jsonl"
+    },
+    {
+      "copy": "dispositivo/inputs_nc001/ConstructionInventory_v1.jsonl",
+      "canonical": "dispositivo/generator/inputs/ConstructionInventory_v1.jsonl"
+    },
+    {
+      "copy": "dispositivo/inputs_nc001/OrthographicProfile_v1_DRAFT.json",
+      "canonical": "dispositivo/generator/inputs/OrthographicProfile_v1_DRAFT.json"
+    }
+  ]
+}
