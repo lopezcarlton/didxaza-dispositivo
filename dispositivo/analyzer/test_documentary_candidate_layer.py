@@ -3,7 +3,8 @@
 
 These tests do not assert that a candidate spelling is correct or equivalent.
 They assert only that already-specified candidate channels are visible while
-remaining strictly separate from exact evidence and correction authority.
+remaining strictly separate from exact evidence and correction authority. Later
+Analyzer wrappers may add documented morphology without changing this layer.
 """
 
 from __future__ import annotations
@@ -94,7 +95,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
 
     def _candidate_row(self, surface: str):
         result = self.engine.analyze(surface, item_id="TECHNICAL_CANDIDATE_REGRESSION")
-        self.assertEqual(result["current_adapter_version"], "0.35.5")
+        self.assertEqual(result["current_adapter_version"], "0.35.6")
         self.assertTrue(result["documentary_candidate_layer_enabled"])
         self.assertEqual(len(result["provisional_unresolved_token_candidates"]), 1)
         return result, result["provisional_unresolved_token_candidates"][0]
@@ -122,6 +123,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
         self.assertTrue(all(x["status"] == "PROVISIONAL" for x in persons))
         self.assertEqual(result["still_exactly_unresolved_token_indexes"], [0])
         self.assertEqual(result["effective_evidence_after_biyubi_token_count"], 0)
+        self.assertEqual(result["unresolved_token_indexes_after_documented_morphology"], [0])
 
     def test_binebiaya_exposes_existing_graphical_1sg_candidates_only(self):
         result, row = self._candidate_row("binebiaya'")
@@ -129,6 +131,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
         self.assertIn("1SG", {x["person"] for x in persons})
         self.assertIn("ya'", {x["matched_suffix"] for x in persons})
         self.assertEqual(result["still_exactly_unresolved_token_indexes"], [0])
+        self.assertEqual(result["unresolved_token_indexes_after_documented_morphology"], [0])
         self.assertFalse(row["exact_surface_match_assertion"])
         self.assertFalse(row["correction_assertion"])
 
@@ -148,6 +151,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
         self.assertEqual(target["graphical_possession_candidate"]["prefix_candidate"], "x-")
         self.assertIn("2SG", {x["person"] for x in target["graphical_person_candidates"]})
         self.assertIn(target_index, result["still_exactly_unresolved_token_indexes"])
+        self.assertIn(target_index, result["unresolved_token_indexes_after_documented_morphology"])
 
     def test_quidxu_remains_exactly_unresolved_despite_graphical_suffix_candidate(self):
         result, row = self._candidate_row("quidxu'")
@@ -157,6 +161,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
             0,
         )
         self.assertEqual(result["still_exactly_unresolved_token_indexes"], [0])
+        self.assertEqual(result["unresolved_token_indexes_after_documented_morphology"], [0])
         self.assertEqual(result["effective_evidence_after_biyubi_token_count"], 0)
         self.assertTrue(result["fallback_policy"]["candidate_layer_does_not_increase_effective_evidence_coverage"])
         self.assertFalse(result["correction_assertion"])
