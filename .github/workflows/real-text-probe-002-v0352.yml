@@ -8,6 +8,7 @@ on:
     paths:
       - "dispositivo/experiments/REAL_TEXT_PROBE_002.txt"
       - "dispositivo/experiments/run_real_text_probe_002_v0352.py"
+      - "dispositivo/experiments/run_probe_002_unresolved_component_diagnostic.py"
       - ".github/workflows/real-text-probe-002-v0352.yml"
 
 permissions:
@@ -27,8 +28,17 @@ jobs:
           python dispositivo/experiments/run_real_text_probe_002_v0352.py > "${RUNNER_TEMP}/REAL_TEXT_PROBE_002_V0352_RESULT.json"
           cat "${RUNNER_TEMP}/REAL_TEXT_PROBE_002_V0352_RESULT.json"
 
+      - name: Diagnose unresolved tokens against existing component analyzers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python dispositivo/experiments/run_probe_002_unresolved_component_diagnostic.py > "${RUNNER_TEMP}/REAL_TEXT_PROBE_002_COMPONENT_DIAGNOSTIC.json"
+          cat "${RUNNER_TEMP}/REAL_TEXT_PROBE_002_COMPONENT_DIAGNOSTIC.json"
+
       - name: Upload probe result
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: real-text-probe-002-v0352-${{ github.sha }}
-          path: ${{ runner.temp }}/REAL_TEXT_PROBE_002_V0352_RESULT.json
+          path: |
+            ${{ runner.temp }}/REAL_TEXT_PROBE_002_V0352_RESULT.json
+            ${{ runner.temp }}/REAL_TEXT_PROBE_002_COMPONENT_DIAGNOSTIC.json
