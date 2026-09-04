@@ -1,0 +1,11 @@
+{
+  "probe_id": "REAL_TEXT_PROBE_001",
+  "status": "EXPERIMENTAL / NON_AUTHORITATIVE",
+  "input_origin": "user_supplied_real_text",
+  "input_normalization": "NONE",
+  "line_count": 4,
+  "duplicate_lines_preserved": true,
+  "cor001_used": false,
+  "benchmark_use": false,
+  "rule_discovery_from_probe": false
+}
