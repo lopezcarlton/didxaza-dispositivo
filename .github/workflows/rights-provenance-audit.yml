@@ -8,6 +8,10 @@ on:
     paths:
       - "dispositivo/governance/**"
       - "dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_SURFACE_SEMANTICS_v2_20.sqlite"
+      - "dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_EVIDENCE_INTEGRITY_v2_19.sqlite"
+      - "dispositivo/runtime/v0_2_15_3/COR001_REPLAY_*"
+      - "dispositivo/runtime/v0_2_15_3/RUN_MANIFEST_COR001_*"
+      - "dispositivo/runtime/v0_2_15_3/CLEAN_REPLAY_VERIFICATION_v0_2_15_3.json"
       - ".github/workflows/rights-provenance-audit.yml"
   pull_request:
     branches:
@@ -15,13 +19,17 @@ on:
     paths:
       - "dispositivo/governance/**"
       - "dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_SURFACE_SEMANTICS_v2_20.sqlite"
+      - "dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_EVIDENCE_INTEGRITY_v2_19.sqlite"
+      - "dispositivo/runtime/v0_2_15_3/COR001_REPLAY_*"
+      - "dispositivo/runtime/v0_2_15_3/RUN_MANIFEST_COR001_*"
+      - "dispositivo/runtime/v0_2_15_3/CLEAN_REPLAY_VERIFICATION_v0_2_15_3.json"
       - ".github/workflows/rights-provenance-audit.yml"
 
 permissions:
   contents: read
 
 jobs:
-  sqlite-provenance:
+  provenance-rights:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -33,15 +41,34 @@ jobs:
           set -euo pipefail
           python -m unittest dispositivo/governance/test_rights_governance.py -v
 
-      - name: Audit runtime SQLite provenance metadata
+      - name: Audit runtime SQLite v2.20 provenance metadata
         shell: bash
         run: |
           set -euo pipefail
           python dispositivo/governance/audit_runtime_rights_sources.py \
-            --output "${RUNNER_TEMP}/RIGHTS_SQLITE_PROVENANCE_AUDIT.json"
+            --db dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_SURFACE_SEMANTICS_v2_20.sqlite \
+            --output "${RUNNER_TEMP}/RIGHTS_SQLITE_V2_20_PROVENANCE_AUDIT.json"
+
+      - name: Audit runtime SQLite v2.19 provenance metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python dispositivo/governance/audit_runtime_rights_sources.py \
+            --db dispositivo/runtime/v0_2_15_3/BASE_CORRECTOR_DIDXAZA_EVIDENCE_INTEGRITY_v2_19.sqlite \
+            --output "${RUNNER_TEMP}/RIGHTS_SQLITE_V2_19_PROVENANCE_AUDIT.json"
+
+      - name: Audit stored COR001 replay artifact schemas
+        shell: bash
+        run: |
+          set -euo pipefail
+          python dispositivo/governance/audit_replay_artifact_rights.py \
+            --output "${RUNNER_TEMP}/RIGHTS_REPLAY_ARTIFACT_SCHEMA_AUDIT.json"
 
       - name: Upload rights provenance evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: rights-sqlite-provenance-${{ github.sha }}
-          path: ${{ runner.temp }}/RIGHTS_SQLITE_PROVENANCE_AUDIT.json
+          name: rights-provenance-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/RIGHTS_SQLITE_V2_20_PROVENANCE_AUDIT.json
+            ${{ runner.temp }}/RIGHTS_SQLITE_V2_19_PROVENANCE_AUDIT.json
+            ${{ runner.temp }}/RIGHTS_REPLAY_ARTIFACT_SCHEMA_AUDIT.json

@@ -1,0 +1,117 @@
+{
+  "map_version": 1,
+  "verification_date": "2026-09-03",
+  "status": "STORED_REPLAY_RIGHTS_SCHEMA_MAP / NON_LINGUISTIC / NON_LEGAL_DETERMINATION",
+  "cor001_policy": "ANALYSIS_TARGET_ONLY",
+  "benchmark_or_rule_discovery_use": false,
+  "audit_evidence": {
+    "workflow": "rights-provenance-audit",
+    "workflow_run_id": 33819805688,
+    "head_sha": "54a52eb5154645f1d14132bb6f67e9a98c2cc9cd",
+    "artifact_id": 9917844986,
+    "content_values_emitted": false,
+    "unicode_schema_classification": "NFKD_FOLDED_TOKEN_MATCH"
+  },
+  "knowledge_authority_context": {
+    "repository": "lopezcarlton/vocesdelasnubes",
+    "document": "conocimiento/AUDIO.md",
+    "document_blob": "5993c3f455a79e2c2ee5e76ccf894186142d0c09",
+    "verified_statements": [
+      "Speakers participate as producers of oral content and validators of naturalness within each session scope.",
+      "The project preserves primary recordings and may produce multiple pedagogical derivatives.",
+      "The complete publication and distribution flow for all derivatives is not yet definitively documented."
+    ],
+    "rights_interpretation": "PARTICIPATION_ROLE_DOCUMENTED / REDISTRIBUTION_LICENSE_OR_CONSENT_NOT_RESOLVED_BY_AUDIO_POLICY"
+  },
+  "artifacts": [
+    {
+      "file": "dispositivo/runtime/v0_2_15_3/COR001_REPLAY_INPUT_v0_2_15_2.csv",
+      "sha256": "045b3abc83ec2035f6d20895d4584f5c028b7855f0cfb198b366b24d0ea5a8e9",
+      "byte_size": 6788,
+      "record_count": 107,
+      "schema_fields": ["ID", "Bloque", "Español", "Didxazá_original"],
+      "direct_content_fields": ["Español", "Didxazá_original"],
+      "rights_metadata_fields_in_artifact": [],
+      "classification": "DIRECT_CORPUS_TEXT_BEARING_ARTIFACT",
+      "distribution_status": "HOLD_FOR_EXPLICIT_COR001_RIGHTS_PROVENANCE / DO_NOT_INCLUDE_UNDER_BLANKET_OPEN_LICENSE"
+    },
+    {
+      "file": "dispositivo/runtime/v0_2_15_3/COR001_REPLAY_DETAILED_v0_2_15_2.jsonl",
+      "sha256": "74496f552dfec13b7104c6b619b2fc43940e937856f3446e1fed30820eb0adaa",
+      "byte_size": 2244031,
+      "record_count": 107,
+      "content_bearing_schema_fields": [
+        "analysis_open_spans",
+        "cross_source_exact_surface",
+        "didxaza_original",
+        "phrase_decision",
+        "spanish"
+      ],
+      "verified_source_metadata": {
+        "source_coverage_metadata_mapping_key": "BIB054_DICTIONARIA",
+        "row_count": 107
+      },
+      "classification": "CONTENT_BEARING_DERIVED_REPLAY_ARTIFACT / THIRD_PARTY_SOURCE_COVERAGE_METADATA_PRESENT",
+      "distribution_status": "MIXED_COR001_AND_DERIVED_SOURCE_RIGHTS_REVIEW_REQUIRED"
+    },
+    {
+      "file": "dispositivo/runtime/v0_2_15_3/COR001_REPLAY_SUMMARY_v0_2_15_2.csv",
+      "sha256": "ce4b799d9cb800eea9e220a3166fcf532246ac9e92f6ec000a36f7f9e0fb06b4",
+      "byte_size": 10070,
+      "record_count": 107,
+      "direct_content_fields": ["Español", "Didxazá_original"],
+      "derived_content_fields": [
+        "phrase_action",
+        "analysis_open_tokens",
+        "analysis_review_tokens",
+        "utterance_validation"
+      ],
+      "rights_metadata_fields_in_artifact": [],
+      "classification": "CONTENT_BEARING_DERIVED_REPLAY_SUMMARY",
+      "distribution_status": "HOLD_FOR_COR001_AND_DERIVATIVE_RIGHTS_BOUNDARY / DO_NOT_INCLUDE_UNDER_BLANKET_OPEN_LICENSE"
+    },
+    {
+      "file": "dispositivo/runtime/v0_2_15_3/COR001_REPLAY_METRICS_v0_2_15_2.json",
+      "sha256": "3d2c1849062bd9a9c8ebc57e9041882922f7d24fa227756c81c37e8cb62051e6",
+      "byte_size": 1041,
+      "top_level_item_count": 23,
+      "direct_corpus_text_fields_detected": false,
+      "classification": "AGGREGATE_TECHNICAL_DERIVATIVE / NO_DIRECT_CORPUS_TEXT_FIELD_DETECTED",
+      "distribution_status": "PROJECT_AUTHORSHIP_AND_DERIVATIVE_METADATA_SCOPE_REVIEW_REQUIRED / LOWER_RIGHTS_RISK_THAN_TEXT_BEARING_OUTPUTS"
+    },
+    {
+      "file": "dispositivo/runtime/v0_2_15_3/RUN_MANIFEST_COR001_v0_2_15_2.json",
+      "sha256": "5bf2a65d5d63a1c00c574821945395c9f324fd0d8d4c3bff5a0ef5dab3d17d6c",
+      "byte_size": 1765,
+      "top_level_item_count": 9,
+      "direct_corpus_text_fields_detected": false,
+      "verified_metadata": {
+        "runtime_version": "0.2.15.2",
+        "source_scope_policy": "DICTIONARIA_SOURCE_COVERAGE_SEPARATE_FROM_DIALECT_SCOPE"
+      },
+      "classification": "TECHNICAL_RUN_METADATA_AND_HASH_MANIFEST",
+      "distribution_status": "PROJECT_AUTHORSHIP_SCOPE_REVIEW_REQUIRED / NO_DIRECT_CORPUS_TEXT_FIELD_DETECTED"
+    },
+    {
+      "file": "dispositivo/runtime/v0_2_15_3/CLEAN_REPLAY_VERIFICATION_v0_2_15_3.json",
+      "sha256": "0446768fa8ec1d6e76937688c62e8aa667e7503d211070988944c44253b36644",
+      "byte_size": 708,
+      "top_level_item_count": 7,
+      "direct_corpus_text_fields_detected": false,
+      "classification": "TECHNICAL_REPRODUCIBILITY_METADATA_AND_HASHES",
+      "distribution_status": "PROJECT_AUTHORSHIP_SCOPE_REVIEW_REQUIRED / NO_DIRECT_CORPUS_TEXT_FIELD_DETECTED"
+    }
+  ],
+  "cor001_rights_state": {
+    "explicit_license_or_consent_metadata_in_audited_artifacts": false,
+    "absence_interpretation": "DOES_NOT_PROVE_NO_PERMISSION_EXISTS",
+    "knowledge_policy_distribution_flow": "NOT_YET_DEFINITIVELY_DOCUMENTED",
+    "current_distribution_gate": "TEXT_BEARING_COR001_ARTIFACTS_REQUIRE_EXPLICIT_RIGHTS_PROVENANCE_BEFORE_OPEN_REDISTRIBUTION"
+  },
+  "next_actions": [
+    "Locate or create an authoritative COR001 rights/provenance record in Voces de las Nubes without rewriting historical replay artifacts",
+    "Separate direct corpus text artifacts from aggregate technical metadata in any distributable package",
+    "Apply Dictionaria attribution requirements to derived replay material where source coverage is retained",
+    "Do not use this rights map to evaluate COR001 linguistic quality or correctness"
+  ]
+}

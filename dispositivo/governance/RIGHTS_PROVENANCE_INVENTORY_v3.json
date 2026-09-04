@@ -1,0 +1,113 @@
+{
+  "inventory_version": 3,
+  "verification_date": "2026-09-03",
+  "status": "PARTIAL_RIGHTS_INVENTORY / V2_20_AND_V2_19_TABLE_PROVENANCE_MAPPED / STORED_REPLAY_SCHEMA_RIGHTS_MAPPED / NON_LEGAL_DETERMINATION",
+  "supersedes_for_current_planning": "RIGHTS_PROVENANCE_INVENTORY_v2.json",
+  "blanket_license_status": "BLOCKED_PENDING_RIGHTS_AND_DISTRIBUTION_ARCHITECTURE",
+  "supporting_artifacts": [
+    "THIRD_PARTY_ATTRIBUTION_v1.md",
+    "SQLITE_RIGHTS_SOURCE_MAP_v1.json",
+    "SQLITE_V2_19_RIGHTS_SOURCE_MAP_v1.json",
+    "REPLAY_ARTIFACT_RIGHTS_MAP_v1.json",
+    "SOURCE_PROFILE_SUPPLEMENT_v1.json",
+    "RIGHTS_PROVENANCE_AUDIT_v3.md"
+  ],
+  "principles": [
+    "SOURCE_LICENSE_STATUS_DOES_NOT_AUTOMATICALLY_LICENSE_PROJECT_DERIVATIVES",
+    "PUBLIC_AVAILABILITY_DOES_NOT_EQUAL_OPEN_LICENSE",
+    "PER_RECORD_ATTRIBUTION_MUST_NOT_BE_DROPPED",
+    "DO_NOT_DELETE_PROVENANCE_CRITICAL_ARTIFACTS_TO_SIMPLIFY_LICENSING",
+    "DO_NOT_MERGE_DISTINCT_SOURCE_IDS_BY_TITLE_SIMILARITY",
+    "HISTORICAL_SQLITES_MUST_NOT_BE_MUTATED_TO_REPAIR_PROFILE_GAPS",
+    "COR001_ANALYSIS_TARGET_ONLY_POLICY_APPLIES_DURING_RIGHTS_AUDIT",
+    "ABSENT_RIGHTS_METADATA_IN_AN_ARTIFACT_DOES_NOT_PROVE_PERMISSION_IS_ABSENT"
+  ],
+  "third_party_sources": [
+    {
+      "source_id": "BIB054_DICTIONARIA",
+      "identity": "Didxazá–Spanish–English Dictionary, Dictionaria",
+      "external_rights_status": "CC_BY_4_0_SITE_NOTICE_VERIFIED",
+      "attribution_status": "CONCRETE_NOTICE_MATERIALIZED / PER_RECORD_CODES_MUST_BE_PRESERVED",
+      "distribution_status": "ATTRIBUTION_AND_TRANSFORMATION_CHAIN_REQUIRED / WHOLE_REPO_LICENSE_NOT_INFERRED"
+    },
+    {
+      "source_id": "BIB004_GRAMATICA_POPULAR",
+      "identity": "Pickett, Black & Marcial Cerqueda. Gramática popular del zapoteco del Istmo. Segunda edición electrónica, 2001.",
+      "external_rights_status": "D_R_RIGHTS_NOTICE_OBSERVED / NO_OPEN_LICENSE_VERIFIED",
+      "distribution_status": "REVIEW_REQUIRED_BEFORE_OPEN_RELICENSING_OR_REDISTRIBUTION"
+    },
+    {
+      "source_id": "BIB003_PICKETT_VOCABULARIO",
+      "identity": "Vocabulario zapoteco del Istmo — lexical backfill source",
+      "external_rights_status": "NO_OPEN_LICENSE_VERIFIED / STANDARD_COPYRIGHT_NOTICE_OBSERVED_FOR_CURRENT_PUBLISHER_LISTING",
+      "relationship_to_BIB055": "UNRESOLVED / DO_NOT_MERGE_BY_INFERENCE",
+      "distribution_status": "HIGH_PRIORITY_RIGHTS_REVIEW_REQUIRED"
+    },
+    {
+      "source_id": "BIB055_PICKETT_VOCABULARIO",
+      "identity": "Vocabulario zapoteco del Istmo — Appendix V documentary alignment source",
+      "external_rights_status": "NO_OPEN_LICENSE_VERIFIED",
+      "relationship_to_BIB003": "UNRESOLVED / DO_NOT_MERGE_BY_INFERENCE",
+      "distribution_status": "RIGHTS_AND_GENEALOGY_REVIEW_REQUIRED"
+    },
+    {
+      "source_id": "BIB059_PBK2016",
+      "identity": "Pérez Báez & Kaufman. 2016. Verb Classes in Juchitán Zapotec. Anthropological Linguistics 58(3):217–257.",
+      "doi": "10.1353/anl.2016.0030",
+      "external_rights_status": "ALL_RIGHTS_RESERVED_NOTICE_OBSERVED",
+      "distribution_status": "DERIVED_RULE_RELICENSING_REVIEW_REQUIRED"
+    },
+    {
+      "source_id": "BH2019_BOOK",
+      "identity": "Juan José Bueno Holle. 2019. Information structure in Isthmus Zapotec narrative and conversation. Language Science Press.",
+      "external_rights_status": "CC_BY_4_0_VERIFIED",
+      "distribution_status": "ATTRIBUTION_REQUIRED / PROJECT_ANALYSIS_AUTHORSHIP_SEPARATION_REQUIRED"
+    }
+  ],
+  "database_state": {
+    "v2_20": {
+      "status": "TABLE_LEVEL_PROVENANCE_PARTIALLY_MAPPED",
+      "map": "SQLITE_RIGHTS_SOURCE_MAP_v1.json",
+      "sha256": "2379773426baf4e3eace87c61ec17f7a1e1b9164421e56cf736d35eb64a5ebed"
+    },
+    "v2_19": {
+      "status": "TABLE_LEVEL_PROVENANCE_PARTIALLY_MAPPED / SAME_SHARED_SOURCE_BOUNDS_AS_V2_20",
+      "map": "SQLITE_V2_19_RIGHTS_SOURCE_MAP_v1.json",
+      "sha256": "c0433ff9a97fa8d4fb3d1ae5efc859b4ef2eacff1da92396fc5e8c22ff0215f4"
+    },
+    "historical_source_profile_gap": [
+      "BIB003_PICKETT_VOCABULARIO",
+      "BIB055_PICKETT_VOCABULARIO",
+      "BIB059_PBK2016"
+    ],
+    "non_destructive_supplement": "SOURCE_PROFILE_SUPPLEMENT_v1.json"
+  },
+  "replay_and_cor001_state": {
+    "map": "REPLAY_ARTIFACT_RIGHTS_MAP_v1.json",
+    "audited_artifact_count": 6,
+    "cor001_policy": "ANALYSIS_TARGET_ONLY",
+    "direct_text_bearing_artifacts": [
+      "COR001_REPLAY_INPUT_v0_2_15_2.csv",
+      "COR001_REPLAY_DETAILED_v0_2_15_2.jsonl",
+      "COR001_REPLAY_SUMMARY_v0_2_15_2.csv"
+    ],
+    "technical_or_aggregate_artifacts_without_direct_corpus_text_fields_detected": [
+      "COR001_REPLAY_METRICS_v0_2_15_2.json",
+      "RUN_MANIFEST_COR001_v0_2_15_2.json",
+      "CLEAN_REPLAY_VERIFICATION_v0_2_15_3.json"
+    ],
+    "explicit_license_or_consent_metadata_in_audited_artifacts": false,
+    "absence_interpretation": "DOES_NOT_PROVE_NO_PERMISSION_EXISTS",
+    "knowledge_authority_audio_policy": "SPEAKER_PARTICIPATION_DOCUMENTED / COMPLETE_PUBLICATION_AND_DISTRIBUTION_FLOW_NOT_YET_DEFINITIVE",
+    "distribution_status": "TEXT_BEARING_COR001_ARTIFACTS_REQUIRE_EXPLICIT_RIGHTS_PROVENANCE_BEFORE_OPEN_REDISTRIBUTION"
+  },
+  "remaining_gates": [
+    "Locate or materialize authoritative COR001 rights/provenance in Voces de las Nubes",
+    "Resolve distribution/packaging treatment for Pickett vocabulary artifacts",
+    "Resolve genealogy of BIB003 vs BIB055 sufficiently for notices and packaging",
+    "Determine treatment of BIB004-derived exact examples/alignments in distributable packages",
+    "Determine treatment of BIB059-derived rule registry and code expressions",
+    "Inventory project-authored code/documentation scope separately from migrated/source-derived expression",
+    "Choose mixed licensing/NOTICE/exclusion architecture only after those boundaries are materialized"
+  ]
+}
