@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Technical regressions for Analyzer v0.35.5 person-fusion candidates.
 
-The tests assert only a documented morphological RELATION candidate. They do
-not promote the observed token to exact evidence, do not assert orthographic
-correctness, and do not authorize generation.
+The candidate layer remains independently inspectable under later adapters. These
+tests assert only the v0.35.5 relation and its non-authority guarantees; v0.35.6
+may separately promote a candidate when independent prosodic evidence exists.
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ class PersonFusionCandidateTests(unittest.TestCase):
         result = self.engine.analyze("Rinite'", item_id="TECHNICAL_GP_1SG_RINITI")
         rows = result["supplemental_documented_person_fusion_candidates"]
 
-        self.assertEqual(result["current_adapter_version"], "0.35.5")
+        self.assertEqual(result["current_adapter_version"], "0.35.6")
         self.assertEqual(len(rows), 1)
         row = rows[0]
         self.assertEqual(row["token_raw"], "Rinite'")
@@ -50,12 +50,15 @@ class PersonFusionCandidateTests(unittest.TestCase):
         self.assertFalse(row["full_person_resolution_assertion"])
         self.assertFalse(row["correction_assertion"])
 
+        # v0.35.5 candidate does not alter exact state, even though v0.35.6 can
+        # separately analyze it after independent prosodic confirmation.
         self.assertEqual(result["matched_token_count"], 0)
         self.assertEqual(result["effective_evidence_after_biyubi_token_count"], 0)
         self.assertEqual(result["still_exactly_unresolved_token_indexes"], [0])
         self.assertEqual(result["documented_person_fusion_candidate_token_indexes"], [0])
         self.assertTrue(result["exact_evidence_state_unchanged_by_person_fusion_candidates"])
-        self.assertEqual(result["analysis_status"], "ABSTAIN_NO_COMPONENT_EVIDENCE")
+        self.assertEqual(result["analysis_status"], "PARTIAL_ANALYSIS_NON_LICENSING")
+        self.assertEqual(result["documented_person_fusion_analyzed_token_indexes"], [0])
 
     def test_missing_glottal_does_not_trigger_i_to_e1sg_candidate(self):
         result = self.engine.analyze("Rinite", item_id="TECHNICAL_GP_1SG_NEGATIVE_NO_GLOTTAL")
