@@ -5,7 +5,7 @@
 
 ```text
 KNOWLEDGE_SOURCE_REPOSITORY = lopezcarlton/vocesdelasnubes
-KNOWLEDGE_SOURCE_COMMIT = 478ef8177598ab565e5acd6c9f245b4ae83a093d
+KNOWLEDGE_SOURCE_COMMIT = caced70ceaab9e86564daf1717f6295cfe65a788
 KNOWLEDGE_SOURCE_REF = main
 ```
 
@@ -20,14 +20,16 @@ INITIAL_SPLIT_DATE = 2026-09-03
 
 ## Alcance canónico actual
 
-El pin incorpora:
+El pin incorpora el systematic semantic backfill completado hasta las fuentes prioritarias actualmente accesibles:
 
 - PBK2016 (`HALL-0073`–`HALL-0076`);
 - Gramática Popular P0 estructural (`HALL-0077`–`HALL-0140`);
 - PVM 2009/2010 + corrigendum (`HALL-0141`–`HALL-0150`);
 - Xneza 2015 (`HALL-0151`–`HALL-0158`);
-- Bueno Holle 2019 (`HALL-0159`–`HALL-0167`, además de `HALL-0007`, `HALL-0067`, `HALL-0068` ya existentes);
-- checkpoint de semantic backfill con siguiente frente = P1 Vocabulario Pickett.
+- Bueno Holle 2019 (`HALL-0159`–`HALL-0167`, además de hallazgos previos relacionados);
+- Vocabulario Pickett 2007 P1 lexicográfico (`HALL-0168`–`HALL-0178`);
+- Cardona 2020 + Cardona–Vicente 2025 P1 variación/escritura (`HALL-0179`–`HALL-0183`);
+- checkpoint `SEMANTIC_BACKFILL_CHECKPOINT_2026-09-04` con estado `SYSTEMATIC_BACKFILL_PASS_COMPLETE_TO_AVAILABLE_SOURCES / NORMA_2016_BLOCKED_BY_ACCESS`.
 
 Reglas de precedencia relevantes:
 
@@ -36,20 +38,18 @@ VOCES_AT_PIN = CANONICAL_KNOWLEDGE
 DEVICE_DERIVED_FORMULATION_MUST_NOT_OVERRIDE_PINNED_VOCES = true
 ```
 
-Consecuencias recientes:
+Contradicciones abiertas que el dispositivo no debe resolver unilateralmente:
+
+- `HALL-0150`: GP2001 vs PVM2010 sobre `b/d/g` intervocálicas;
+- `HALL-0172`: Pickett 2007 vs Xneza 2015 sobre reglas españolas de acento ortográfico.
+
+Estado de la Norma 2016:
 
 ```text
-REFERENCE_FORM_SELECTION = DISCOURSE_SENSITIVE
-OVERT_3RD != ZERO_3RD_FREE_VARIATION
-FOCUS != GENERIC_EMPHASIS
-TOPIC != FOCUS
-nga != GENERIC_EMPHASIS_PARTICLE_BY_DEFAULT
-la != SIMPLE_COMMA
-IU != ORTHOGRAPHIC_SENTENCE_BY_DEFAULT
-CORPUS_TENDENCY != CATEGORICAL_GENERATION_RULE
+NORMA_2016_IDENTITY = RESOLVED
+NORMA_2016_FULL_TEXT = NOT_ACCESSED
+SECONDARY_QUOTATIONS != FULL_NORM
 ```
-
-`HALL-0150` conserva la discrepancia bibliográfica abierta GP2001/PVM2010 sobre `b/d/g` intervocálicas. El dispositivo no debe resolverla unilateralmente.
 
 No se modifica aquí runtime histórico, SQLite, JLC ni otros artefactos byte-exactos.
 
