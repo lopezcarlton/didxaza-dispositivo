@@ -86,7 +86,7 @@ class RightsGovernanceTests(unittest.TestCase):
             self.replay_map["cor001_rights_state"]["absence_interpretation"],
         )
 
-    def test_text_bearing_cor001_artifacts_are_not_open_by_default(self):
+    def test_text_bearing_cor001_artifacts_are_held_for_rights_review(self):
         rows = {Path(row["file"]).name: row for row in self.replay_map["artifacts"]}
         for name in (
             "COR001_REPLAY_INPUT_v0_2_15_2.csv",
@@ -94,7 +94,8 @@ class RightsGovernanceTests(unittest.TestCase):
             "COR001_REPLAY_SUMMARY_v0_2_15_2.csv",
         ):
             self.assertIn(name, rows)
-            self.assertNotIn("OPEN_LICENSE", rows[name]["distribution_status"])
+            status = rows[name]["distribution_status"]
+            self.assertTrue("HOLD" in status or "REVIEW_REQUIRED" in status)
         self.assertEqual(rows["COR001_REPLAY_INPUT_v0_2_15_2.csv"]["record_count"], 107)
         self.assertEqual(rows["COR001_REPLAY_SUMMARY_v0_2_15_2.csv"]["record_count"], 107)
 
