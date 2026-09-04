@@ -1,0 +1,77 @@
+name: analyzer-exact-fallback
+
+on:
+  push:
+    branches:
+      - "feature/analyzer-exact-fallback-*"
+    paths:
+      - "dispositivo/analyzer/**"
+      - ".github/workflows/analyzer-exact-fallback.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "dispositivo/analyzer/**"
+      - ".github/workflows/analyzer-exact-fallback.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  fallback:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Run exact fallback technical regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python dispositivo/analyzer/test_exact_existing_layer_fallback.py -v
+
+      - name: Re-run first real-text probe through current Analyzer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' > "${RUNNER_TEMP}/REAL_TEXT_PROBE_001_AFTER_FALLBACK.json"
+          import json, sys
+          from pathlib import Path
+
+          root = Path.cwd()
+          analyzer_dir = root / 'dispositivo' / 'analyzer'
+          runtime_dir = root / 'dispositivo' / 'runtime' / 'v0_2_15_3'
+          sys.path.insert(0, str(analyzer_dir))
+          sys.path.insert(0, str(runtime_dir))
+          from analyzer_v0_35_migrated_adapter import build_migrated_analyzer
+
+          lines = [
+              'Biaa gu’yu’ siou’',
+              'Nuu xquie naxhi ne nuu naxí',
+              'Tecu dxandí’ ni riní’',
+              'Biaa gu’yu’ siou’',
+          ]
+          engine = build_migrated_analyzer()
+          try:
+              rows = [
+                  engine.analyze(line, item_id=f'REAL_TEXT_PROBE_001_L{i:02d}')
+                  for i, line in enumerate(lines, 1)
+              ]
+          finally:
+              engine.close()
+
+          print(json.dumps({
+              'probe_id': 'REAL_TEXT_PROBE_001_AFTER_EXACT_FALLBACK',
+              'cor001_used': False,
+              'benchmark_use': False,
+              'rule_discovery': False,
+              'results': rows,
+          }, ensure_ascii=False, indent=2, sort_keys=True))
+          PY
+          cat "${RUNNER_TEMP}/REAL_TEXT_PROBE_001_AFTER_FALLBACK.json"
+
+      - name: Upload real-text probe result
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: real-text-probe-001-after-exact-fallback-${{ github.sha }}
+          path: ${{ runner.temp }}/REAL_TEXT_PROBE_001_AFTER_FALLBACK.json
