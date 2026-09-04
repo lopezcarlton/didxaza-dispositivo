@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Technical regression tests for Analyzer v0.35.1 exact fallback.
+"""Technical regression tests for current exact existing-layer fallback.
 
 These tests assert retrieval behavior over already materialized runtime evidence.
 They do not assert linguistic correctness, orthographic correctness, translation,
@@ -40,8 +40,9 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
 
     def test_execution_state_declares_current_fallback(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.1")
+        self.assertEqual(state["current_adapter_version"], "0.35.2")
         self.assertTrue(state["exact_existing_layer_fallback_enabled"])
+        self.assertTrue(state["punctuation_light_fallback_lookup_enabled"])
         self.assertEqual(
             set(state["fallback_layers"]),
             {
@@ -129,6 +130,37 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
             self.assertFalse(result["correction_assertion"])
             self.assertFalse(result["orthographic_authority_assertion"])
             self.assertFalse(result["rule_discovery_assertion"])
+
+    def test_punctuation_light_lookup_recovers_probe_002_attestations(self):
+        expected_sources = {
+            "sicarú,": {"BIB003_PICKETT_VOCABULARIO", "BIB054_DICTIONARIA"},
+            "beeu,": {"BIB003_PICKETT_VOCABULARIO", "BIB054_DICTIONARIA"},
+            "Ibá',": {"BIB003_PICKETT_VOCABULARIO"},
+            "Ibá'.": {"BIB003_PICKETT_VOCABULARIO"},
+        }
+        for surface, sources in expected_sources.items():
+            result, row = self._single_fallback(surface)
+            self.assertEqual(row["fallback_status"], "ATTESTED_OUTSIDE_PRIMARY_LEXICON")
+            self.assertEqual(set(row["source_ids"]), sources)
+            self.assertEqual(row["lookup_normalization"], "PUNCTUATION_LIGHT_INDEX")
+            self.assertNotEqual(row["token_raw"], row["punctuation_light_lookup_key"])
+            self.assertEqual(result["effective_evidence_token_count"], 1)
+            self.assertTrue(result["fallback_policy"]["punctuation_light_lookup_enabled"])
+            self.assertTrue(
+                result["fallback_policy"]["punctuation_is_comparison_only_not_input_rewrite"]
+            )
+            self.assertEqual(result["surface_original"], surface)
+
+    def test_punctuation_light_does_not_create_evidence_for_unresolved_token(self):
+        result, row = self._single_fallback("guendaranaxhii,")
+        self.assertEqual(
+            row["fallback_status"],
+            "UNRESOLVED_NO_EXACT_EXISTING_LAYER_EVIDENCE",
+        )
+        self.assertEqual(row["punctuation_light_lookup_key"], "guendaranaxhii")
+        self.assertEqual(sum(row["evidence_counts"].values()), 0)
+        self.assertEqual(result["surface_original"], "guendaranaxhii,")
+        self.assertEqual(result["unresolved_token_indexes_after_exact_fallback"], [0])
 
 
 if __name__ == "__main__":

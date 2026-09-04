@@ -3,7 +3,7 @@
 
 The historical v0.35 orchestrator remains unchanged. This module supplies
 explicit paths to its verified runtime, SQLite and verb inventory dependencies
-and wraps it with the current v0.35.1 exact existing-layer fallback.
+and wraps it with the current v0.35.2 punctuation-light exact fallback.
 
 Neither primary analysis nor fallback attestation grants generation,
 correction, orthographic or research authority.
@@ -16,9 +16,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-from analyzer_v0_35_1_exact_fallback_adapter import (
+from analyzer_v0_35_2_punctuation_light_fallback_adapter import (
     ADAPTER_VERSION,
-    ExactExistingLayerFallbackAnalyzer,
+    PunctuationLightExactFallbackAnalyzer,
 )
 from non_licensing_analyzer_orchestrator_v0_35 import (
     NonLicensingAnalyzerOrchestrator,
@@ -31,7 +31,7 @@ SQLITE_PATH = RUNTIME_ROOT / "BASE_CORRECTOR_DIDXAZA_SURFACE_SEMANTICS_v2_20.sql
 VERB_INVENTORY_PATH = HERE / "DIC_VERB_2385_v0_1.csv"
 
 
-def build_migrated_analyzer() -> ExactExistingLayerFallbackAnalyzer:
+def build_migrated_analyzer() -> PunctuationLightExactFallbackAnalyzer:
     """Instantiate the current migrated Analyzer over exact repository artifacts."""
 
     historical = NonLicensingAnalyzerOrchestrator(
@@ -39,7 +39,7 @@ def build_migrated_analyzer() -> ExactExistingLayerFallbackAnalyzer:
         sqlite_path=SQLITE_PATH,
         verb_inventory_path=VERB_INVENTORY_PATH,
     )
-    return ExactExistingLayerFallbackAnalyzer(historical)
+    return PunctuationLightExactFallbackAnalyzer(historical)
 
 
 def migrated_execution_state() -> dict[str, Any]:
@@ -50,9 +50,10 @@ def migrated_execution_state() -> dict[str, Any]:
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
-            "current_adapter": "analyzer_v0_35_1_exact_fallback_adapter.py",
+            "current_adapter": "analyzer_v0_35_2_punctuation_light_fallback_adapter.py",
             "current_adapter_version": ADAPTER_VERSION,
             "exact_existing_layer_fallback_enabled": True,
+            "punctuation_light_fallback_lookup_enabled": True,
             "fallback_layers": [
                 "surface_attestation_v029",
                 "pickett_lexical_record_v0211",
