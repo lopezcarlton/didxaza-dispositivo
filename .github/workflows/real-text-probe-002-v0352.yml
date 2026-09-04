@@ -42,3 +42,5 @@ jobs:
           path: |
             ${{ runner.temp }}/REAL_TEXT_PROBE_002_V0352_RESULT.json
             ${{ runner.temp }}/REAL_TEXT_PROBE_002_COMPONENT_DIAGNOSTIC.json
+
+# Diagnostic extension registered after v0.35.2 merge.
