@@ -1,6 +1,7 @@
 name: real-text-probe-002
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - "experiment/real-text-probe-002-*"
