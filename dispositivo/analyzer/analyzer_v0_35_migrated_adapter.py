@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Execution adapter for the Analyzer v0.35 artifacts migrated to this repo.
+"""Current execution adapter for the migrated Analyzer.
 
-The historical orchestrator remains unchanged. This module supplies explicit
-paths to its verified runtime, SQLite and verb inventory dependencies. Neither
-instantiation nor an analysis result grants generation, correction,
-orthographic or research authority.
+The historical v0.35 orchestrator remains unchanged. This module supplies
+explicit paths to its verified runtime, SQLite and verb inventory dependencies
+and wraps it with the current v0.35.1 exact existing-layer fallback.
+
+Neither primary analysis nor fallback attestation grants generation,
+correction, orthographic or research authority.
 """
 
 from __future__ import annotations
@@ -14,6 +16,10 @@ import json
 from pathlib import Path
 from typing import Any
 
+from analyzer_v0_35_1_exact_fallback_adapter import (
+    ADAPTER_VERSION,
+    ExactExistingLayerFallbackAnalyzer,
+)
 from non_licensing_analyzer_orchestrator_v0_35 import (
     NonLicensingAnalyzerOrchestrator,
 )
@@ -25,14 +31,15 @@ SQLITE_PATH = RUNTIME_ROOT / "BASE_CORRECTOR_DIDXAZA_SURFACE_SEMANTICS_v2_20.sql
 VERB_INVENTORY_PATH = HERE / "DIC_VERB_2385_v0_1.csv"
 
 
-def build_migrated_analyzer() -> NonLicensingAnalyzerOrchestrator:
-    """Instantiate Analyzer v0.35 from exact artifacts in the repository."""
+def build_migrated_analyzer() -> ExactExistingLayerFallbackAnalyzer:
+    """Instantiate the current migrated Analyzer over exact repository artifacts."""
 
-    return NonLicensingAnalyzerOrchestrator(
+    historical = NonLicensingAnalyzerOrchestrator(
         runtime_root=RUNTIME_ROOT,
         sqlite_path=SQLITE_PATH,
         verb_inventory_path=VERB_INVENTORY_PATH,
     )
+    return ExactExistingLayerFallbackAnalyzer(historical)
 
 
 def migrated_execution_state() -> dict[str, Any]:
@@ -43,6 +50,15 @@ def migrated_execution_state() -> dict[str, Any]:
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
+            "current_adapter": "analyzer_v0_35_1_exact_fallback_adapter.py",
+            "current_adapter_version": ADAPTER_VERSION,
+            "exact_existing_layer_fallback_enabled": True,
+            "fallback_layers": [
+                "surface_attestation_v029",
+                "pickett_lexical_record_v0211",
+                "cross_source_exact_surface_v0212",
+                "documentary_alignment_v0210",
+            ],
             "runtime_profile": "runtime/v0_2_15_3",
             "dictionaria_entries": len(engine.retrieval.entries),
             "dictionaria_senses": sum(len(rows) for rows in engine.retrieval.senses.values()),
