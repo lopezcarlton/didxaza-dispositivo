@@ -3,11 +3,13 @@
 
 The historical v0.35 orchestrator remains unchanged. This module supplies
 explicit paths to its verified runtime, SQLite and verb inventory dependencies,
-wraps it with the v0.35.2 punctuation-light exact fallback, and optionally adds
-v0.35.3 exact evidence from the controlled Biyubi source snapshot.
+then layers:
+- v0.35.2 punctuation-light exact existing-source fallback;
+- v0.35.3 optional exact Biyubi controlled-source evidence;
+- v0.35.4 candidate-only documentary/person/possession observations.
 
-Neither primary analysis nor any fallback attestation grants generation,
-correction, orthographic or research authority.
+Neither primary analysis, exact fallback attestation, nor candidate relations
+grant generation, correction, orthographic or research authority.
 """
 
 from __future__ import annotations
@@ -22,8 +24,11 @@ from analyzer_v0_35_2_punctuation_light_fallback_adapter import (
     PunctuationLightExactFallbackAnalyzer,
 )
 from analyzer_v0_35_3_biyubi_exact_fallback_adapter import (
-    ADAPTER_VERSION,
     BiyubiExactFallbackAnalyzer,
+)
+from analyzer_v0_35_4_documentary_candidate_adapter import (
+    ADAPTER_VERSION,
+    DocumentaryCandidateAnalyzer,
 )
 from biyubi_exact_source import (
     BiyubiControlledSource,
@@ -58,36 +63,33 @@ def build_migrated_analyzer(
     biyubi_path: str | Path | None = None,
     *,
     require_biyubi: bool = False,
-) -> BiyubiExactFallbackAnalyzer:
-    """Instantiate the current Analyzer over exact repository/source artifacts.
-
-    Biyubi is a controlled optional mount because its raw XLSX is intentionally
-    not published in this repository. When supplied, the loader validates the
-    registered SHA-256 and 23,601-row data count before the Analyzer may use it.
-    """
+) -> DocumentaryCandidateAnalyzer:
+    """Instantiate the current Analyzer over repository/source artifacts."""
 
     historical = NonLicensingAnalyzerOrchestrator(
         runtime_root=RUNTIME_ROOT,
         sqlite_path=SQLITE_PATH,
         verb_inventory_path=VERB_INVENTORY_PATH,
     )
-    builtin = PunctuationLightExactFallbackAnalyzer(historical)
+    existing_exact = PunctuationLightExactFallbackAnalyzer(historical)
 
     source_path = _resolved_biyubi_path(biyubi_path)
     if source_path is None:
         if require_biyubi:
-            builtin.close()
+            existing_exact.close()
             raise FileNotFoundError(
                 f"Biyubi controlled source is required; pass --biyubi-xlsx or set {BIYUBI_SOURCE_ENV_VAR}"
             )
-        return BiyubiExactFallbackAnalyzer(builtin, None)
+        biyubi_exact = BiyubiExactFallbackAnalyzer(existing_exact, None)
+        return DocumentaryCandidateAnalyzer(biyubi_exact)
 
     try:
         biyubi_source = BiyubiControlledSource(source_path)
     except Exception:
-        builtin.close()
+        existing_exact.close()
         raise
-    return BiyubiExactFallbackAnalyzer(builtin, biyubi_source)
+    biyubi_exact = BiyubiExactFallbackAnalyzer(existing_exact, biyubi_source)
+    return DocumentaryCandidateAnalyzer(biyubi_exact)
 
 
 def migrated_execution_state(
@@ -100,10 +102,24 @@ def migrated_execution_state(
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
-            "current_adapter": "analyzer_v0_35_3_biyubi_exact_fallback_adapter.py",
+            "current_adapter": "analyzer_v0_35_4_documentary_candidate_adapter.py",
             "current_adapter_version": ADAPTER_VERSION,
             "exact_existing_layer_fallback_enabled": True,
             "punctuation_light_fallback_lookup_enabled": True,
+            "documentary_candidate_layer_enabled": True,
+            "candidate_layer_policy": {
+                "candidate_is_exact_evidence": False,
+                "candidate_promotes_analysis_status": False,
+                "candidate_increases_effective_evidence_coverage": False,
+                "generic_edit_distance": False,
+                "near_match_ranking": False,
+                "operations_enabled": [
+                    "FINAL_GLOTTAL_MARK_PRESENCE_CANDIDATE",
+                    "SINGLE_ADJACENT_IDENTICAL_VOWEL_LENGTH_CANDIDATE",
+                    "EXISTING_GRAPHICAL_PERSON_SUFFIX_CANDIDATE",
+                    "EXISTING_GRAPHICAL_POSSESSION_PREFIX_CANDIDATE",
+                ],
+            },
             "fallback_layers": [
                 "surface_attestation_v029",
                 "pickett_lexical_record_v0211",
