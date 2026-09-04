@@ -7,5 +7,6 @@
   "duplicate_lines_preserved": true,
   "cor001_used": false,
   "benchmark_use": false,
-  "rule_discovery_from_probe": false
+  "rule_discovery_from_probe": false,
+  "runner_revision": 1
 }
