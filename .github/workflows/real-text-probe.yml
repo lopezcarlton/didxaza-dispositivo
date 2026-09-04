@@ -31,8 +31,17 @@ jobs:
           python dispositivo/experiments/run_real_text_probe.py > "${RUNNER_TEMP}/REAL_TEXT_PROBE_001_RESULT.json"
           cat "${RUNNER_TEMP}/REAL_TEXT_PROBE_001_RESULT.json"
 
+      - name: Run unmatched-token coverage diagnostic
+        shell: bash
+        run: |
+          set -euo pipefail
+          python dispositivo/experiments/run_real_text_probe_coverage.py > "${RUNNER_TEMP}/REAL_TEXT_PROBE_001_COVERAGE.json"
+          cat "${RUNNER_TEMP}/REAL_TEXT_PROBE_001_COVERAGE.json"
+
       - name: Upload probe result
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: real-text-probe-001-${{ github.sha }}
-          path: ${{ runner.temp }}/REAL_TEXT_PROBE_001_RESULT.json
+          path: |
+            ${{ runner.temp }}/REAL_TEXT_PROBE_001_RESULT.json
+            ${{ runner.temp }}/REAL_TEXT_PROBE_001_COVERAGE.json
