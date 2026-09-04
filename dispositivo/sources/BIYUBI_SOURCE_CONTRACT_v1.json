@@ -1,0 +1,46 @@
+{
+  "authority_record_path": "conocimiento/fuentes/SRC-BIYUBI-DICCIONARIO-DIDXAZA-ESPANOL.md",
+  "authority_repository": "lopezcarlton/vocesdelasnubes",
+  "contract_version": 1,
+  "exact_match_contract": {
+    "apostrophe_codepoints_preserved": true,
+    "case_sensitive": false,
+    "near_match": false,
+    "outer_sentence_punctuation_ignored": true,
+    "pdlma_to_surface": false,
+    "statuses": [
+      "BIYUBI_EXACT_ENTRY",
+      "BIYUBI_EXACT_TOKEN_ATTESTATION",
+      "BIYUBI_NO_EXACT_EVIDENCE"
+    ],
+    "strip_tone": false,
+    "tones_and_diacritics_preserved": true,
+    "unicode_normalization": "NFC_ONLY"
+  },
+  "orthographic_authority": false,
+  "payload_in_public_repository": false,
+  "payload_mount_env_var": "DIDXAZA_BIYUBI_XLSX",
+  "registered_snapshot": {
+    "data_rows": 23601,
+    "filename_observed": "diccionario biyubi(1).xlsx",
+    "sha256": "53a01c4661e465930289ff042a2def58627ab8fc26d0b812feb65b47714e3b75",
+    "sheet_name": "Hoja 1",
+    "size_bytes": 782774,
+    "trailing_blank_formatted_rows": 292,
+    "worksheet_row_elements": 23893
+  },
+  "safety": {
+    "absence_is_incorrectness": false,
+    "attestation_is_correctness_license": false,
+    "attestation_is_full_analysis": false,
+    "correction_assertion": false,
+    "generation_license_assertion": false,
+    "rule_discovery_assertion": false
+  },
+  "source_id": "SRC-BIYUBI-DICCIONARIO-DIDXAZA-ESPANOL",
+  "source_role": [
+    "SURFACE_EVIDENCE_SECONDARY",
+    "CONTRAST_EVIDENCE",
+    "PARADIGM_CANDIDATE"
+  ]
+}

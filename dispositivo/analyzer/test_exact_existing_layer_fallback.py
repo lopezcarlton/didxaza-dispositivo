@@ -3,7 +3,8 @@
 
 These tests assert retrieval behavior over already materialized runtime evidence.
 They do not assert linguistic correctness, orthographic correctness, translation,
-or rule discovery.
+or rule discovery. Biyubi is registered but intentionally unmounted in this
+public-repository regression suite.
 """
 
 from __future__ import annotations
@@ -40,7 +41,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
 
     def test_execution_state_declares_current_fallback(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.2")
+        self.assertEqual(state["current_adapter_version"], "0.35.3")
         self.assertTrue(state["exact_existing_layer_fallback_enabled"])
         self.assertTrue(state["punctuation_light_fallback_lookup_enabled"])
         self.assertEqual(
@@ -52,6 +53,16 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
                 "documentary_alignment_v0210",
             },
         )
+        self.assertEqual(len(state["controlled_external_sources"]), 1)
+        biyubi = state["controlled_external_sources"][0]
+        self.assertEqual(
+            biyubi["source_id"],
+            "SRC-BIYUBI-DICCIONARIO-DIDXAZA-ESPANOL",
+        )
+        self.assertEqual(biyubi["registered_data_rows"], 23601)
+        self.assertEqual(biyubi["mount_status"], "NOT_MOUNTED")
+        self.assertFalse(biyubi["payload_in_public_repository"])
+        self.assertFalse(biyubi["orthographic_authority"])
         self.assertFalse(state["cor001_benchmark_allowed"])
         self.assertFalse(state["research_authority_assertion"])
 
@@ -65,6 +76,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(result["analysis_status"], "PARTIAL_ANALYSIS_NON_LICENSING")
         self.assertEqual(result["matched_token_count"], 0)
         self.assertEqual(result["effective_evidence_token_count"], 1)
+        self.assertEqual(result["biyubi_source_status"], "NOT_MOUNTED")
 
     def test_naxi_is_attested_in_pickett_and_dictionaria_examples(self):
         result, row = self._single_fallback("naxí")
@@ -97,7 +109,9 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(result["analysis_status"], "ABSTAIN_NO_COMPONENT_EVIDENCE")
         self.assertEqual(result["effective_evidence_token_count"], 0)
         self.assertEqual(result["unresolved_token_indexes_after_exact_fallback"], [0])
+        self.assertEqual(result["unresolved_token_indexes_after_biyubi"], [0])
         self.assertTrue(result["fallback_policy"]["unresolved_not_incorrect"])
+        self.assertTrue(result["fallback_policy"]["biyubi_absence_not_incorrect"])
 
     def test_real_text_lines_gain_effective_coverage_without_inflating_primary_matches(self):
         line2 = self.engine.analyze(
@@ -125,6 +139,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(line1["unresolved_token_indexes_after_exact_fallback"], [1])
 
         for result in (line1, line2, line3):
+            self.assertEqual(result["current_adapter_version"], "0.35.3")
             self.assertTrue(result["fallback_policy"]["matched_token_count_not_inflated_by_fallback"])
             self.assertFalse(result["generation_license_assertion"])
             self.assertFalse(result["correction_assertion"])
@@ -161,6 +176,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(sum(row["evidence_counts"].values()), 0)
         self.assertEqual(result["surface_original"], "guendaranaxhii,")
         self.assertEqual(result["unresolved_token_indexes_after_exact_fallback"], [0])
+        self.assertEqual(result["unresolved_token_indexes_after_biyubi"], [0])
 
 
 if __name__ == "__main__":
