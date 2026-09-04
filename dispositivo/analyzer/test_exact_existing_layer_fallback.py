@@ -4,7 +4,8 @@
 These tests assert retrieval behavior over already materialized runtime evidence.
 They do not assert linguistic correctness, orthographic correctness, translation,
 or rule discovery. Biyubi is registered but intentionally unmounted in this
-public-repository regression suite.
+public-repository regression suite. Candidate-only observations must not alter
+any exact-evidence assertion below.
 """
 
 from __future__ import annotations
@@ -41,9 +42,13 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
 
     def test_execution_state_declares_current_fallback(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.3")
+        self.assertEqual(state["current_adapter_version"], "0.35.4")
         self.assertTrue(state["exact_existing_layer_fallback_enabled"])
         self.assertTrue(state["punctuation_light_fallback_lookup_enabled"])
+        self.assertTrue(state["documentary_candidate_layer_enabled"])
+        self.assertFalse(state["candidate_layer_policy"]["candidate_is_exact_evidence"])
+        self.assertFalse(state["candidate_layer_policy"]["candidate_promotes_analysis_status"])
+        self.assertFalse(state["candidate_layer_policy"]["candidate_increases_effective_evidence_coverage"])
         self.assertEqual(
             set(state["fallback_layers"]),
             {
@@ -110,8 +115,10 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(result["effective_evidence_token_count"], 0)
         self.assertEqual(result["unresolved_token_indexes_after_exact_fallback"], [0])
         self.assertEqual(result["unresolved_token_indexes_after_biyubi"], [0])
+        self.assertEqual(result["still_exactly_unresolved_token_indexes"], [0])
         self.assertTrue(result["fallback_policy"]["unresolved_not_incorrect"])
         self.assertTrue(result["fallback_policy"]["biyubi_absence_not_incorrect"])
+        self.assertTrue(result["exact_evidence_state_unchanged_by_candidates"])
 
     def test_real_text_lines_gain_effective_coverage_without_inflating_primary_matches(self):
         line2 = self.engine.analyze(
@@ -139,8 +146,10 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(line1["unresolved_token_indexes_after_exact_fallback"], [1])
 
         for result in (line1, line2, line3):
-            self.assertEqual(result["current_adapter_version"], "0.35.3")
+            self.assertEqual(result["current_adapter_version"], "0.35.4")
             self.assertTrue(result["fallback_policy"]["matched_token_count_not_inflated_by_fallback"])
+            self.assertTrue(result["fallback_policy"]["candidate_layer_does_not_increase_effective_evidence_coverage"])
+            self.assertTrue(result["exact_evidence_state_unchanged_by_candidates"])
             self.assertFalse(result["generation_license_assertion"])
             self.assertFalse(result["correction_assertion"])
             self.assertFalse(result["orthographic_authority_assertion"])
@@ -177,6 +186,8 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(result["surface_original"], "guendaranaxhii,")
         self.assertEqual(result["unresolved_token_indexes_after_exact_fallback"], [0])
         self.assertEqual(result["unresolved_token_indexes_after_biyubi"], [0])
+        self.assertEqual(result["still_exactly_unresolved_token_indexes"], [0])
+        self.assertTrue(result["exact_evidence_state_unchanged_by_candidates"])
 
 
 if __name__ == "__main__":

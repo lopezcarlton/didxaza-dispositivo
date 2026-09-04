@@ -5,6 +5,7 @@ on:
     branches:
       - "feature/analyzer-exact-fallback-*"
       - "feature/biyubi-source-layer-*"
+      - "feature/analyzer-documentary-candidates-*"
     paths:
       - "dispositivo/analyzer/**"
       - "dispositivo/sources/**"
@@ -27,12 +28,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Run exact fallback technical regressions
+      - name: Run Analyzer technical regressions
         shell: bash
         run: |
           set -euo pipefail
           python dispositivo/analyzer/test_exact_existing_layer_fallback.py -v
           python dispositivo/analyzer/test_biyubi_exact_source.py -v
+          python dispositivo/analyzer/test_documentary_candidate_layer.py -v
 
       - name: Re-run first real-text probe through current Analyzer
         shell: bash
@@ -65,11 +67,12 @@ jobs:
               engine.close()
 
           print(json.dumps({
-              'probe_id': 'REAL_TEXT_PROBE_001_AFTER_CURRENT_FALLBACK',
+              'probe_id': 'REAL_TEXT_PROBE_001_AFTER_CURRENT_ANALYZER',
               'cor001_used': False,
               'benchmark_use': False,
               'rule_discovery': False,
               'biyubi_payload_mounted_in_public_ci': False,
+              'candidate_layer_is_non_exact': True,
               'results': rows,
           }, ensure_ascii=False, indent=2, sort_keys=True))
           PY
@@ -78,5 +81,5 @@ jobs:
       - name: Upload real-text probe result
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: real-text-probe-001-after-current-fallback-${{ github.sha }}
+          name: real-text-probe-001-after-current-analyzer-${{ github.sha }}
           path: ${{ runner.temp }}/REAL_TEXT_PROBE_001_AFTER_FALLBACK.json
