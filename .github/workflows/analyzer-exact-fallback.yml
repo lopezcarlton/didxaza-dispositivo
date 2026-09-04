@@ -7,6 +7,7 @@ on:
       - "feature/biyubi-source-layer-*"
       - "feature/analyzer-documentary-candidates-*"
       - "feature/analyzer-structured-morph-candidate-*"
+      - "feature/analyzer-documented-1sg-fusion-*"
     paths:
       - "dispositivo/analyzer/**"
       - "dispositivo/sources/**"
@@ -37,6 +38,7 @@ jobs:
           python dispositivo/analyzer/test_biyubi_exact_source.py -v
           python dispositivo/analyzer/test_documentary_candidate_layer.py -v
           python dispositivo/analyzer/test_person_fusion_candidate.py -v
+          python dispositivo/analyzer/test_documented_person_fusion_analysis.py -v
 
       - name: Re-run first real-text probe through current Analyzer
         shell: bash
@@ -75,6 +77,7 @@ jobs:
               'rule_discovery': False,
               'biyubi_payload_mounted_in_public_ci': False,
               'candidate_layer_is_non_exact': True,
+              'documented_morphology_is_separate_from_exact_evidence': True,
               'results': rows,
           }, ensure_ascii=False, indent=2, sort_keys=True))
           PY

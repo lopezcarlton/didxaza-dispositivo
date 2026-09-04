@@ -7,10 +7,13 @@ then layers:
 - v0.35.2 punctuation-light exact existing-source fallback;
 - v0.35.3 optional exact Biyubi controlled-source evidence;
 - v0.35.4 candidate-only documentary/person/possession observations;
-- v0.35.5 source-backed person-fusion candidates over documented verb bases.
+- v0.35.5 source-backed person-fusion candidates over documented verb bases;
+- v0.35.6 documented 1SG fusion analysis when lemma + person rule + prosodic
+  condition are independently licensed.
 
-Neither primary analysis, exact fallback attestation, nor candidate relations
-grant generation, correction, orthographic or research authority.
+Exact surface evidence remains separate from rule-based morphological analysis.
+No layer grants correction, orthographic authority, generation license, or rule
+discovery authority.
 """
 
 from __future__ import annotations
@@ -31,8 +34,11 @@ from analyzer_v0_35_4_documentary_candidate_adapter import (
     DocumentaryCandidateAnalyzer,
 )
 from analyzer_v0_35_5_person_fusion_candidate_adapter import (
-    ADAPTER_VERSION,
     PersonFusionCandidateAnalyzer,
+)
+from analyzer_v0_35_6_documented_person_fusion_analysis_adapter import (
+    ADAPTER_VERSION,
+    DocumentedPersonFusionAnalysisAnalyzer,
 )
 from biyubi_exact_source import (
     BiyubiControlledSource,
@@ -53,8 +59,6 @@ VERB_INVENTORY_PATH = HERE / "DIC_VERB_2385_v0_1.csv"
 
 
 def _resolved_biyubi_path(biyubi_path: str | Path | None = None) -> Path | None:
-    """Resolve explicit Biyubi path first, then the controlled-mount env var."""
-
     if biyubi_path is not None:
         return Path(biyubi_path).expanduser()
     env_value = os.environ.get(BIYUBI_SOURCE_ENV_VAR)
@@ -67,7 +71,7 @@ def build_migrated_analyzer(
     biyubi_path: str | Path | None = None,
     *,
     require_biyubi: bool = False,
-) -> PersonFusionCandidateAnalyzer:
+) -> DocumentedPersonFusionAnalysisAnalyzer:
     """Instantiate the current Analyzer over repository/source artifacts."""
 
     historical = NonLicensingAnalyzerOrchestrator(
@@ -85,39 +89,54 @@ def build_migrated_analyzer(
                 f"Biyubi controlled source is required; pass --biyubi-xlsx or set {BIYUBI_SOURCE_ENV_VAR}"
             )
         biyubi_exact = BiyubiExactFallbackAnalyzer(existing_exact, None)
-        documentary = DocumentaryCandidateAnalyzer(biyubi_exact)
-        return PersonFusionCandidateAnalyzer(documentary)
+    else:
+        try:
+            biyubi_source = BiyubiControlledSource(source_path)
+        except Exception:
+            existing_exact.close()
+            raise
+        biyubi_exact = BiyubiExactFallbackAnalyzer(existing_exact, biyubi_source)
 
-    try:
-        biyubi_source = BiyubiControlledSource(source_path)
-    except Exception:
-        existing_exact.close()
-        raise
-    biyubi_exact = BiyubiExactFallbackAnalyzer(existing_exact, biyubi_source)
     documentary = DocumentaryCandidateAnalyzer(biyubi_exact)
-    return PersonFusionCandidateAnalyzer(documentary)
+    person_candidates = PersonFusionCandidateAnalyzer(documentary)
+    return DocumentedPersonFusionAnalysisAnalyzer(person_candidates)
 
 
 def migrated_execution_state(
     biyubi_path: str | Path | None = None,
 ) -> dict[str, Any]:
-    """Describe the materialized, non-licensing Analyzer capability."""
-
     engine = build_migrated_analyzer(biyubi_path=biyubi_path)
     try:
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
-            "current_adapter": "analyzer_v0_35_5_person_fusion_candidate_adapter.py",
+            "current_adapter": "analyzer_v0_35_6_documented_person_fusion_analysis_adapter.py",
             "current_adapter_version": ADAPTER_VERSION,
             "exact_existing_layer_fallback_enabled": True,
             "punctuation_light_fallback_lookup_enabled": True,
             "documentary_candidate_layer_enabled": True,
             "documented_person_fusion_candidate_layer_enabled": True,
+            "documented_person_fusion_analysis_enabled": True,
+            "documented_morphology_policy": {
+                "exact_surface_evidence_kept_separate": True,
+                "requires_documented_lemma": True,
+                "requires_explicit_source_rule": True,
+                "requires_independent_prosodic_license": True,
+                "generation_license": False,
+                "correction_authority": False,
+                "implemented_rules": [
+                    {
+                        "knowledge_rule_id": "HALL-0022",
+                        "knowledge_commit": "c555732061cfb4bc29a8fa7f746b3bc4157c1fcb",
+                        "source_id": "BIB004_GRAMATICA_POPULAR",
+                        "source_locations": ["§3.6 El acento", "Cuadro 17"],
+                        "rule": "1SG grave final i -> e'",
+                    }
+                ],
+            },
             "candidate_layer_policy": {
                 "candidate_is_exact_evidence": False,
                 "candidate_promotes_analysis_status": False,
-                "candidate_increases_effective_evidence_coverage": False,
                 "generic_edit_distance": False,
                 "near_match_ranking": False,
                 "operations_enabled": [
