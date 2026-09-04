@@ -6,7 +6,8 @@ explicit paths to its verified runtime, SQLite and verb inventory dependencies,
 then layers:
 - v0.35.2 punctuation-light exact existing-source fallback;
 - v0.35.3 optional exact Biyubi controlled-source evidence;
-- v0.35.4 candidate-only documentary/person/possession observations.
+- v0.35.4 candidate-only documentary/person/possession observations;
+- v0.35.5 source-backed person-fusion candidates over documented verb bases.
 
 Neither primary analysis, exact fallback attestation, nor candidate relations
 grant generation, correction, orthographic or research authority.
@@ -27,8 +28,11 @@ from analyzer_v0_35_3_biyubi_exact_fallback_adapter import (
     BiyubiExactFallbackAnalyzer,
 )
 from analyzer_v0_35_4_documentary_candidate_adapter import (
-    ADAPTER_VERSION,
     DocumentaryCandidateAnalyzer,
+)
+from analyzer_v0_35_5_person_fusion_candidate_adapter import (
+    ADAPTER_VERSION,
+    PersonFusionCandidateAnalyzer,
 )
 from biyubi_exact_source import (
     BiyubiControlledSource,
@@ -63,7 +67,7 @@ def build_migrated_analyzer(
     biyubi_path: str | Path | None = None,
     *,
     require_biyubi: bool = False,
-) -> DocumentaryCandidateAnalyzer:
+) -> PersonFusionCandidateAnalyzer:
     """Instantiate the current Analyzer over repository/source artifacts."""
 
     historical = NonLicensingAnalyzerOrchestrator(
@@ -81,7 +85,8 @@ def build_migrated_analyzer(
                 f"Biyubi controlled source is required; pass --biyubi-xlsx or set {BIYUBI_SOURCE_ENV_VAR}"
             )
         biyubi_exact = BiyubiExactFallbackAnalyzer(existing_exact, None)
-        return DocumentaryCandidateAnalyzer(biyubi_exact)
+        documentary = DocumentaryCandidateAnalyzer(biyubi_exact)
+        return PersonFusionCandidateAnalyzer(documentary)
 
     try:
         biyubi_source = BiyubiControlledSource(source_path)
@@ -89,7 +94,8 @@ def build_migrated_analyzer(
         existing_exact.close()
         raise
     biyubi_exact = BiyubiExactFallbackAnalyzer(existing_exact, biyubi_source)
-    return DocumentaryCandidateAnalyzer(biyubi_exact)
+    documentary = DocumentaryCandidateAnalyzer(biyubi_exact)
+    return PersonFusionCandidateAnalyzer(documentary)
 
 
 def migrated_execution_state(
@@ -102,11 +108,12 @@ def migrated_execution_state(
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
-            "current_adapter": "analyzer_v0_35_4_documentary_candidate_adapter.py",
+            "current_adapter": "analyzer_v0_35_5_person_fusion_candidate_adapter.py",
             "current_adapter_version": ADAPTER_VERSION,
             "exact_existing_layer_fallback_enabled": True,
             "punctuation_light_fallback_lookup_enabled": True,
             "documentary_candidate_layer_enabled": True,
+            "documented_person_fusion_candidate_layer_enabled": True,
             "candidate_layer_policy": {
                 "candidate_is_exact_evidence": False,
                 "candidate_promotes_analysis_status": False,
@@ -118,6 +125,7 @@ def migrated_execution_state(
                     "SINGLE_ADJACENT_IDENTICAL_VOWEL_LENGTH_CANDIDATE",
                     "EXISTING_GRAPHICAL_PERSON_SUFFIX_CANDIDATE",
                     "EXISTING_GRAPHICAL_POSSESSION_PREFIX_CANDIDATE",
+                    "GP_1SG_FINAL_I_TO_E_GLOTTAL_REVERSE_LINK_CANDIDATE",
                 ],
             },
             "fallback_layers": [
