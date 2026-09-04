@@ -5,12 +5,12 @@
 
 ```text
 KNOWLEDGE_SOURCE_REPOSITORY = lopezcarlton/vocesdelasnubes
-KNOWLEDGE_SOURCE_COMMIT = e66630195471f1d4d142c018e067dade55a35a41
+KNOWLEDGE_SOURCE_COMMIT = a929380dd278a95eb20f41bd2767796013daa777
 ```
 
 ## Propósito
 
-Materializar en el repositorio técnico un conjunto de hechos que ya fueron promovidos o corregidos en Voces de las Nubes después de detectar huecos de migración semántica durante la lectura del Alfabeto Popular de 1956.
+Materializar en el repositorio técnico un conjunto de hechos que ya fueron promovidos o corregidos en Voces de las Nubes después de detectar huecos de migración semántica durante la lectura del Alfabeto Popular de 1956 y el backfill posterior de fuentes previamente ingeridas.
 
 Este archivo **no crea conocimiento**. Es una representación técnica derivada de `HALL` canónicos y debe leerse junto con `KNOWLEDGE_CONSUMPTION_CONTRACT_v1.md`.
 
@@ -103,6 +103,33 @@ ALFABETO_POPULAR_1956 != NORMA_2016
 ```
 
 Al consumir reglas ortográficas históricas, el dispositivo debe comprobar continuidad con conocimiento posterior formalizado en Voces. No debe tratar el Alfabeto Popular como simple curiosidad histórica, pero tampoco convertir su versión de 1956 en regla contemporánea automática sin adjudicación.
+
+## DKP-007 — sistema de cuatro clases verbales PBK2016
+
+**Fuentes canónicas:** `HALL-0073`, `HALL-0074`, `HALL-0075`, `HALL-0076`.
+
+```text
+VERB_CLASS_SYSTEM = A | B | C | D
+PRIMARY_CLASS_DIAGNOSTICS = POTENTIAL + COMPLETIVE
+HABITUAL_ROLE_IN_PBK = ROOT_ISOLATION
+CLASS_KNOWN -> OTHER_TAM_BEHAVIOR_PREDICTABLE_WITHIN_PBK_MODEL
+PBK_ANALYTICAL_FORM != PROJECT_ORTHOGRAPHIC_SURFACE
+```
+
+Restricciones:
+
+- no convertir una forma PDLMA/analítica de PBK2016 en superficie del Alfabeto Popular por sustitución ciega;
+- conservar clases alternantes (`A~B`, `A~C`, etc.) cuando la evidencia documental las registre;
+- no usar tamaño de clase como frecuencia conversacional ni como prioridad pedagógica;
+- no inferir que enseñar un verbo obliga a enseñar su paradigma completo;
+- la clase de un registro léxico concreto debe conservar la provenance documental de Dictionaria cuando ésa sea la evidencia utilizada.
+
+El runtime v0.2.3 ya contiene una implementación histórica de reglas `PBK-VERB-*` y el inventario `DIC_VERB_2385_v0_1.csv`. A partir de este patch, esos artefactos pueden considerarse **implementación previa compatible a verificar contra conocimiento canónico**, no autoridad lingüística independiente.
+
+```text
+HISTORICAL_RUNTIME_RULE = IMPLEMENTATION_EVIDENCE
+CANONICAL_PBK_KNOWLEDGE = HALL-0073..HALL-0076
+```
 
 ## Regla de transición
 
