@@ -5,7 +5,7 @@
 
 ```text
 KNOWLEDGE_SOURCE_REPOSITORY = lopezcarlton/vocesdelasnubes
-KNOWLEDGE_SOURCE_COMMIT = 05567cec1bf3d6beb5ec373529674bee1212112a
+KNOWLEDGE_SOURCE_COMMIT = efa4fb5ef7f05d6df08312fd5fbadf81c86cf0e8
 KNOWLEDGE_SOURCE_REF = main
 ```
 
@@ -27,8 +27,14 @@ La identidad técnica del snapshot inicial continúa documentada en `SEPARATION_
 El commit actual incorpora, entre otros cambios canónicos posteriores a la separación:
 
 - piloto PBK2016 de clases verbales (`HALL-0073`–`HALL-0076`);
-- backfill dirigido de Gramática Popular §7.2–7.3 (`HALL-0077`–`HALL-0089`);
-- `conocimiento/TEORIA.md` v1.4 con corrección del sistema aspectual.
+- backfill dirigido de Gramática Popular:
+  - sistema verbal/aspectual (`HALL-0077`–`HALL-0089`);
+  - persona (`HALL-0090`–`HALL-0096`);
+  - posesión (`HALL-0097`–`HALL-0101`);
+  - causatividad/valencia (`HALL-0102`–`HALL-0105`);
+  - imperativos/movimiento (`HALL-0106`–`HALL-0109`);
+- `conocimiento/TEORIA.md` v1.6;
+- checkpoint de backfill actualizado con P0-A Gramática Popular `IN_PROGRESS`.
 
 Reglas de precedencia relevantes para el dispositivo:
 
@@ -38,13 +44,16 @@ JUCHITAN_LINGUISTIC_CORE_v0_27 = DERIVED_HISTORICAL_COMPILATION
 DEVICE_DERIVED_FORMULATION_MUST_NOT_OVERRIDE_PINNED_VOCES = true
 ```
 
-En particular:
+Consecuencias técnicas del lote:
 
-- la Gramática Popular afirma que Juego 1C no tiene prefijo para el potencial (`HALL-0081`);
-- esto corrige el grado de incertidumbre documental de `JLC-SP2-006`;
-- **no** autoriza generación ciega por analogía: análisis/generación siguen requiriendo lema, clase y paradigma cuando la implementación lo necesite;
-- la interpretación de `u` en Juego 2 como vocal temática causativa permanece como hipótesis de la fuente (`HALL-0082`);
-- el perfecto no debe representarse como un perfecto genérico de resultado presente (`HALL-0078`);
-- potencial, completivo, progresivo y estativo no deben mapearse mecánicamente a categorías temporales españolas (`HALL-0077`, `HALL-0084`–`HALL-0088`).
+- la Gramática Popular afirma que Juego 1C no tiene prefijo para el potencial (`HALL-0081`), corrigiendo el grado de incertidumbre documental de `JLC-SP2-006`, sin autorizar generación ciega por analogía;
+- la interpretación de `u` en Juego 2 como vocal temática causativa permanece hipótesis de la fuente (`HALL-0082`);
+- el perfecto no debe representarse como perfecto genérico de resultado presente (`HALL-0078`);
+- potencial, completivo, progresivo y estativo no deben mapearse mecánicamente a tiempos españoles (`HALL-0077`, `HALL-0084`–`HALL-0088`);
+- tercera persona sin marca segmental puede ser válida si el referente es recuperable (`HALL-0092`): `UNMARKED != ERROR`;
+- persona y posesión contienen fusiones/alternancias: no aplicar stripping ciego de afijos (`HALL-0093`, `HALL-0094`, `HALL-0098`–`HALL-0101`);
+- causatividad es sensible a lema/paradigma y no se genera universalmente con `si-` (`HALL-0102`–`HALL-0105`);
+- imperativo singular/plural y los verbos de movimiento requieren patrones específicos (`HALL-0106`–`HALL-0109`);
+- el tono puede distinguir análisis verbales aun con identidad segmental (`HALL-0108`): no descartar tono antes del análisis.
 
-No se modifica aquí el runtime histórico ni sus artefactos byte-exactos. Cualquier cambio ejecutable posterior debe consumir este pin o uno más reciente y conservar provenance hacia las entidades canónicas pertinentes.
+No se modifica aquí el runtime histórico, la SQLite, el JLC ni otros artefactos byte-exactos. El conocimiento canónico se sincroniza por pin y cualquier cambio ejecutable posterior debe consumir este commit o uno más reciente y conservar provenance hacia las entidades canónicas pertinentes.
