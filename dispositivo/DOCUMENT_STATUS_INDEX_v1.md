@@ -1,7 +1,7 @@
 # DOCUMENT_STATUS_INDEX_v1 — índice técnico de estado documental
 
 **Estado del índice:** `ACTIVE_TECHNICAL_METADATA / NON_CANONICAL / NON_KNOWLEDGE_AUTHORITY`  
-**Fecha:** 2026-09-03
+**Fecha:** 2026-09-04
 
 ## Propósito
 
@@ -18,7 +18,7 @@ INDEX_CLASSIFICATION != KNOWLEDGE_AUTHORITY
 
 La ausencia de un encabezado `Estado` o `Status` no autoriza a inventar uno retroactivamente.
 
-## Documentos verificados en P2-06
+## Documentos verificados
 
 | Documento | Declaración propia observada | Tratamiento del índice |
 |---|---|---|
@@ -29,6 +29,7 @@ La ausencia de un encabezado `Estado` o `Status` no autoriza a inventar uno retr
 | `development_corpus/HOLDOUT_GENERALIZATION_REQUIREMENTS_v0_1.md` | no declara encabezado ni campo explícito de estado | `STATUS_NOT_DECLARED / DO_NOT_INFER` |
 | `hardening/ANALYSIS_CAPABILITY_GUARDRAILS_v0_35.md` | no declara encabezado ni campo explícito de estado | `STATUS_NOT_DECLARED / DO_NOT_INFER` |
 | `analyzer/reports/COR001_ANALYSIS_TARGET_PASS_REPORT_v0_24.md` | `## Result`; `PASS / ANALYSIS_TARGET_OBSERVATION_COMPLETED`; declara además que no es una evaluación de exactitud | `EXPLICIT_RESULT_ONLY / STATUS_NOT_DECLARED` |
+| `core/VOCES_KNOWLEDGE_PATCH_2026-09-04_v1.md` | `ACTIVE_DERIVED_KNOWLEDGE_PATCH / NON_CANONICAL / VOCES_AUTHORITY`; declara `KNOWLEDGE_SOURCE_COMMIT` exacto | `EXPLICIT_STATUS / ACTIVE_DERIVED_REPRESENTATION` |
 
 ## Regla de lectura
 
@@ -36,6 +37,8 @@ Para los documentos marcados `STATUS_NOT_DECLARED`, este índice no decide si de
 
 Para el reporte COR001, `PASS` describe la finalización de una observación del objeto de análisis. No convierte COR001 en benchmark, gold standard, regresión ni fuente de descubrimiento de reglas.
 
+`core/VOCES_KNOWLEDGE_PATCH_2026-09-04_v1.md` es una representación técnica derivada del estado canónico de Voces fijado en el commit que declara. No tiene autoridad para modificar o ampliar los `HALL` de origen y no garantiza por sí solo que los engines ejecutables ya consuman cada regla.
+
 ## Alcance
 
-Este v1 cubre únicamente el conjunto documental verificado durante P2-06. No afirma ser un inventario exhaustivo de todos los documentos del repositorio. Puede ampliarse aditivamente cuando aparezcan nuevos casos de ambigüedad documental.
+Este v1 cubre únicamente el conjunto documental verificado durante P2-06 y el patch derivado añadido el 2026-09-04. No afirma ser un inventario exhaustivo de todos los documentos del repositorio. Puede ampliarse aditivamente cuando aparezcan nuevos casos de ambigüedad documental.
