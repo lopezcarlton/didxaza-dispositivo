@@ -23,7 +23,10 @@ then layers:
   identified Dictionaria entry;
 - v0.35.13 VerbMorphologicalHypothesisView v0.1, re-expressing already-produced
   v0.35.10 coordinates as explicit TAM/root/class hypotheses without turning
-  them into token-level facts.
+  them into token-level facts;
+- v0.35.14 CausativeGroupCoordinateView v0.1, exposing PB2015 C1-C4 analytical
+  causative resources only after source-explicit group membership is already
+  established for an identified entry.
 
 Exact surface evidence remains separate from rule-based morphological analysis.
 The v0.35.11 layer does not infer valency from visible prefixes. The v0.35.12
@@ -31,8 +34,11 @@ layer may retrieve PB2015 V1–V3/C1–C4 membership only from HALL-0193's expli
 relation registry; it does not assign groups from surface form, resolve
 MULTIPLE_STRICT rows, or treat NO_STRICT as negative evidence. The v0.35.13
 layer does not add new relations or segment visible prefixes: TAM, root and class
-remain documentary structural hypotheses. No layer grants correction,
-orthographic authority, generation license, or rule-discovery authority.
+remain documentary structural hypotheses. The v0.35.14 layer likewise never
+detects causative material from visible strings: C1=-g-, C2=-u-, C3=-u-g- and
+C4 larger concatenations are source-level analytical coordinates, not project
+surface parses or generation recipes. No layer grants correction, orthographic
+authority, generation license, or rule-discovery authority.
 """
 
 from __future__ import annotations
@@ -73,9 +79,13 @@ from analyzer_v0_35_12_explicit_valency_relations import (
     ExplicitValencyRelationBridgeAnalyzer,
 )
 from analyzer_v0_35_13_verb_morphological_hypotheses import (
-    ADAPTER_VERSION,
     VIEW_VERSION as VERB_MORPHOLOGICAL_HYPOTHESIS_VIEW_VERSION,
     VerbMorphologicalHypothesisViewAnalyzer,
+)
+from analyzer_v0_35_14_causative_group_coordinates import (
+    ADAPTER_VERSION,
+    VIEW_VERSION as CAUSATIVE_GROUP_COORDINATE_VIEW_VERSION,
+    CausativeGroupCoordinateViewAnalyzer,
 )
 from biyubi_exact_source import (
     BiyubiControlledSource,
@@ -106,7 +116,7 @@ def build_migrated_analyzer(
     biyubi_path: str | Path | None = None,
     *,
     require_biyubi: bool = False,
-) -> VerbMorphologicalHypothesisViewAnalyzer:
+) -> CausativeGroupCoordinateViewAnalyzer:
     """Instantiate the current Analyzer over repository/source artifacts."""
 
     historical = NonLicensingAnalyzerOrchestrator(
@@ -140,7 +150,8 @@ def build_migrated_analyzer(
     verb_bridge_v02 = DocumentaryVerbFormCandidateAnalyzer(verb_bridge_v01)
     valency_v01 = ValencyCompatibilityBridgeAnalyzer(verb_bridge_v02)
     explicit_relations = ExplicitValencyRelationBridgeAnalyzer(valency_v01)
-    return VerbMorphologicalHypothesisViewAnalyzer(explicit_relations)
+    hypotheses = VerbMorphologicalHypothesisViewAnalyzer(explicit_relations)
+    return CausativeGroupCoordinateViewAnalyzer(hypotheses)
 
 
 def migrated_execution_state(
@@ -151,7 +162,7 @@ def migrated_execution_state(
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
-            "current_adapter": "analyzer_v0_35_13_verb_morphological_hypotheses.py",
+            "current_adapter": "analyzer_v0_35_14_causative_group_coordinates.py",
             "current_adapter_version": ADAPTER_VERSION,
             "exact_existing_layer_fallback_enabled": True,
             "punctuation_light_fallback_lookup_enabled": True,
@@ -163,16 +174,18 @@ def migrated_execution_state(
             "verb_analysis_bridge_enabled": True,
             "verb_analysis_bridge_version": VERB_ANALYSIS_BRIDGE_VERSION,
             "documentary_verb_form_candidate_layer_enabled": True,
-            "documentary_verb_form_candidate_index_stats": engine.base.base.base.documentary_candidate_index_stats,
+            "documentary_verb_form_candidate_index_stats": engine.base.base.base.base.documentary_candidate_index_stats,
             "valency_compatibility_bridge_enabled": True,
             "valency_compatibility_bridge_version": VALENCY_COMPATIBILITY_BRIDGE_VERSION,
-            "valency_compatibility_index_stats": engine.base.base.valency_compatibility_index_stats,
+            "valency_compatibility_index_stats": engine.base.base.base.valency_compatibility_index_stats,
             "explicit_valency_relation_bridge_enabled": True,
             "explicit_valency_relation_bridge_version": EXPLICIT_VALENCY_RELATION_BRIDGE_VERSION,
             "explicit_valency_relation_crosswalk_path": str(EXPLICIT_VALENCY_RELATION_CROSSWALK_PATH),
-            "explicit_valency_relation_index_stats": engine.base.explicit_valency_relation_index_stats,
+            "explicit_valency_relation_index_stats": engine.base.base.explicit_valency_relation_index_stats,
             "verb_morphological_hypothesis_view_enabled": True,
             "verb_morphological_hypothesis_view_version": VERB_MORPHOLOGICAL_HYPOTHESIS_VIEW_VERSION,
+            "causative_group_coordinate_view_enabled": True,
+            "causative_group_coordinate_view_version": CAUSATIVE_GROUP_COORDINATE_VIEW_VERSION,
             "verb_analysis_bridge_policy": {
                 "documented_single_token_headword_records": True,
                 "exposes_documented_class": True,
@@ -274,6 +287,27 @@ def migrated_execution_state(
                 "orthographic_authority": False,
                 "rule_discovery_authority": False,
             },
+            "causative_group_coordinate_policy": {
+                "knowledge_authority": ["HALL-0188", "HALL-0190", "HALL-0191"],
+                "knowledge_commit": "f17c5363caada6f8beb18fa99c39e37cd72c6f09",
+                "requires_source_explicit_c1_c4_membership": True,
+                "group_resources_analytical": {
+                    "C1": "-g-",
+                    "C2": "-u-",
+                    "C3": "-u-g-",
+                    "C4": "-u(-g)-zi- / -zu-",
+                },
+                "surface_group_assignment": False,
+                "visible_prefix_detection": False,
+                "observed_surface_segmentation": False,
+                "token_level_causative_parse_from_group_resource": False,
+                "pdlma_to_ap": False,
+                "productive_generation": False,
+                "generation_license": False,
+                "correction_authority": False,
+                "orthographic_authority": False,
+                "rule_discovery_authority": False,
+            },
             "documented_morphology_policy": {
                 "exact_surface_evidence_kept_separate": True,
                 "requires_documented_lemma": True,
@@ -306,6 +340,7 @@ def migrated_execution_state(
                     "DICTIONARIA_LITERAL_LEXICAL_VALENCY_CODE_COMPATIBILITY",
                     "PB2015_SOURCE_EXPLICIT_VALENCY_RELATION_RETRIEVAL",
                     "DOCUMENTARY_TAM_ROOT_CLASS_HYPOTHESIS_VIEW",
+                    "PB2015_SOURCE_EXPLICIT_C1_C4_CAUSATIVE_GROUP_ANALYTICAL_COORDINATE",
                 ],
             },
             "fallback_layers": [
