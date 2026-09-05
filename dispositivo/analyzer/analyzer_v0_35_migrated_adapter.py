@@ -6,9 +6,11 @@ explicit paths to its verified runtime, SQLite and verb inventory dependencies,
 then layers:
 - v0.35.2 punctuation-light exact existing-source fallback;
 - v0.35.3 optional exact Biyubi controlled-source evidence;
-- v0.35.4 candidate-only documentary/person/possession observations;
+- v0.35.7 exact documentary surface attestations already promoted in Voces;
+- v0.35.4 candidate-only documentary/person/possession observations over the
+  latest unresolved exact-evidence boundary;
 - v0.35.5 source-backed person-fusion candidates over documented verb bases;
-- v0.35.6 documented 1SG fusion analysis when lemma + person rule + prosodic
+- v0.35.8 documented 1SG fusion analysis when lemma + person rule + prosodic
   condition are independently licensed.
 
 Exact surface evidence remains separate from rule-based morphological analysis.
@@ -30,13 +32,17 @@ from analyzer_v0_35_2_punctuation_light_fallback_adapter import (
 from analyzer_v0_35_3_biyubi_exact_fallback_adapter import (
     BiyubiExactFallbackAnalyzer,
 )
+from analyzer_v0_35_7_voces_documentary_exact_adapter import (
+    DEFAULT_REGISTRY_PATH as VOCES_DOCUMENTARY_REGISTRY_PATH,
+    VocesDocumentaryExactFallbackAnalyzer,
+)
 from analyzer_v0_35_4_documentary_candidate_adapter import (
     DocumentaryCandidateAnalyzer,
 )
 from analyzer_v0_35_5_person_fusion_candidate_adapter import (
     PersonFusionCandidateAnalyzer,
 )
-from analyzer_v0_35_6_documented_person_fusion_analysis_adapter import (
+from analyzer_v0_35_8_documented_person_fusion_analysis_adapter import (
     ADAPTER_VERSION,
     DocumentedPersonFusionAnalysisAnalyzer,
 )
@@ -97,7 +103,8 @@ def build_migrated_analyzer(
             raise
         biyubi_exact = BiyubiExactFallbackAnalyzer(existing_exact, biyubi_source)
 
-    documentary = DocumentaryCandidateAnalyzer(biyubi_exact)
+    voces_documentary_exact = VocesDocumentaryExactFallbackAnalyzer(biyubi_exact)
+    documentary = DocumentaryCandidateAnalyzer(voces_documentary_exact)
     person_candidates = PersonFusionCandidateAnalyzer(documentary)
     return DocumentedPersonFusionAnalysisAnalyzer(person_candidates)
 
@@ -110,10 +117,12 @@ def migrated_execution_state(
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
-            "current_adapter": "analyzer_v0_35_6_documented_person_fusion_analysis_adapter.py",
+            "current_adapter": "analyzer_v0_35_8_documented_person_fusion_analysis_adapter.py",
             "current_adapter_version": ADAPTER_VERSION,
             "exact_existing_layer_fallback_enabled": True,
             "punctuation_light_fallback_lookup_enabled": True,
+            "voces_documentary_exact_layer_enabled": True,
+            "voces_documentary_registry_path": str(VOCES_DOCUMENTARY_REGISTRY_PATH),
             "documentary_candidate_layer_enabled": True,
             "documented_person_fusion_candidate_layer_enabled": True,
             "documented_person_fusion_analysis_enabled": True,
@@ -152,6 +161,7 @@ def migrated_execution_state(
                 "pickett_lexical_record_v0211",
                 "cross_source_exact_surface_v0212",
                 "documentary_alignment_v0210",
+                "voces_promoted_documentary_exact_v0357",
             ],
             "controlled_external_sources": [
                 {
