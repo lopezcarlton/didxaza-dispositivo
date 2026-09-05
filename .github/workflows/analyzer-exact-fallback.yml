@@ -13,6 +13,7 @@ on:
       - "feature/valency-compatibility-bridge-*"
       - "feature/pb2015-explicit-valency-relations-*"
       - "feature/verb-morphological-hypothesis-view-*"
+      - "feature/causative-group-coordinate-view-*"
     paths:
       - "dispositivo/analyzer/**"
       - "dispositivo/sources/**"
@@ -63,6 +64,9 @@ jobs:
           if [ -f dispositivo/analyzer/test_verb_morphological_hypothesis_view.py ]; then
             python dispositivo/analyzer/test_verb_morphological_hypothesis_view.py -v
           fi
+          if [ -f dispositivo/analyzer/test_causative_group_coordinates.py ]; then
+            python dispositivo/analyzer/test_causative_group_coordinates.py -v
+          fi
 
       - name: Re-run first real-text probe through current Analyzer
         shell: bash
@@ -107,6 +111,10 @@ jobs:
               'explicit_valency_relations_require_documented_entry_identity': True,
               'explicit_valency_relation_surface_inference_enabled': False,
               'automatic_valency_group_assignment_enabled': False,
+              'verb_morphological_hypotheses_are_candidate_only': True,
+              'verb_morphological_hypothesis_surface_segmentation_enabled': False,
+              'causative_group_coordinates_require_source_explicit_membership': True,
+              'causative_visible_prefix_detection_enabled': False,
               'valency_generation_enabled': False,
               'results': rows,
           }, ensure_ascii=False, indent=2, sort_keys=True))
