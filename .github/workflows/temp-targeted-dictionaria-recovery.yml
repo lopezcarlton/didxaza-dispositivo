@@ -24,15 +24,16 @@ jobs:
           ref: 76c22cf30c23d8f4bc5c83c11013a8cb24fe0f85
           path: _external_didxazageneral
 
-      - name: Recover linked lexical, sense and example records
+      - name: Recover linked lexical, sense, example and raw association records
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY' > "${RUNNER_TEMP}/DICTIONARIA_LINKED_TARGETED_SOURCE_RECORDS.json"
-          import csv, json
+          import csv, json, sqlite3
           from pathlib import Path
 
-          root = Path('_external_didxazageneral/cldf')
+          repo_root = Path('_external_didxazageneral')
+          root = repo_root / 'cldf'
           needles = ('rindani', 'gundani')
 
           def read_rows(filename):
@@ -54,9 +55,9 @@ jobs:
 
           entry_ids = {row.get('ID', '') for row in matched_entries if row.get('ID')}
           example_sense_ids = set()
+          matched_example_ids = {row.get('ID', '') for row in matched_examples if row.get('ID')}
           for row in matched_examples:
-              raw = row.get('Sense_IDs', '')
-              for value in raw.replace(';', ' ').replace(',', ' ').split():
+              for value in row.get('Sense_IDs', '').replace(';', ' ').replace(',', ' ').split():
                   if value:
                       example_sense_ids.add(value)
 
@@ -67,14 +68,38 @@ jobs:
           linked_entry_ids = {row.get('Entry_ID', '') for row in linked_senses if row.get('Entry_ID')}
           linked_entries = [row for row in entries if row.get('ID') in (entry_ids | linked_entry_ids)]
 
-          all_linked_sense_ids = {row.get('ID', '') for row in linked_senses if row.get('ID')}
+          linked_sense_ids = {row.get('ID', '') for row in linked_senses if row.get('ID')}
           linked_examples = [
               row for row in examples
               if any(
-                  sid in all_linked_sense_ids
+                  sid in linked_sense_ids
                   for sid in row.get('Sense_IDs', '').replace(';', ' ').replace(',', ' ').split()
               )
           ]
+
+          db = sqlite3.connect(repo_root / 'raw' / 'jzd.dictionaria.sqlite')
+          try:
+              placeholders = ','.join('?' for _ in matched_example_ids)
+              args = sorted(matched_example_ids)
+              raw_field_assoc = []
+              raw_sense_assoc = []
+              if args:
+                  raw_field_assoc = [
+                      {'example_id': str(r[0]), 'sense_id': str(r[1]), 'field_id': r[2]}
+                      for r in db.execute(
+                          f'SELECT example_id, sense_id, field_id FROM sense_field_example WHERE example_id IN ({placeholders}) ORDER BY example_id, sense_id, field_id',
+                          args,
+                      )
+                  ]
+                  raw_sense_assoc = [
+                      {'example_id': str(r[0]), 'sense_id': str(r[1]), 'field_id': None}
+                      for r in db.execute(
+                          f'SELECT example_id, sense_id FROM sense_example WHERE example_id IN ({placeholders}) ORDER BY example_id, sense_id',
+                          args,
+                      )
+                  ]
+          finally:
+              db.close()
 
           out = {
               'source_repository': 'dictionaria/didxazageneral',
@@ -86,10 +111,12 @@ jobs:
               'regression_source_use': False,
               'rule_discovery_from_analysis_target': False,
               'matched_entry_ids': sorted(entry_ids),
+              'matched_example_ids': sorted(matched_example_ids),
               'matched_example_sense_ids': sorted(example_sense_ids),
               'entries': linked_entries,
               'senses': linked_senses,
               'examples': linked_examples,
+              'raw_example_associations': raw_field_assoc + raw_sense_assoc,
           }
           print(json.dumps(out, ensure_ascii=False, indent=2, sort_keys=True))
           PY
