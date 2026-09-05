@@ -15,11 +15,13 @@ then layers:
 - v0.35.9 VerbAnalysisBridge v0.1, exposing already-documented exact verb
   headword records with class, paradigm availability and provenance;
 - v0.35.10 VerbAnalysisBridge v0.2, exposing documentary non-headword verb-form
-  candidates when an exact AP example token belongs to an example linked to one
-  verb entry and a documented PDLMA TAM variant of that same verb matches after
-  removing ASCII morpheme hyphens only.
+  candidates when an AP example token matches under the restricted candidate key,
+  the example links to one verb entry, and a documented PDLMA TAM variant of that
+  same verb matches under the same key after removing ASCII morpheme hyphens only.
 
 Exact surface evidence remains separate from rule-based morphological analysis.
+The v0.2 candidate key uses NFC, casefold and apostrophe-typography unification
+only for candidate comparison and never promotes that relation to exact evidence.
 PDLMA paradigm fields remain analytical documentary fields and are not projected
 onto AP surface. The hyphen-collapse operation is comparison-only and does not
 constitute a PDLMA→AP rewrite. Documentary verb-form candidates do not resolve
@@ -146,9 +148,13 @@ def migrated_execution_state(
                 "exposes_documented_pdlma_paradigm_fields": True,
                 "preserves_homography": True,
                 "documentary_nonheadword_form_candidates": True,
-                "candidate_requires_exact_ap_example_token": True,
+                "candidate_requires_ap_example_token_match_under_candidate_key": True,
                 "candidate_requires_unique_linked_verb_entry": True,
-                "candidate_requires_literal_pdlma_match_after_ascii_hyphen_removal_only": True,
+                "candidate_requires_pdlma_tam_match_after_ascii_hyphen_removal_under_same_candidate_key": True,
+                "candidate_key_nfc": True,
+                "candidate_key_casefold": True,
+                "candidate_key_apostrophe_typography_unification": True,
+                "candidate_match_is_exact_surface_evidence": False,
                 "candidate_requires_explicit_example_tam_feature": False,
                 "candidate_token_role_asserted": False,
                 "candidate_tam_of_observed_surface_asserted": False,
@@ -200,7 +206,7 @@ def migrated_execution_state(
                     "EXISTING_GRAPHICAL_PERSON_SUFFIX_CANDIDATE",
                     "EXISTING_GRAPHICAL_POSSESSION_PREFIX_CANDIDATE",
                     "GP_1SG_FINAL_I_TO_E_GLOTTAL_REVERSE_LINK_CANDIDATE",
-                    "DICTIONARIA_EXACT_AP_EXAMPLE_TOKEN_PLUS_UNIQUE_VERB_LINK_PLUS_LITERAL_PDLMA_TAM_HYPHEN_COLLAPSE_CANDIDATE",
+                    "DICTIONARIA_AP_EXAMPLE_TOKEN_CANDIDATE_KEY_PLUS_UNIQUE_VERB_LINK_PLUS_PDLMA_TAM_ASCII_HYPHEN_COLLAPSE_CANDIDATE",
                 ],
             },
             "fallback_layers": [
