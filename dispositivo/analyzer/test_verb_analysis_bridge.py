@@ -3,7 +3,8 @@
 
 The fixtures come from the already-materialized 2,385-record verb inventory or
 from synthetic negative strings. No NEW_WRITTEN_ANALYSIS_TARGET is used as a
-benchmark, regression source, or rule-discovery source.
+benchmark, regression source, or rule-discovery source. These v0.1 invariants
+remain independently testable under later wrappers.
 """
 
 from __future__ import annotations
@@ -28,11 +29,11 @@ class VerbAnalysisBridgeTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.engine.close()
 
-    def test_execution_state_exposes_bridge_without_generation(self):
+    def test_execution_state_exposes_v01_invariants_under_latest_wrapper(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.9")
+        self.assertEqual(state["current_adapter_version"], "0.35.10")
         self.assertTrue(state["verb_analysis_bridge_enabled"])
-        self.assertEqual(state["verb_analysis_bridge_version"], "0.1")
+        self.assertEqual(state["verb_analysis_bridge_version"], "0.2")
         policy = state["verb_analysis_bridge_policy"]
         self.assertTrue(policy["exposes_documented_class"])
         self.assertTrue(policy["exposes_documented_pdlma_paradigm_fields"])
@@ -45,7 +46,7 @@ class VerbAnalysisBridgeTests(unittest.TestCase):
 
     def test_known_class_a_headword_exposes_record_and_paradigm(self):
         result = self.engine.analyze("ra", item_id="TECHNICAL_VERB_BRIDGE_A")
-        self.assertEqual(result["current_adapter_version"], "0.35.9")
+        self.assertEqual(result["current_adapter_version"], "0.35.10")
         self.assertIn(0, result["documented_exact_verb_token_indexes"])
         row = result["documented_exact_verb_analyses"][0]
         self.assertEqual(row["verb_headword_status"], STATUS_RAW)

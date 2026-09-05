@@ -46,6 +46,9 @@ jobs:
           if [ -f dispositivo/analyzer/test_verb_analysis_bridge.py ]; then
             python dispositivo/analyzer/test_verb_analysis_bridge.py -v
           fi
+          if [ -f dispositivo/analyzer/test_documentary_verb_form_candidates.py ]; then
+            python dispositivo/analyzer/test_documentary_verb_form_candidates.py -v
+          fi
 
       - name: Re-run first real-text probe through current Analyzer
         shell: bash
@@ -85,6 +88,7 @@ jobs:
               'biyubi_payload_mounted_in_public_ci': False,
               'candidate_layer_is_non_exact': True,
               'documented_morphology_is_separate_from_exact_evidence': True,
+              'documentary_verb_form_candidates_are_non_resolving': True,
               'results': rows,
           }, ensure_ascii=False, indent=2, sort_keys=True))
           PY

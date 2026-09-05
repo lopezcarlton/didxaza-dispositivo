@@ -79,7 +79,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
 
     def _candidate_row(self, surface: str):
         result = self.engine.analyze(surface, item_id="TECHNICAL_CANDIDATE_REGRESSION")
-        self.assertEqual(result["current_adapter_version"], "0.35.9")
+        self.assertEqual(result["current_adapter_version"], "0.35.10")
         self.assertTrue(result["documentary_candidate_layer_enabled"])
         self.assertEqual(len(result["provisional_unresolved_token_candidates"]), 1)
         return result, result["provisional_unresolved_token_candidates"][0]
