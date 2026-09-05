@@ -16,7 +16,6 @@ from analyzer_v0_35_13_verb_morphological_hypotheses import (
     STATUS_MULTIPLE,
     STATUS_NONE,
     STATUS_UNIQUE,
-    VerbMorphologicalHypothesisViewAnalyzer,
 )
 from analyzer_v0_35_migrated_adapter import build_migrated_analyzer
 
@@ -24,8 +23,8 @@ from analyzer_v0_35_migrated_adapter import build_migrated_analyzer
 class VerbMorphologicalHypothesisViewTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.engine = VerbMorphologicalHypothesisViewAnalyzer(build_migrated_analyzer())
-        # v0.35.13(test wrapper) -> v0.35.12 -> v0.35.11 -> v0.35.10.
+        cls.engine = build_migrated_analyzer()
+        # v0.35.13 -> v0.35.12 -> v0.35.11 -> v0.35.10.
         cls.v02 = cls.engine.base.base.base
 
     @classmethod
