@@ -65,10 +65,11 @@ class ValencyCompatibilityBridgeTests(unittest.TestCase):
 
     def test_execution_state_exposes_measured_inventory_and_hard_limits(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.11")
+        self.assertEqual(state["current_adapter_version"], "0.35.12")
         self.assertEqual(state["verb_analysis_bridge_version"], "0.2")
         self.assertTrue(state["valency_compatibility_bridge_enabled"])
         self.assertEqual(state["valency_compatibility_bridge_version"], "0.1")
+        self.assertTrue(state["explicit_valency_relation_bridge_enabled"])
 
         stats = state["valency_compatibility_index_stats"]
         print("VALENCY_INDEX_STATS=" + json.dumps(stats, sort_keys=True))
@@ -163,11 +164,15 @@ class ValencyCompatibilityBridgeTests(unittest.TestCase):
     def test_structural_nonheadword_route_is_compatibility_only(self):
         chosen_surface = None
         chosen_entry = None
-        for rows in self.engine.base._example_token_index.values():
+        # Current chain: v0.35.12 -> v0.35.11 -> v0.35.10 -> v0.35.9.
+        # The example index belongs to v0.35.10; _lookup_token belongs to v0.35.9.
+        v02 = self.engine.base.base
+        v01 = v02.base
+        for rows in v02._example_token_index.values():
             if not rows:
                 continue
             token = rows[0]["token_surface_in_example"]
-            if self.engine.base.base._lookup_token(token, 0)["verb_category_documented"]:
+            if v01._lookup_token(token, 0)["verb_category_documented"]:
                 continue
             entry_ids = {row["linked_verb_entry_id"] for row in rows}
             for entry_id in entry_ids:
@@ -206,6 +211,7 @@ class ValencyCompatibilityBridgeTests(unittest.TestCase):
         self.assertFalse(row["generation_license_assertion"])
         self.assertFalse(result["valency_compatibility_changes_exact_evidence_metrics"])
         self.assertFalse(result["valency_compatibility_changes_analysis_status"])
+        self.assertEqual(result["explicit_valency_relation_informative_token_indexes"], [])
 
     def test_unknown_surface_receives_no_valency_entry_link(self):
         result = self.engine.analyze(
@@ -217,6 +223,7 @@ class ValencyCompatibilityBridgeTests(unittest.TestCase):
             result["valency_compatibility_observations"][0]["status"],
             "NO_LINKED_VERB_ENTRY",
         )
+        self.assertEqual(result["explicit_valency_relation_informative_token_indexes"], [])
         self.assertFalse(result["valency_generation_enabled"])
         self.assertFalse(result["valency_correction_enabled"])
 
