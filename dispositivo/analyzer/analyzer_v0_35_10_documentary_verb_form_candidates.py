@@ -6,27 +6,30 @@ metrics or promoting a token to a resolved morphological analysis.
 
 The pinned Dictionaria snapshot does *not* contain populated example↔TAM links
 (`sense_field_example` has zero rows) and its examples contain AP text but no
-parallel PDLMA transcription.  Therefore v0.2 does not manufacture either kind
+parallel PDLMA transcription. Therefore v0.2 does not manufacture either kind
 of missing association.
 
 Instead, it uses only relations that are actually present and independently
 anchored:
 
-1. an AP token occurs exactly in a Dictionaria Primary_Text example;
+1. an AP token is present in a Dictionaria Primary_Text example;
 2. that example is associated through Sense_IDs with exactly one verb entry in
    the 2,385-record verb inventory;
-3. one documented PDLMA TAM variant of that *same verb entry* becomes literally
-   identical to the AP token after removing ASCII hyphen U+002D only.
+3. one documented PDLMA TAM variant of that *same verb entry* matches the AP
+   token under a deliberately narrow candidate-comparison key after removing
+   ASCII morpheme hyphen U+002D from the PDLMA form.
 
-The third operation is deliberately a comparison operation, not an orthographic
-rewrite.  No `7`→apostrophe mapping, tone/diacritic stripping, `!` removal, dot
-removal, vowel change, segment substitution, edit distance or general
-PDLMA→Alfabeto Popular conversion is permitted.
+The candidate key applies NFC, casefolding and apostrophe-codepoint typography
+unification. These are explicitly comparison-only operations and are never
+reported as exact surface evidence. The PDLMA structural operation itself removes
+only ASCII hyphen: no `7`→apostrophe mapping, tone/diacritic stripping, `!`
+removal, dot removal, vowel change, segment substitution, edit distance or
+general PDLMA→Alfabeto Popular conversion is permitted.
 
-A successful match is therefore exposed only as a research candidate connecting
-observed AP token → candidate TAM → analytical root → compatible verb entry →
-verb class. It does NOT assert token identity, TAM, root segmentation, spelling,
-semantic equivalence, correction or generation.
+A successful match is exposed only as a research candidate connecting observed
+AP token → candidate TAM → analytical root → compatible verb entry → verb class.
+It does NOT assert token identity, TAM, root segmentation, spelling, semantic
+equivalence, correction or generation.
 
 This uses the recovery-coordinate role allowed by Voces HALL-0073/HALL-0074 and
 HALL-0076 while preserving HALL-0076's explicit prohibition on blind
@@ -45,6 +48,7 @@ BRIDGE_VERSION = "0.2"
 
 CANDIDATE_STATUS = "DOCUMENTARY_VERB_FORM_STRUCTURAL_CANDIDATE"
 COMPARISON_OPERATION = "PDLMA_REMOVE_ASCII_MORPHEME_HYPHEN_ONLY"
+CANDIDATE_KEY_POLICY = "NFC_CASEFOLD_APOSTROPHE_TYPOGRAPHY_ONLY"
 
 VOCES_KNOWLEDGE_COMMIT = "5a5a76eca11966b7df79edb76cf51ab94507bda1"
 DICTIONARIA_SOURCE_ID = "SRC-DICTIONARIA-DIDXAZA-SPANISH-ENGLISH-DICTIONARY"
@@ -56,7 +60,7 @@ APOSTROPHE_EQUIVALENTS = ("'", "’", "ʼ", "ꞌ")
 
 
 def strict_documentary_key(text: str) -> str:
-    """Comparison key for AP documentary evidence; never an output rewrite."""
+    """Candidate comparison key; never exact evidence and never an output rewrite."""
     value = unicodedata.normalize("NFC", str(text or "")).casefold()
     for apostrophe in APOSTROPHE_EQUIVALENTS[1:]:
         value = value.replace(apostrophe, "'")
@@ -64,13 +68,20 @@ def strict_documentary_key(text: str) -> str:
 
 
 def pdlma_hyphen_collapse_candidate_key(text: str) -> str:
-    """Remove only literal ASCII hyphens, then apply the documentary key.
+    """Remove only literal ASCII hyphens from PDLMA, then apply candidate key.
 
     This intentionally leaves PDLMA symbols such as `.`, `=`, `!`, `7`, `*`,
-    parentheses and spaces untouched.  It is a candidate-comparison coordinate,
+    parentheses and spaces untouched. It is a candidate-comparison coordinate,
     never a PDLMA→AP conversion function.
     """
     return strict_documentary_key(str(text or "").replace("-", ""))
+
+
+def _nfc_raw_equal(left: str, right: str) -> bool:
+    """Raw documentary equality with Unicode NFC only; no case/apostrophe rewrite."""
+    return unicodedata.normalize("NFC", str(left or "")) == unicodedata.normalize(
+        "NFC", str(right or "")
+    )
 
 
 def tokenize_documentary_surface(text: str) -> tuple[str, ...]:
@@ -164,6 +175,7 @@ class DocumentaryVerbFormCandidateAnalyzer:
                             "tam": str(tam),
                             "pdlma_variant_raw": variant_raw,
                             "comparison_operation": COMPARISON_OPERATION,
+                            "candidate_key_policy": CANDIDATE_KEY_POLICY,
                         }
                     )
 
@@ -192,10 +204,12 @@ class DocumentaryVerbFormCandidateAnalyzer:
                         "tam_candidate": structural_match["tam"],
                         "pdlma_variant_raw": structural_match["pdlma_variant_raw"],
                         "comparison_operation": COMPARISON_OPERATION,
+                        "candidate_key_policy": CANDIDATE_KEY_POLICY,
                         "attribution_raw": example.get("Attribution", "") or "",
                         "source_id": DICTIONARIA_SOURCE_ID,
                         "dictionaria_commit": DICTIONARIA_COMMIT,
                         "token_role_within_example_assertion": False,
+                        "exact_surface_evidence_assertion": False,
                         "pdlma_to_ap_assertion": False,
                     }
                     self._example_token_index[token_key].append(association)
@@ -215,10 +229,11 @@ class DocumentaryVerbFormCandidateAnalyzer:
         return {
             "verb_sense_links": len(self._sense_to_verb_entry),
             "single_verb_linked_examples": self._linked_single_verb_example_count,
-            "examples_with_literal_hyphen_collapse_match": self._matched_structural_example_count,
+            "examples_with_candidate_key_hyphen_collapse_match": self._matched_structural_example_count,
             "candidate_relations": self._candidate_relation_count,
             "indexed_token_keys": len(self._example_token_index),
             "comparison_operation": COMPARISON_OPERATION,
+            "candidate_key_policy": CANDIDATE_KEY_POLICY,
         }
 
     def _candidate_payload(self, raw_token: str, token_index: int) -> dict[str, Any] | None:
@@ -245,6 +260,9 @@ class DocumentaryVerbFormCandidateAnalyzer:
             example_ids = sorted(
                 {row["example_id"] for row in rows if row.get("example_id")}
             )
+            raw_exact_here = any(
+                _nfc_raw_equal(raw_token, row["token_surface_in_example"]) for row in rows
+            )
             compatible_entries.append(
                 {
                     "entry_id": entry_id,
@@ -259,15 +277,21 @@ class DocumentaryVerbFormCandidateAnalyzer:
                     "matching_documented_pdlma_variants": dict(pdlma_coordinates),
                     "supporting_example_ids": example_ids,
                     "supporting_example_count": len(example_ids),
+                    "query_matches_supporting_ap_token_raw_nfc_exact": raw_exact_here,
                     "supporting_associations": rows,
                     "association_strength": (
-                        "MULTIPLE_DOCUMENTARY_EXAMPLES_PLUS_LITERAL_PDLMA_BOUNDARY_COLLAPSE"
+                        "MULTIPLE_DOCUMENTARY_EXAMPLES_PLUS_CANDIDATE_KEY_PDLMA_BOUNDARY_COLLAPSE"
                         if len(example_ids) > 1
-                        else "SINGLE_DOCUMENTARY_EXAMPLE_PLUS_LITERAL_PDLMA_BOUNDARY_COLLAPSE"
+                        else "SINGLE_DOCUMENTARY_EXAMPLE_PLUS_CANDIDATE_KEY_PDLMA_BOUNDARY_COLLAPSE"
                     ),
                     "comparison_policy": {
                         "operation": COMPARISON_OPERATION,
-                        "ascii_hyphen_removed": True,
+                        "candidate_key_policy": CANDIDATE_KEY_POLICY,
+                        "ascii_hyphen_removed_from_pdlma": True,
+                        "unicode_nfc": True,
+                        "casefold_for_candidate_comparison": True,
+                        "apostrophe_typography_unified_for_candidate_comparison": True,
+                        "candidate_is_exact_surface_evidence": False,
                         "tone_stripping": False,
                         "diacritic_stripping": False,
                         "glottal_7_to_apostrophe": False,
@@ -301,20 +325,27 @@ class DocumentaryVerbFormCandidateAnalyzer:
 
         if not compatible_entries:
             return None
+        raw_exact_any = any(
+            _nfc_raw_equal(raw_token, row["token_surface_in_example"])
+            for row in associations
+        )
         return {
             "token_index": token_index,
             "token_raw": raw_token,
-            "documentary_key": key,
+            "documentary_candidate_key": key,
+            "candidate_key_policy": CANDIDATE_KEY_POLICY,
             "candidate_status": CANDIDATE_STATUS,
-            "underlying_exact_documentary_token_attestation": True,
+            "documentary_token_match_under_candidate_key": True,
+            "raw_nfc_exact_documentary_token_attestation": raw_exact_any,
             "compatible_verb_entry_count": len(compatible_entries),
             "compatible_verb_entries": compatible_entries,
             "candidate_adds_exact_surface_evidence": False,
             "candidate_promotes_analysis_status": False,
             "candidate_resolves_token": False,
             "interpretation": (
-                "AP_TOKEN_OCCURS_IN_EXAMPLE_LINKED_TO_VERB_ENTRY_AND_LITERAL_PDLMA_TAM_"
-                "VARIANT_MATCHES_AFTER_ASCII_HYPHEN_REMOVAL_ONLY_CANDIDATE_NOT_ANALYSIS"
+                "AP_TOKEN_MATCHES_DOCUMENTARY_EXAMPLE_UNDER_CANDIDATE_KEY_LINKED_TO_VERB_"
+                "ENTRY_AND_PDLMA_TAM_VARIANT_MATCHES_AFTER_ASCII_HYPHEN_REMOVAL_"
+                "CANDIDATE_ONLY_NOT_EXACT_EVIDENCE_OR_ANALYSIS"
             ),
         }
 
@@ -370,9 +401,13 @@ class DocumentaryVerbFormCandidateAnalyzer:
         result.setdefault("fallback_policy", {}).update(
             {
                 "documentary_verb_form_candidate_requires_no_existing_exact_verb_headword_analysis": True,
-                "documentary_verb_form_candidate_requires_exact_ap_example_token": True,
+                "documentary_verb_form_candidate_requires_ap_example_token_match_under_candidate_key": True,
+                "documentary_verb_form_candidate_candidate_key_nfc": True,
+                "documentary_verb_form_candidate_candidate_key_casefold": True,
+                "documentary_verb_form_candidate_candidate_key_apostrophe_typography_unification": True,
+                "documentary_verb_form_candidate_match_is_exact_surface_evidence": False,
                 "documentary_verb_form_candidate_requires_unique_linked_verb_entry_per_example": True,
-                "documentary_verb_form_candidate_requires_literal_pdlma_tam_match_after_ascii_hyphen_removal_only": True,
+                "documentary_verb_form_candidate_requires_pdlma_tam_match_after_ascii_hyphen_removal_under_same_candidate_key": True,
                 "documentary_verb_form_candidate_token_role_is_not_asserted": True,
                 "documentary_verb_form_candidate_pdlma_is_recovery_coordinate_only": True,
                 "documentary_verb_form_candidate_pdlma_to_ap": False,
@@ -383,6 +418,7 @@ class DocumentaryVerbFormCandidateAnalyzer:
         )
         result.setdefault("limitations", []).extend(
             [
+                "DOCUMENTARY_VERB_FORM_CANDIDATE_MATCH_UNDER_CANDIDATE_KEY_IS_NOT_EXACT_SURFACE_EVIDENCE",
                 "DOCUMENTARY_VERB_FORM_CANDIDATE_DOES_NOT_PROVE_TOKEN_ROLE_WITHIN_EXAMPLE",
                 "DOCUMENTARY_VERB_FORM_CANDIDATE_DOES_NOT_PROVE_TAM_OF_OBSERVED_SURFACE",
                 "DOCUMENTARY_VERB_FORM_CANDIDATE_DOES_NOT_SEGMENT_OBSERVED_TOKEN",
