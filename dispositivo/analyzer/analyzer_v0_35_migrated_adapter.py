@@ -15,14 +15,16 @@ then layers:
 - v0.35.9 VerbAnalysisBridge v0.1, exposing already-documented exact verb
   headword records with class, paradigm availability and provenance;
 - v0.35.10 VerbAnalysisBridge v0.2, exposing documentary non-headword verb-form
-  candidates from exact AP example tokens linked to one verb entry and explicit
-  TAM feature associations.
+  candidates when an exact AP example token belongs to an example linked to one
+  verb entry and a documented PDLMA TAM variant of that same verb matches after
+  removing ASCII morpheme hyphens only.
 
 Exact surface evidence remains separate from rule-based morphological analysis.
 PDLMA paradigm fields remain analytical documentary fields and are not projected
-onto AP surface. Documentary verb-form candidates do not resolve token identity
-or TAM. No layer grants correction, orthographic authority, generation license,
-or rule-discovery authority.
+onto AP surface. The hyphen-collapse operation is comparison-only and does not
+constitute a PDLMA→AP rewrite. Documentary verb-form candidates do not resolve
+token identity, TAM or root segmentation. No layer grants correction,
+orthographic authority, generation license, or rule-discovery authority.
 """
 
 from __future__ import annotations
@@ -146,14 +148,23 @@ def migrated_execution_state(
                 "documentary_nonheadword_form_candidates": True,
                 "candidate_requires_exact_ap_example_token": True,
                 "candidate_requires_unique_linked_verb_entry": True,
-                "candidate_requires_explicit_tam_feature": True,
+                "candidate_requires_literal_pdlma_match_after_ascii_hyphen_removal_only": True,
+                "candidate_requires_explicit_example_tam_feature": False,
                 "candidate_token_role_asserted": False,
                 "candidate_tam_of_observed_surface_asserted": False,
+                "candidate_root_segmentation_asserted": False,
                 "candidate_promotes_analysis_status": False,
                 "pdlma_recovery_coordinate_only": True,
+                "ascii_morpheme_hyphen_comparison_only": True,
                 "tone_stripping": False,
                 "diacritic_stripping": False,
+                "glottal_7_to_apostrophe": False,
+                "bang_removal": False,
+                "dot_removal": False,
+                "segment_substitution": False,
+                "vowel_change": False,
                 "near_match": False,
+                "edit_distance": False,
                 "pdlma_to_ap": False,
                 "nonheadword_tam_inference": False,
                 "valency_analysis": False,
@@ -189,7 +200,7 @@ def migrated_execution_state(
                     "EXISTING_GRAPHICAL_PERSON_SUFFIX_CANDIDATE",
                     "EXISTING_GRAPHICAL_POSSESSION_PREFIX_CANDIDATE",
                     "GP_1SG_FINAL_I_TO_E_GLOTTAL_REVERSE_LINK_CANDIDATE",
-                    "DICTIONARIA_EXACT_AP_EXAMPLE_TOKEN_TO_UNIQUE_VERB_TAM_ASSOCIATION_CANDIDATE",
+                    "DICTIONARIA_EXACT_AP_EXAMPLE_TOKEN_PLUS_UNIQUE_VERB_LINK_PLUS_LITERAL_PDLMA_TAM_HYPHEN_COLLAPSE_CANDIDATE",
                 ],
             },
             "fallback_layers": [
