@@ -12,6 +12,7 @@ on:
       - "feature/verb-analysis-bridge-*"
       - "feature/valency-compatibility-bridge-*"
       - "feature/pb2015-explicit-valency-relations-*"
+      - "feature/verb-morphological-hypothesis-view-*"
     paths:
       - "dispositivo/analyzer/**"
       - "dispositivo/sources/**"
@@ -58,6 +59,9 @@ jobs:
           fi
           if [ -f dispositivo/analyzer/test_explicit_valency_relations.py ]; then
             python dispositivo/analyzer/test_explicit_valency_relations.py -v
+          fi
+          if [ -f dispositivo/analyzer/test_verb_morphological_hypothesis_view.py ]; then
+            python dispositivo/analyzer/test_verb_morphological_hypothesis_view.py -v
           fi
 
       - name: Re-run first real-text probe through current Analyzer
