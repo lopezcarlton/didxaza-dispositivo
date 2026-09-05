@@ -60,11 +60,12 @@ class CurrentAnalyzerDocumentedFusionTests(unittest.TestCase):
 
     def test_execution_state_keeps_documented_fusion_under_latest_wrapper(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.11")
+        self.assertEqual(state["current_adapter_version"], "0.35.12")
         self.assertTrue(state["documented_person_fusion_analysis_enabled"])
         self.assertTrue(state["verb_analysis_bridge_enabled"])
         self.assertTrue(state["documentary_verb_form_candidate_layer_enabled"])
         self.assertTrue(state["valency_compatibility_bridge_enabled"])
+        self.assertTrue(state["explicit_valency_relation_bridge_enabled"])
         rules = state["documented_morphology_policy"]["implemented_rules"]
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0]["knowledge_rule_id"], "HALL-0022")
@@ -100,6 +101,8 @@ class CurrentAnalyzerDocumentedFusionTests(unittest.TestCase):
         self.assertNotEqual(valency["status"], "NO_LINKED_VERB_ENTRY")
         self.assertFalse(result["valency_compatibility_changes_exact_evidence_metrics"])
         self.assertFalse(result["valency_compatibility_changes_analysis_status"])
+        self.assertFalse(result["explicit_valency_relation_changes_exact_evidence_metrics"])
+        self.assertFalse(result["explicit_valency_relation_changes_analysis_status"])
 
     def test_other_candidates_are_not_promoted_by_this_rule(self):
         for surface in ("rucuidxiilu'", "quidxu'", "xquendasicarulu'", "binebiaya'"):
@@ -109,6 +112,7 @@ class CurrentAnalyzerDocumentedFusionTests(unittest.TestCase):
             self.assertEqual(result["unresolved_token_indexes_after_documentary_verb_form_candidates"], [0])
             self.assertEqual(result["effective_analysis_token_count_after_documented_morphology"], 0)
             self.assertFalse(result["valency_compatibility_changes_analysis_status"])
+            self.assertFalse(result["explicit_valency_relation_changes_analysis_status"])
 
 
 if __name__ == "__main__":
