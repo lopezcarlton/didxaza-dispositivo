@@ -3,7 +3,8 @@
 
 No NEW_WRITTEN_ANALYSIS_TARGET is used as benchmark, regression source or rule
 source. Positive fixtures are discovered from the already-versioned Dictionaria
-snapshot and the 2,385-record verb inventory; negatives are synthetic.
+snapshot/derived association registry and the 2,385-record verb inventory;
+negatives are synthetic.
 """
 
 from __future__ import annotations
@@ -32,6 +33,9 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertEqual(state["verb_analysis_bridge_version"], "0.2")
         self.assertTrue(state["documentary_verb_form_candidate_layer_enabled"])
         stats = state["documentary_verb_form_candidate_index_stats"]
+        self.assertTrue(stats["association_registry_present"])
+        self.assertGreater(stats["association_registry_rows"], 0)
+        self.assertGreater(stats["used_association_rows"], 0)
         self.assertGreater(stats["verb_sense_links"], 0)
         self.assertGreater(stats["tam_tagged_examples"], 0)
         self.assertGreater(stats["indexed_token_keys"], 0)
@@ -63,9 +67,10 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
                 break
         self.assertIsNotNone(candidate)
         self.assertEqual(candidate["candidate_status"], CANDIDATE_STATUS)
-        self.assertFalse(candidate["candidate_is_exact_surface_evidence"])
+        self.assertTrue(candidate["underlying_exact_documentary_token_attestation"])
+        self.assertFalse(candidate["candidate_adds_exact_surface_evidence"])
         self.assertFalse(candidate["candidate_promotes_analysis_status"])
-        self.assertFalse(candidate["candidate_resolves_unresolved_token"])
+        self.assertFalse(candidate["candidate_resolves_token"])
         self.assertGreater(candidate["compatible_verb_entry_count"], 0)
         entry = candidate["compatible_verb_entries"][0]
         self.assertTrue(entry["tam_candidates"])
@@ -77,28 +82,48 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertFalse(entry["generation_license_assertion"])
         self.assertFalse(entry["correction_assertion"])
 
-    def test_real_snapshot_has_nonheadword_unresolved_candidate_without_resolution(self):
+    def test_real_snapshot_has_nonheadword_candidate_without_promoting_analysis(self):
         chosen = None
-        # Find a documentary token independently of the blind target. Limit the
-        # search to keep CI fast; the snapshot contains many TAM-tagged examples.
+        base_result = None
+        # Find a documentary token independently of the blind target that is not
+        # already recognized by v0.1 as an exact verb headword and is not the
+        # separately promoted 1SG person-fusion case.
         for rows in list(self.engine._example_token_index.values())[:500]:
             if not rows:
                 continue
             token = rows[0]["token_surface_in_example"]
-            base_result = self.engine.base.analyze(token, item_id="TECHNICAL_V02_DISCOVERY")
-            unresolved = base_result.get("unresolved_token_indexes_after_documented_morphology", [])
-            if unresolved == [0]:
-                chosen = token
-                break
+            candidate_base = self.engine.base.analyze(
+                token, item_id="TECHNICAL_V02_DISCOVERY"
+            )
+            if candidate_base.get("documented_exact_verb_token_indexes"):
+                continue
+            if candidate_base.get("documented_person_fusion_analyzed_token_indexes"):
+                continue
+            chosen = token
+            base_result = candidate_base
+            break
 
-        self.assertIsNotNone(chosen, "No unresolved documentary candidate found in first 500 indexed keys")
+        self.assertIsNotNone(chosen, "No non-headword documentary candidate found in first 500 indexed keys")
+        self.assertIsNotNone(base_result)
         result = self.engine.analyze(chosen, item_id="TECHNICAL_V02_INTEGRATION")
         self.assertEqual(result["current_adapter_version"], "0.35.10")
         self.assertEqual(result["documentary_verb_form_candidate_token_indexes"], [0])
-        self.assertEqual(result["unresolved_token_indexes_after_documentary_verb_form_candidates"], [0])
         self.assertTrue(result["documentary_verb_form_candidates"])
         candidate = result["documentary_verb_form_candidates"][0]
-        self.assertFalse(candidate["candidate_resolves_unresolved_token"])
+        self.assertFalse(candidate["candidate_resolves_token"])
+
+        # v0.2 enriches research coordinates only.  Whatever exact/analysis
+        # state v0.1 had must remain unchanged.
+        self.assertEqual(
+            result["unresolved_token_indexes_after_documentary_verb_form_candidates"],
+            base_result["unresolved_token_indexes_after_documented_morphology"],
+        )
+        self.assertEqual(result["matched_token_count"], base_result["matched_token_count"])
+        self.assertEqual(
+            result["effective_evidence_token_count"],
+            base_result["effective_evidence_token_count"],
+        )
+        self.assertEqual(result["analysis_status"], base_result["analysis_status"])
         self.assertFalse(result["documentary_verb_form_candidates_change_exact_evidence_metrics"])
         self.assertFalse(result["documentary_verb_form_candidates_change_analysis_status"])
         self.assertFalse(result["generation_license_assertion"])
