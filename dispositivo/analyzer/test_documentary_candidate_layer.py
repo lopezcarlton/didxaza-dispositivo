@@ -80,7 +80,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
 
     def _candidate_row(self, surface: str):
         result = self.engine.analyze(surface, item_id="TECHNICAL_CANDIDATE_REGRESSION")
-        self.assertEqual(result["current_adapter_version"], "0.35.12")
+        self.assertEqual(result["current_adapter_version"], "0.35.13")
         self.assertTrue(result["documentary_candidate_layer_enabled"])
         self.assertEqual(len(result["provisional_unresolved_token_candidates"]), 1)
         return result, result["provisional_unresolved_token_candidates"][0]
@@ -97,6 +97,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
         self.assertTrue(result["exact_evidence_state_unchanged_by_candidates"])
         self.assertEqual(result["analysis_status"], "ABSTAIN_NO_COMPONENT_EVIDENCE")
         self.assertFalse(result["valency_compatibility_changes_exact_evidence_metrics"])
+        self.assertFalse(result["verb_morphological_hypothesis_changes_exact_evidence_metrics"])
 
     def test_rucuidxiilu_exposes_existing_graphical_2sg_candidate_only(self):
         result, row = self._candidate_row("rucuidxiilu'")
@@ -142,6 +143,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
         self.assertFalse(result["orthographic_authority_assertion"])
         self.assertFalse(result["rule_discovery_assertion"])
         self.assertFalse(result["valency_compatibility_changes_analysis_status"])
+        self.assertFalse(result["verb_morphological_hypothesis_changes_analysis_status"])
 
 
 if __name__ == "__main__":
