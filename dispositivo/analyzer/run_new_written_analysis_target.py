@@ -8,6 +8,12 @@ orthographic authority.
 
 Input is accepted from exactly one of --surface, --file, or --stdin. Output is a
 single JSON envelope on stdout. The runner does not modify repository artifacts.
+
+From schema v1.1, each analyzed non-empty line may receive nearby non-empty lines
+from the same target as `context_segments`. This is target-internal context only:
+it is not authority, does not create rules, and cannot by itself resolve an
+analysis. The current Analyzer may use it only through its explicitly
+non-resolving contextual documentary-support layer.
 """
 
 from __future__ import annotations
@@ -24,7 +30,8 @@ from analyzer_v0_35_migrated_adapter import build_migrated_analyzer
 
 
 TARGET_ROLE = "NEW_WRITTEN_ANALYSIS_TARGET"
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
+DEFAULT_CONTEXT_RADIUS = 1
 
 
 def _git_commit() -> str | None:
@@ -50,6 +57,42 @@ def _nonempty_lines(text: str) -> list[tuple[int, str]]:
     ]
 
 
+def _neighbor_context_segments(
+    lines: list[tuple[int, str]],
+    current_index: int,
+    *,
+    radius: int,
+) -> list[dict[str, Any]]:
+    """Return nearby analyzed lines as non-authoritative Didxazá context.
+
+    Radius is measured over the sequence of non-empty analyzed lines. Blank input
+    lines remain preserved indirectly through each segment's source line number,
+    but they are not themselves analysis/context segments.
+    """
+
+    if radius < 0:
+        raise ValueError("context_radius must be >= 0")
+    if radius == 0 or not lines:
+        return []
+
+    start = max(0, current_index - radius)
+    stop = min(len(lines), current_index + radius + 1)
+    out = []
+    for index in range(start, stop):
+        if index == current_index:
+            continue
+        source_line_number, surface = lines[index]
+        out.append(
+            {
+                "surface": surface,
+                "source_line_number": source_line_number,
+                "target_role": TARGET_ROLE,
+                "authority_scope": "TARGET_INTERNAL_CONTEXT_NON_AUTHORITATIVE",
+            }
+        )
+    return out
+
+
 def analyze_target_text(
     text: str,
     *,
@@ -57,8 +100,12 @@ def analyze_target_text(
     item_prefix: str = "NEW_WRITTEN_TARGET",
     biyubi_path: str | Path | None = None,
     require_biyubi: bool = False,
+    context_radius: int = DEFAULT_CONTEXT_RADIUS,
 ) -> dict[str, Any]:
     """Analyze non-empty input lines and return a non-licensing JSON envelope."""
+
+    if context_radius < 0:
+        raise ValueError("context_radius must be >= 0")
 
     encoded = text.encode("utf-8")
     lines = _nonempty_lines(text)
@@ -68,12 +115,27 @@ def analyze_target_text(
     )
     try:
         results = []
-        for ordinal, (source_line_number, surface) in enumerate(lines, 1):
-            analysis = engine.analyze(surface, item_id=f"{item_prefix}_L{ordinal:03d}")
+        for line_index, (source_line_number, surface) in enumerate(lines):
+            ordinal = line_index + 1
+            context_segments = _neighbor_context_segments(
+                lines,
+                line_index,
+                radius=context_radius,
+            )
+            analysis = engine.analyze(
+                surface,
+                item_id=f"{item_prefix}_L{ordinal:03d}",
+                context_segments=context_segments,
+            )
             results.append(
                 {
                     "source_line_number": source_line_number,
                     "original_surface": surface,
+                    "context_source_line_numbers": [
+                        int(segment["source_line_number"])
+                        for segment in context_segments
+                    ],
+                    "context_segment_count": len(context_segments),
                     "analysis": analysis,
                 }
             )
@@ -88,6 +150,13 @@ def analyze_target_text(
         "input_sha256": hashlib.sha256(encoded).hexdigest(),
         "input_bytes": len(encoded),
         "analyzed_nonempty_line_count": len(results),
+        "target_internal_context_enabled": context_radius > 0,
+        "target_internal_context_radius_nonempty_lines": context_radius,
+        "target_internal_context_excludes_current_line": True,
+        "target_internal_context_is_authority": False,
+        "target_internal_context_can_create_rules": False,
+        "target_internal_context_can_promote_knowledge": False,
+        "target_internal_context_can_resolve_hypothesis_by_itself": False,
         "benchmark_use": False,
         "gold_use": False,
         "regression_source_use": False,
@@ -127,7 +196,16 @@ def main() -> None:
     parser.add_argument("--item-prefix", default="NEW_WRITTEN_TARGET")
     parser.add_argument("--biyubi-xlsx")
     parser.add_argument("--require-biyubi", action="store_true")
+    parser.add_argument(
+        "--context-radius",
+        type=int,
+        default=DEFAULT_CONTEXT_RADIUS,
+        help="Nearby non-empty target lines supplied as non-authoritative context on each side (default: 1)",
+    )
     args = parser.parse_args()
+
+    if args.context_radius < 0:
+        parser.error("--context-radius must be >= 0")
 
     text, input_kind = _read_input(args)
     payload = analyze_target_text(
@@ -136,6 +214,7 @@ def main() -> None:
         item_prefix=args.item_prefix,
         biyubi_path=args.biyubi_xlsx,
         require_biyubi=args.require_biyubi,
+        context_radius=args.context_radius,
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
 
