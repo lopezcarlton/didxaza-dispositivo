@@ -34,7 +34,7 @@ class PersonFusionCandidateTests(unittest.TestCase):
         result = self.engine.analyze("Rinite'", item_id="TECHNICAL_GP_1SG_RINITI")
         rows = result["supplemental_documented_person_fusion_candidates"]
 
-        self.assertEqual(result["current_adapter_version"], "0.35.14")
+        self.assertEqual(result["current_adapter_version"], "0.35.15")
         self.assertEqual(len(rows), 1)
         row = rows[0]
         self.assertEqual(row["token_raw"], "Rinite'")
@@ -64,6 +64,8 @@ class PersonFusionCandidateTests(unittest.TestCase):
         self.assertFalse(result["verb_morphological_hypothesis_changes_analysis_status"])
         self.assertFalse(result["causative_group_coordinate_changes_exact_evidence_metrics"])
         self.assertFalse(result["causative_group_coordinate_changes_analysis_status"])
+        self.assertFalse(result["contextual_documentary_support_changes_exact_evidence_metrics"])
+        self.assertFalse(result["contextual_documentary_support_changes_analysis_status"])
 
     def test_missing_glottal_does_not_trigger_i_to_e1sg_candidate(self):
         result = self.engine.analyze("Rinite", item_id="TECHNICAL_GP_1SG_NEGATIVE_NO_GLOTTAL")
@@ -87,6 +89,8 @@ class PersonFusionCandidateTests(unittest.TestCase):
         self.assertFalse(result["verb_morphological_hypothesis_correction_enabled"])
         self.assertFalse(result["causative_group_generation_enabled"])
         self.assertFalse(result["causative_group_correction_enabled"])
+        self.assertFalse(result["contextual_documentary_support_generation_enabled"])
+        self.assertFalse(result["contextual_documentary_support_correction_enabled"])
         policy = result["fallback_policy"]
         self.assertTrue(policy["person_fusion_candidate_requires_documented_habitual_headword"])
         self.assertTrue(policy["person_fusion_candidate_requires_prosodic_confirmation_for_resolution"])
