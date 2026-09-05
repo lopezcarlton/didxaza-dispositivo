@@ -11,11 +11,14 @@ then layers:
   latest unresolved exact-evidence boundary;
 - v0.35.5 source-backed person-fusion candidates over documented verb bases;
 - v0.35.8 documented 1SG fusion analysis when lemma + person rule + prosodic
-  condition are independently licensed.
+  condition are independently licensed;
+- v0.35.9 VerbAnalysisBridge v0.1, exposing already-documented exact verb
+  headword records with class, paradigm availability and provenance.
 
 Exact surface evidence remains separate from rule-based morphological analysis.
-No layer grants correction, orthographic authority, generation license, or rule
-discovery authority.
+PDLMA paradigm fields remain analytical documentary fields and are not projected
+onto AP surface. No layer grants correction, orthographic authority, generation
+license, or rule-discovery authority.
 """
 
 from __future__ import annotations
@@ -36,15 +39,15 @@ from analyzer_v0_35_7_voces_documentary_exact_adapter import (
     DEFAULT_REGISTRY_PATH as VOCES_DOCUMENTARY_REGISTRY_PATH,
     VocesDocumentaryExactFallbackAnalyzer,
 )
-from analyzer_v0_35_4_documentary_candidate_adapter import (
-    DocumentaryCandidateAnalyzer,
-)
-from analyzer_v0_35_5_person_fusion_candidate_adapter import (
-    PersonFusionCandidateAnalyzer,
-)
+from analyzer_v0_35_4_documentary_candidate_adapter import DocumentaryCandidateAnalyzer
+from analyzer_v0_35_5_person_fusion_candidate_adapter import PersonFusionCandidateAnalyzer
 from analyzer_v0_35_8_documented_person_fusion_analysis_adapter import (
-    ADAPTER_VERSION,
     DocumentedPersonFusionAnalysisAnalyzer,
+)
+from analyzer_v0_35_9_verb_analysis_bridge import (
+    ADAPTER_VERSION,
+    BRIDGE_VERSION as VERB_ANALYSIS_BRIDGE_VERSION,
+    VerbAnalysisBridgeAnalyzer,
 )
 from biyubi_exact_source import (
     BiyubiControlledSource,
@@ -53,9 +56,7 @@ from biyubi_exact_source import (
     SOURCE_ENV_VAR as BIYUBI_SOURCE_ENV_VAR,
     SOURCE_ID as BIYUBI_SOURCE_ID,
 )
-from non_licensing_analyzer_orchestrator_v0_35 import (
-    NonLicensingAnalyzerOrchestrator,
-)
+from non_licensing_analyzer_orchestrator_v0_35 import NonLicensingAnalyzerOrchestrator
 
 
 HERE = Path(__file__).resolve().parent
@@ -77,7 +78,7 @@ def build_migrated_analyzer(
     biyubi_path: str | Path | None = None,
     *,
     require_biyubi: bool = False,
-) -> DocumentedPersonFusionAnalysisAnalyzer:
+) -> VerbAnalysisBridgeAnalyzer:
     """Instantiate the current Analyzer over repository/source artifacts."""
 
     historical = NonLicensingAnalyzerOrchestrator(
@@ -106,7 +107,8 @@ def build_migrated_analyzer(
     voces_documentary_exact = VocesDocumentaryExactFallbackAnalyzer(biyubi_exact)
     documentary = DocumentaryCandidateAnalyzer(voces_documentary_exact)
     person_candidates = PersonFusionCandidateAnalyzer(documentary)
-    return DocumentedPersonFusionAnalysisAnalyzer(person_candidates)
+    documented_person = DocumentedPersonFusionAnalysisAnalyzer(person_candidates)
+    return VerbAnalysisBridgeAnalyzer(documented_person)
 
 
 def migrated_execution_state(
@@ -117,7 +119,7 @@ def migrated_execution_state(
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
-            "current_adapter": "analyzer_v0_35_8_documented_person_fusion_analysis_adapter.py",
+            "current_adapter": "analyzer_v0_35_9_verb_analysis_bridge.py",
             "current_adapter_version": ADAPTER_VERSION,
             "exact_existing_layer_fallback_enabled": True,
             "punctuation_light_fallback_lookup_enabled": True,
@@ -126,6 +128,24 @@ def migrated_execution_state(
             "documentary_candidate_layer_enabled": True,
             "documented_person_fusion_candidate_layer_enabled": True,
             "documented_person_fusion_analysis_enabled": True,
+            "verb_analysis_bridge_enabled": True,
+            "verb_analysis_bridge_version": VERB_ANALYSIS_BRIDGE_VERSION,
+            "verb_analysis_bridge_policy": {
+                "documented_single_token_headword_records": True,
+                "exposes_documented_class": True,
+                "exposes_documented_pdlma_paradigm_fields": True,
+                "preserves_homography": True,
+                "tone_stripping": False,
+                "diacritic_stripping": False,
+                "apostrophe_normalization": False,
+                "near_match": False,
+                "pdlma_to_ap": False,
+                "nonheadword_tam_inference": False,
+                "valency_analysis": False,
+                "context_resolution": False,
+                "generation_license": False,
+                "correction_authority": False,
+            },
             "documented_morphology_policy": {
                 "exact_surface_evidence_kept_separate": True,
                 "requires_documented_lemma": True,
