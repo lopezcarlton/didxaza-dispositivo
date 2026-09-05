@@ -39,6 +39,7 @@ jobs:
           python dispositivo/analyzer/test_documentary_candidate_layer.py -v
           python dispositivo/analyzer/test_person_fusion_candidate.py -v
           python dispositivo/analyzer/test_documented_person_fusion_analysis.py -v
+          python dispositivo/analyzer/test_new_written_analysis_target_runner.py -v
 
       - name: Re-run first real-text probe through current Analyzer
         shell: bash
