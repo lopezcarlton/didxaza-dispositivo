@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
-"""Derive the missing Dictionaria example↔sense-field associations.
+"""Inspect and derive documentary verb-form associations from pinned Dictionaria.
 
-The public CLDF examples table keeps Primary_Text and Sense_IDs but the granular
-`sense_field_example` relation from the upstream raw database is not materialized
-in the exported ExampleTable. VerbAnalysisBridge v0.2 needs only the subset of
-that relation whose field_id is an explicitly named TAM field.
-
-This script downloads one pinned upstream raw SQLite snapshot, verifies its Git
-blob identity, inspects the exact source schema for auditability, reads only
-`sense_field_example`, and writes a compact CSV. The result is a technical
-derivative, not a new linguistic authority.
+This script is intentionally source-first. It verifies one pinned upstream raw
+SQLite snapshot and prints compact diagnostics needed to determine which
+relations are actually populated before materializing any technical derivative.
+No missing source relation is reconstructed by inference.
 """
 
 from __future__ import annotations
@@ -57,41 +52,59 @@ def git_blob_sha1(payload: bytes) -> str:
 
 
 def inspect_source(db: sqlite3.Connection) -> None:
-    """Print only compact schema/value diagnostics needed to map field_id."""
     print("sense_field_example_schema=")
     for row in db.execute("PRAGMA table_info(sense_field_example)"):
         print(tuple(row))
-
     total = db.execute("SELECT COUNT(*) FROM sense_field_example").fetchone()[0]
     print(f"sense_field_example_rows={total}")
-    print("sense_field_example_distinct_field_ids=")
-    for field_id, count in db.execute(
-        "SELECT field_id, COUNT(*) FROM sense_field_example "
-        "GROUP BY field_id ORDER BY COUNT(*) DESC, field_id LIMIT 100"
-    ):
-        print(f"{field_id!r}\t{count}")
 
-    print("tables_containing_field=")
-    tables = [
-        row[0]
-        for row in db.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND lower(name) LIKE '%field%' ORDER BY name"
+    for table in ("example", "sense_example", "textvalue"):
+        print(f"{table}_schema=")
+        for row in db.execute(f'PRAGMA table_info("{table}")'):
+            print(tuple(row))
+        count = db.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0]
+        print(f"{table}_rows={count}")
+
+    # The technical README documents example.text_id as the shared identity for
+    # multiple transcriptions/translations in textvalue. Measure what this exact
+    # snapshot actually contains before relying on it.
+    paired_sql = """
+        SELECT e.example_id,
+               MAX(CASE WHEN tv.language_id='jz_ap' THEN tv.content END) AS ap,
+               MAX(CASE WHEN tv.language_id='jz_pdlma' THEN tv.content END) AS pdlma,
+               MAX(CASE WHEN tv.language_id='jz_pdlma_sur' THEN tv.content END) AS pdlma_sur
+        FROM example e
+        JOIN textvalue tv ON tv.text_id=e.text_id
+        GROUP BY e.example_id
+    """
+    aggregates = list(db.execute(paired_sql))
+    has_ap = [row for row in aggregates if row[1]]
+    has_pdlma = [row for row in aggregates if row[2]]
+    paired = [row for row in aggregates if row[1] and row[2]]
+    paired_sur = [row for row in aggregates if row[1] and row[3]]
+    print(f"examples_aggregated={len(aggregates)}")
+    print(f"examples_with_jz_ap={len(has_ap)}")
+    print(f"examples_with_jz_pdlma={len(has_pdlma)}")
+    print(f"examples_with_ap_and_pdlma={len(paired)}")
+    print(f"examples_with_ap_and_pdlma_sur={len(paired_sur)}")
+
+    print("sample_ap_pdlma_pairs=")
+    for example_id, ap, pdlma, pdlma_sur in paired[:12]:
+        sense_ids = [
+            str(row[0])
+            for row in db.execute(
+                "SELECT sense_id FROM sense_example WHERE example_id=? ORDER BY sense_id",
+                (example_id,),
+            )
+        ]
+        print(
+            f"example_id={example_id!r} sense_ids={sense_ids!r} "
+            f"AP={ap!r} PDLMA={pdlma!r} PDLMA_SUR={pdlma_sur!r}"
         )
-    ]
-    for table in tables:
-        print(table)
-        columns = list(db.execute(f'PRAGMA table_info("{table}")'))
-        print("  columns=", [row[1] for row in columns])
-        try:
-            samples = list(db.execute(f'SELECT * FROM "{table}" LIMIT 5'))
-        except sqlite3.DatabaseError as exc:
-            print("  sample_error=", repr(exc))
-        else:
-            for sample in samples:
-                print("  sample=", tuple(sample))
 
 
-def derive(sqlite_path: Path, output_path: Path) -> int:
+def derive_empty_field_associations(sqlite_path: Path, output_path: Path) -> int:
+    """Materialize only genuine sense_field_example TAM rows; currently diagnostic."""
     payload = sqlite_path.read_bytes()
     if len(payload) != RAW_SQLITE_SIZE:
         raise RuntimeError(
@@ -151,15 +164,15 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.sqlite is not None:
-        count = derive(args.sqlite, args.output)
+        count = derive_empty_field_associations(args.sqlite, args.output)
     else:
         with tempfile.TemporaryDirectory() as tmp:
             sqlite_path = Path(tmp) / "jzd.dictionaria.sqlite"
             with urlopen(RAW_SQLITE_URL, timeout=120) as response:
                 sqlite_path.write_bytes(response.read())
-            count = derive(sqlite_path, args.output)
+            count = derive_empty_field_associations(sqlite_path, args.output)
 
-    print(f"derived_rows={count}")
+    print(f"derived_sense_field_example_tam_rows={count}")
     print(f"output={args.output}")
     print(f"dictionaria_commit={DICTIONARIA_COMMIT}")
     print(f"raw_sqlite_git_blob_sha1={RAW_SQLITE_GIT_BLOB_SHA1}")
