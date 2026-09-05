@@ -19,7 +19,6 @@ from analyzer_v0_35_15_contextual_documentary_support import (
     STATUS_NO_CONTEXT,
     STATUS_NO_SUPPORT,
     STATUS_SUPPORT,
-    ContextualDocumentarySupportViewAnalyzer,
 )
 from analyzer_v0_35_migrated_adapter import build_migrated_analyzer
 
@@ -27,9 +26,8 @@ from analyzer_v0_35_migrated_adapter import build_migrated_analyzer
 class ContextualDocumentarySupportTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # Independent test wrapper until v0.35.15 becomes the migrated outer adapter.
-        cls.engine = ContextualDocumentarySupportViewAnalyzer(build_migrated_analyzer())
-        # v0.35.15(test) -> v0.35.14 -> v0.35.13 -> v0.35.12 -> v0.35.11 -> v0.35.10.
+        cls.engine = build_migrated_analyzer()
+        # v0.35.15 -> v0.35.14 -> v0.35.13 -> v0.35.12 -> v0.35.11 -> v0.35.10.
         cls.v02 = cls.engine.base.base.base.base.base
 
     @classmethod
@@ -45,6 +43,8 @@ class ContextualDocumentarySupportTests(unittest.TestCase):
             if token in seen:
                 continue
             seen.add(token)
+            # Inspect the pre-context v0.35.14 result so the fixture is selected
+            # independently of the contextual-support layer being tested.
             base_result = self.engine.base.analyze(
                 token, item_id="TECHNICAL_CONTEXT_FIXTURE_DISCOVERY"
             )
