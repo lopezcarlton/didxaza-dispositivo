@@ -5,7 +5,7 @@
 
 ```text
 KNOWLEDGE_SOURCE_REPOSITORY = lopezcarlton/vocesdelasnubes
-KNOWLEDGE_SOURCE_COMMIT = 59653cc283d2fceea968031e1b554192ff7b3a27
+KNOWLEDGE_SOURCE_COMMIT = f17c5363caada6f8beb18fa99c39e37cd72c6f09
 KNOWLEDGE_SOURCE_REF = main
 ```
 
@@ -33,6 +33,7 @@ El pin incorpora el systematic semantic backfill completado hasta las fuentes pr
 - recuperación independiente posterior a un hueco de análisis: atestación documental conservadora de `binnilaanu` en Xneza/Teria (`HALL-0186`) y separación AP/PDLMA + evidencia `ndani`/`gundani` en Dictionaria (`HALL-0187`);
 - adjudicación directa de Pérez Báez 2015 sobre cambio morfológico de valencia: separación TAM/derivación (`HALL-0188`), grupos vocálicos V1–V3 (`HALL-0189`), grupos consonánticos C1–C4 (`HALL-0190`) y variación/productividad/equipolencia (`HALL-0191`);
 - semántica explícita de códigos gramaticales Dictionaria para causativo, intransitivo y transitivo (`HALL-0192`);
+- relaciones concretas fuente-explícitas de Pérez Báez 2015 entre miembros de díadas/tríadas y equipolentes (`HALL-0193`), con derivado selectivo de 65 miembros / 26 conjuntos y auditoría que confirma que el snapshot fijado de Dictionaria no contiene campos de relación poblados;
 - checkpoint `SEMANTIC_BACKFILL_CHECKPOINT_2026-09-04` con estado `SYSTEMATIC_BACKFILL_PASS_COMPLETE_TO_AVAILABLE_SOURCES / NORMA_2016_BLOCKED_BY_ACCESS`.
 
 Reglas de precedencia relevantes:
@@ -49,8 +50,16 @@ HALL_0191_DOCUMENTED_DERIVATIONAL_PATTERN != PRODUCTIVE_RULE
 HALL_0192_LITERAL_DEFINED_CODE = LEXICAL_DOCUMENTARY_PROPERTY_ONLY
 HALL_0192_CAUSATIVE_CODE != BASIC_CAUSATIVE_RELATION
 HALL_0192_TRANSITIVITY_CODE != AUTOMATIC_NUMERIC_VALENCE
+HALL_0193_SOURCE_TABLE_MEMBERSHIP = EXPLICIT_VALENCY_RELATION
+HALL_0193_V1_MORE_ACTIVE != AUTOMATIC_CAUSATIVE
+HALL_0193_PDLMA_MEMBER != AP_SURFACE
+HALL_0193_SELECTED_REGISTRY != EXHAUSTIVE_SOURCE_TRANSCRIPTION
+STRICT_PDLMA_CROSSWALK_NO_MATCH != LINGUISTIC_ABSENCE
+STRICT_PDLMA_CROSSWALK_MULTIPLE_MATCH != AUTOMATIC_DISAMBIGUATION
+STRICT_PDLMA_ENTRY_LINK != OBSERVED_SURFACE_PDLMA_TO_AP_INFERENCE
 vers = UNADJUDICATED
 VALENCY_COMPATIBILITY != CORRECTION_OR_GENERATION_LICENSE
+EXPLICIT_VALENCY_RELATION != GENERATION_LICENSE
 ```
 
 Contradicciones abiertas que el dispositivo no debe resolver unilateralmente:

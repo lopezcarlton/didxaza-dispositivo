@@ -4,9 +4,9 @@
 These tests assert retrieval behavior over already materialized runtime evidence.
 They do not assert linguistic correctness, orthographic correctness, translation,
 or rule discovery. Biyubi is registered but intentionally unmounted in this
-public-repository regression suite. Candidate-only, documented-morphology or
-valency-compatibility observations must not alter any exact-evidence assertion
-below.
+public-repository regression suite. Candidate-only, documented-morphology,
+valency-compatibility, and source-explicit valency-relation observations must
+not alter any exact-evidence assertion below.
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
 
     def test_execution_state_declares_current_fallback(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.11")
+        self.assertEqual(state["current_adapter_version"], "0.35.12")
         self.assertTrue(state["exact_existing_layer_fallback_enabled"])
         self.assertTrue(state["punctuation_light_fallback_lookup_enabled"])
         self.assertTrue(state["voces_documentary_exact_layer_enabled"])
@@ -53,6 +53,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertTrue(state["verb_analysis_bridge_enabled"])
         self.assertTrue(state["documentary_verb_form_candidate_layer_enabled"])
         self.assertTrue(state["valency_compatibility_bridge_enabled"])
+        self.assertTrue(state["explicit_valency_relation_bridge_enabled"])
         self.assertFalse(state["candidate_layer_policy"]["candidate_is_exact_evidence"])
         self.assertFalse(state["candidate_layer_policy"]["candidate_promotes_analysis_status"])
         self.assertTrue(state["documented_morphology_policy"]["exact_surface_evidence_kept_separate"])
@@ -60,6 +61,10 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertFalse(state["documented_morphology_policy"]["correction_authority"])
         self.assertFalse(state["valency_compatibility_policy"]["generation_license"])
         self.assertFalse(state["valency_compatibility_policy"]["correction_authority"])
+        self.assertFalse(state["explicit_valency_relation_policy"]["surface_relation_inference"])
+        self.assertFalse(state["explicit_valency_relation_policy"]["pdlma_to_ap"])
+        self.assertFalse(state["explicit_valency_relation_policy"]["generation_license"])
+        self.assertFalse(state["explicit_valency_relation_policy"]["correction_authority"])
         self.assertEqual(
             set(state["fallback_layers"]),
             {
@@ -138,6 +143,8 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertTrue(result["exact_evidence_metrics_preserved_separately"])
         self.assertFalse(result["valency_compatibility_changes_exact_evidence_metrics"])
         self.assertFalse(result["valency_compatibility_changes_analysis_status"])
+        self.assertFalse(result["explicit_valency_relation_changes_exact_evidence_metrics"])
+        self.assertFalse(result["explicit_valency_relation_changes_analysis_status"])
 
     def test_real_text_lines_gain_effective_coverage_without_inflating_primary_matches(self):
         line2 = self.engine.analyze(
@@ -165,7 +172,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(line1["unresolved_token_indexes_after_exact_fallback"], [1])
 
         for result in (line1, line2, line3):
-            self.assertEqual(result["current_adapter_version"], "0.35.11")
+            self.assertEqual(result["current_adapter_version"], "0.35.12")
             self.assertTrue(result["fallback_policy"]["matched_token_count_not_inflated_by_fallback"])
             self.assertTrue(result["fallback_policy"]["candidate_layer_does_not_increase_effective_evidence_coverage"])
             self.assertTrue(result["fallback_policy"]["person_fusion_candidate_does_not_increase_effective_evidence_coverage"])
@@ -176,6 +183,8 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
             self.assertFalse(result["documentary_verb_form_candidates_change_analysis_status"])
             self.assertFalse(result["valency_compatibility_changes_exact_evidence_metrics"])
             self.assertFalse(result["valency_compatibility_changes_analysis_status"])
+            self.assertFalse(result["explicit_valency_relation_changes_exact_evidence_metrics"])
+            self.assertFalse(result["explicit_valency_relation_changes_analysis_status"])
             self.assertFalse(result["generation_license_assertion"])
             self.assertFalse(result["correction_assertion"])
             self.assertFalse(result["orthographic_authority_assertion"])
@@ -221,6 +230,8 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertTrue(result["exact_evidence_metrics_preserved_separately"])
         self.assertFalse(result["valency_compatibility_changes_exact_evidence_metrics"])
         self.assertFalse(result["valency_compatibility_changes_analysis_status"])
+        self.assertFalse(result["explicit_valency_relation_changes_exact_evidence_metrics"])
+        self.assertFalse(result["explicit_valency_relation_changes_analysis_status"])
 
 
 if __name__ == "__main__":
