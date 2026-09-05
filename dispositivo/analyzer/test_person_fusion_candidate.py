@@ -34,7 +34,7 @@ class PersonFusionCandidateTests(unittest.TestCase):
         result = self.engine.analyze("Rinite'", item_id="TECHNICAL_GP_1SG_RINITI")
         rows = result["supplemental_documented_person_fusion_candidates"]
 
-        self.assertEqual(result["current_adapter_version"], "0.35.11")
+        self.assertEqual(result["current_adapter_version"], "0.35.12")
         self.assertEqual(len(rows), 1)
         row = rows[0]
         self.assertEqual(row["token_raw"], "Rinite'")
