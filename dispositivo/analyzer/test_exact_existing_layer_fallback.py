@@ -42,9 +42,10 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
 
     def test_execution_state_declares_current_fallback(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.6")
+        self.assertEqual(state["current_adapter_version"], "0.35.8")
         self.assertTrue(state["exact_existing_layer_fallback_enabled"])
         self.assertTrue(state["punctuation_light_fallback_lookup_enabled"])
+        self.assertTrue(state["voces_documentary_exact_layer_enabled"])
         self.assertTrue(state["documentary_candidate_layer_enabled"])
         self.assertTrue(state["documented_person_fusion_candidate_layer_enabled"])
         self.assertTrue(state["documented_person_fusion_analysis_enabled"])
@@ -60,6 +61,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
                 "pickett_lexical_record_v0211",
                 "cross_source_exact_surface_v0212",
                 "documentary_alignment_v0210",
+                "voces_promoted_documentary_exact_v0357",
             },
         )
         self.assertEqual(len(state["controlled_external_sources"]), 1)
@@ -119,6 +121,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(result["effective_evidence_token_count"], 0)
         self.assertEqual(result["unresolved_token_indexes_after_exact_fallback"], [0])
         self.assertEqual(result["unresolved_token_indexes_after_biyubi"], [0])
+        self.assertEqual(result["unresolved_token_indexes_after_voces_documentary_exact"], [0])
         self.assertEqual(result["still_exactly_unresolved_token_indexes"], [0])
         self.assertEqual(result["unresolved_token_indexes_after_documented_morphology"], [0])
         self.assertTrue(result["fallback_policy"]["unresolved_not_incorrect"])
@@ -153,7 +156,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(line1["unresolved_token_indexes_after_exact_fallback"], [1])
 
         for result in (line1, line2, line3):
-            self.assertEqual(result["current_adapter_version"], "0.35.6")
+            self.assertEqual(result["current_adapter_version"], "0.35.8")
             self.assertTrue(result["fallback_policy"]["matched_token_count_not_inflated_by_fallback"])
             self.assertTrue(result["fallback_policy"]["candidate_layer_does_not_increase_effective_evidence_coverage"])
             self.assertTrue(result["fallback_policy"]["person_fusion_candidate_does_not_increase_effective_evidence_coverage"])
@@ -196,6 +199,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(result["surface_original"], "guendaranaxhii,")
         self.assertEqual(result["unresolved_token_indexes_after_exact_fallback"], [0])
         self.assertEqual(result["unresolved_token_indexes_after_biyubi"], [0])
+        self.assertEqual(result["unresolved_token_indexes_after_voces_documentary_exact"], [0])
         self.assertEqual(result["still_exactly_unresolved_token_indexes"], [0])
         self.assertEqual(result["unresolved_token_indexes_after_documented_morphology"], [0])
         self.assertTrue(result["exact_evidence_state_unchanged_by_candidates"])
