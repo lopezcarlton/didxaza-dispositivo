@@ -4,7 +4,8 @@
 These tests do not assert that a candidate spelling is correct or equivalent.
 They assert only that already-specified candidate channels are visible while
 remaining strictly separate from exact evidence and correction authority. Later
-Analyzer wrappers may add documented morphology without changing this layer.
+Analyzer wrappers may add documented morphology or valency compatibility without
+changing this layer.
 """
 
 from __future__ import annotations
@@ -79,7 +80,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
 
     def _candidate_row(self, surface: str):
         result = self.engine.analyze(surface, item_id="TECHNICAL_CANDIDATE_REGRESSION")
-        self.assertEqual(result["current_adapter_version"], "0.35.10")
+        self.assertEqual(result["current_adapter_version"], "0.35.11")
         self.assertTrue(result["documentary_candidate_layer_enabled"])
         self.assertEqual(len(result["provisional_unresolved_token_candidates"]), 1)
         return result, result["provisional_unresolved_token_candidates"][0]
@@ -95,6 +96,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
         self.assertEqual(result["still_exactly_unresolved_token_indexes"], [0])
         self.assertTrue(result["exact_evidence_state_unchanged_by_candidates"])
         self.assertEqual(result["analysis_status"], "ABSTAIN_NO_COMPONENT_EVIDENCE")
+        self.assertFalse(result["valency_compatibility_changes_exact_evidence_metrics"])
 
     def test_rucuidxiilu_exposes_existing_graphical_2sg_candidate_only(self):
         result, row = self._candidate_row("rucuidxiilu'")
@@ -139,6 +141,7 @@ class CurrentAnalyzerCandidateLayerTests(unittest.TestCase):
         self.assertFalse(result["correction_assertion"])
         self.assertFalse(result["orthographic_authority_assertion"])
         self.assertFalse(result["rule_discovery_assertion"])
+        self.assertFalse(result["valency_compatibility_changes_analysis_status"])
 
 
 if __name__ == "__main__":
