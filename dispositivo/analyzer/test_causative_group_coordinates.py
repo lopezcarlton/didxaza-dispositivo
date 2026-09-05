@@ -14,19 +14,16 @@ from analyzer_v0_35_14_causative_group_coordinates import (
     CAUSATIVE_GROUP_RESOURCES,
     STATUS_AVAILABLE,
     STATUS_NONE,
-    CausativeGroupCoordinateViewAnalyzer,
     group_resource_payload,
 )
 from analyzer_v0_35_9_verb_analysis_bridge import _split_documented_headword_variants
-from analyzer_v0_35_migrated_adapter import build_migrated_analyzer
+from analyzer_v0_35_migrated_adapter import build_migrated_analyzer, migrated_execution_state
 
 
 class CausativeGroupCoordinateViewTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # At this stage the migrated builder is v0.35.13; wrap it independently
-        # before promoting v0.35.14 to the current outer adapter.
-        cls.engine = CausativeGroupCoordinateViewAnalyzer(build_migrated_analyzer())
+        cls.engine = build_migrated_analyzer()
 
     @classmethod
     def tearDownClass(cls):
@@ -38,6 +35,24 @@ class CausativeGroupCoordinateViewTests(unittest.TestCase):
             if variant and not any(ch.isspace() for ch in variant):
                 return variant
         self.fail(f"No single-token headword for {entry_id}")
+
+    def test_execution_state_declares_source_constrained_view(self):
+        state = migrated_execution_state()
+        self.assertEqual(state["current_adapter_version"], "0.35.14")
+        self.assertTrue(state["causative_group_coordinate_view_enabled"])
+        self.assertEqual(state["causative_group_coordinate_view_version"], "0.1")
+        policy = state["causative_group_coordinate_policy"]
+        self.assertTrue(policy["requires_source_explicit_c1_c4_membership"])
+        self.assertEqual(
+            policy["group_resources_analytical"],
+            {"C1": "-g-", "C2": "-u-", "C3": "-u-g-", "C4": "-u(-g)-zi- / -zu-"},
+        )
+        self.assertFalse(policy["surface_group_assignment"])
+        self.assertFalse(policy["visible_prefix_detection"])
+        self.assertFalse(policy["observed_surface_segmentation"])
+        self.assertFalse(policy["token_level_causative_parse_from_group_resource"])
+        self.assertFalse(policy["pdlma_to_ap"])
+        self.assertFalse(policy["productive_generation"])
 
     def test_group_resource_map_matches_adjudicated_c1_c4_coordinates(self):
         expected = {
