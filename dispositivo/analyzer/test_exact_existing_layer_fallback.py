@@ -6,8 +6,8 @@ They do not assert linguistic correctness, orthographic correctness, translation
 or rule discovery. Biyubi is registered but intentionally unmounted in this
 public-repository regression suite. Candidate-only, documented-morphology,
 valency-compatibility, source-explicit valency-relation, morphological hypothesis,
-and causative group-coordinate observations must not alter any exact-evidence
-assertion below.
+causative group-coordinate and contextual-documentary-support observations must
+not alter any exact-evidence assertion below.
 """
 
 from __future__ import annotations
@@ -44,7 +44,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
 
     def test_execution_state_declares_current_fallback(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.14")
+        self.assertEqual(state["current_adapter_version"], "0.35.15")
         self.assertTrue(state["exact_existing_layer_fallback_enabled"])
         self.assertTrue(state["punctuation_light_fallback_lookup_enabled"])
         self.assertTrue(state["voces_documentary_exact_layer_enabled"])
@@ -57,6 +57,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertTrue(state["explicit_valency_relation_bridge_enabled"])
         self.assertTrue(state["verb_morphological_hypothesis_view_enabled"])
         self.assertTrue(state["causative_group_coordinate_view_enabled"])
+        self.assertTrue(state["contextual_documentary_support_view_enabled"])
         self.assertFalse(state["candidate_layer_policy"]["candidate_is_exact_evidence"])
         self.assertFalse(state["candidate_layer_policy"]["candidate_promotes_analysis_status"])
         self.assertTrue(state["documented_morphology_policy"]["exact_surface_evidence_kept_separate"])
@@ -76,6 +77,10 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertFalse(state["causative_group_coordinate_policy"]["surface_group_assignment"])
         self.assertFalse(state["causative_group_coordinate_policy"]["visible_prefix_detection"])
         self.assertFalse(state["causative_group_coordinate_policy"]["pdlma_to_ap"])
+        self.assertTrue(state["contextual_documentary_support_policy"]["requires_existing_verb_hypothesis"])
+        self.assertFalse(state["contextual_documentary_support_policy"]["resolves_hypothesis"])
+        self.assertFalse(state["contextual_documentary_support_policy"]["ranks_hypotheses"])
+        self.assertFalse(state["contextual_documentary_support_policy"]["rewrites_local_evidence"])
         self.assertEqual(
             set(state["fallback_layers"]),
             {
@@ -160,6 +165,8 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertFalse(result["verb_morphological_hypothesis_changes_analysis_status"])
         self.assertFalse(result["causative_group_coordinate_changes_exact_evidence_metrics"])
         self.assertFalse(result["causative_group_coordinate_changes_analysis_status"])
+        self.assertFalse(result["contextual_documentary_support_changes_exact_evidence_metrics"])
+        self.assertFalse(result["contextual_documentary_support_changes_analysis_status"])
 
     def test_real_text_lines_gain_effective_coverage_without_inflating_primary_matches(self):
         line2 = self.engine.analyze(
@@ -187,7 +194,7 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertEqual(line1["unresolved_token_indexes_after_exact_fallback"], [1])
 
         for result in (line1, line2, line3):
-            self.assertEqual(result["current_adapter_version"], "0.35.14")
+            self.assertEqual(result["current_adapter_version"], "0.35.15")
             self.assertTrue(result["fallback_policy"]["matched_token_count_not_inflated_by_fallback"])
             self.assertTrue(result["fallback_policy"]["candidate_layer_does_not_increase_effective_evidence_coverage"])
             self.assertTrue(result["fallback_policy"]["person_fusion_candidate_does_not_increase_effective_evidence_coverage"])
@@ -204,6 +211,8 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
             self.assertFalse(result["verb_morphological_hypothesis_changes_analysis_status"])
             self.assertFalse(result["causative_group_coordinate_changes_exact_evidence_metrics"])
             self.assertFalse(result["causative_group_coordinate_changes_analysis_status"])
+            self.assertFalse(result["contextual_documentary_support_changes_exact_evidence_metrics"])
+            self.assertFalse(result["contextual_documentary_support_changes_analysis_status"])
             self.assertFalse(result["generation_license_assertion"])
             self.assertFalse(result["correction_assertion"])
             self.assertFalse(result["orthographic_authority_assertion"])
@@ -255,6 +264,8 @@ class ExactExistingLayerFallbackTests(unittest.TestCase):
         self.assertFalse(result["verb_morphological_hypothesis_changes_analysis_status"])
         self.assertFalse(result["causative_group_coordinate_changes_exact_evidence_metrics"])
         self.assertFalse(result["causative_group_coordinate_changes_analysis_status"])
+        self.assertFalse(result["contextual_documentary_support_changes_exact_evidence_metrics"])
+        self.assertFalse(result["contextual_documentary_support_changes_analysis_status"])
 
 
 if __name__ == "__main__":
