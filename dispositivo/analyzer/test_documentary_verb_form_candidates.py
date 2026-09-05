@@ -11,6 +11,7 @@ from __future__ import annotations
 import unittest
 
 from analyzer_v0_35_10_documentary_verb_form_candidates import (
+    CANDIDATE_KEY_POLICY,
     CANDIDATE_STATUS,
     COMPARISON_OPERATION,
     pdlma_hyphen_collapse_candidate_key,
@@ -36,15 +37,20 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         stats = state["documentary_verb_form_candidate_index_stats"]
         self.assertGreater(stats["verb_sense_links"], 0)
         self.assertGreater(stats["single_verb_linked_examples"], 0)
-        self.assertGreater(stats["examples_with_literal_hyphen_collapse_match"], 0)
+        self.assertGreater(stats["examples_with_candidate_key_hyphen_collapse_match"], 0)
         self.assertGreater(stats["candidate_relations"], 0)
         self.assertGreater(stats["indexed_token_keys"], 0)
         self.assertEqual(stats["comparison_operation"], COMPARISON_OPERATION)
+        self.assertEqual(stats["candidate_key_policy"], CANDIDATE_KEY_POLICY)
         policy = state["verb_analysis_bridge_policy"]
         self.assertTrue(policy["documentary_nonheadword_form_candidates"])
-        self.assertTrue(policy["candidate_requires_exact_ap_example_token"])
+        self.assertTrue(policy["candidate_requires_ap_example_token_match_under_candidate_key"])
         self.assertTrue(policy["candidate_requires_unique_linked_verb_entry"])
-        self.assertTrue(policy["candidate_requires_literal_pdlma_match_after_ascii_hyphen_removal_only"])
+        self.assertTrue(policy["candidate_requires_pdlma_tam_match_after_ascii_hyphen_removal_under_same_candidate_key"])
+        self.assertTrue(policy["candidate_key_nfc"])
+        self.assertTrue(policy["candidate_key_casefold"])
+        self.assertTrue(policy["candidate_key_apostrophe_typography_unification"])
+        self.assertFalse(policy["candidate_match_is_exact_surface_evidence"])
         self.assertFalse(policy["candidate_token_role_asserted"])
         self.assertFalse(policy["candidate_tam_of_observed_surface_asserted"])
         self.assertFalse(policy["candidate_promotes_analysis_status"])
@@ -52,18 +58,36 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertFalse(policy["generation_license"])
         self.assertFalse(policy["correction_authority"])
 
-    def test_documentary_key_preserves_tone_and_only_unifies_apostrophe_typography(self):
+    def test_documentary_key_preserves_tone_and_only_unifies_case_apostrophe_typography(self):
         self.assertNotEqual(strict_documentary_key("xí"), strict_documentary_key("xi"))
-        self.assertEqual(strict_documentary_key("gu’yu’"), strict_documentary_key("gu'yu'"))
+        self.assertEqual(strict_documentary_key("Gu’yu’"), strict_documentary_key("gu'yu'"))
         self.assertNotEqual(strict_documentary_key("gu'yu'"), strict_documentary_key("guyu"))
 
-    def test_pdlma_candidate_comparison_removes_only_ascii_hyphen(self):
+    def test_pdlma_candidate_comparison_removes_only_ascii_hyphen_structurally(self):
         target = strict_documentary_key("gundani")
         self.assertEqual(pdlma_hyphen_collapse_candidate_key("gu-ndani"), target)
         self.assertNotEqual(pdlma_hyphen_collapse_candidate_key("gu.ndani"), target)
         self.assertNotEqual(pdlma_hyphen_collapse_candidate_key("gu-nda!ni"), target)
         self.assertNotEqual(pdlma_hyphen_collapse_candidate_key("gu-nda7ni"), target)
         self.assertNotEqual(pdlma_hyphen_collapse_candidate_key("gú-ndani"), target)
+
+    def test_candidate_key_match_is_not_exact_surface_evidence(self):
+        # Candidate comparison may unify sentence capitalization/apostrophe typography,
+        # but that must never be represented as raw exact evidence.
+        rows = None
+        for candidate_rows in self.engine._example_token_index.values():
+            if candidate_rows:
+                rows = candidate_rows
+                break
+        self.assertIsNotNone(rows)
+        token = rows[0]["token_surface_in_example"]
+        variant = token[:1].upper() + token[1:] if token else token
+        candidate = self.engine._candidate_payload(variant, 0)
+        self.assertIsNotNone(candidate)
+        self.assertTrue(candidate["documentary_token_match_under_candidate_key"])
+        if variant != token:
+            self.assertFalse(candidate["raw_nfc_exact_documentary_token_attestation"])
+        self.assertFalse(candidate["candidate_adds_exact_surface_evidence"])
 
     def test_indexed_candidate_exposes_only_analytical_coordinates(self):
         candidate = None
@@ -76,7 +100,8 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
                 break
         self.assertIsNotNone(candidate)
         self.assertEqual(candidate["candidate_status"], CANDIDATE_STATUS)
-        self.assertTrue(candidate["underlying_exact_documentary_token_attestation"])
+        self.assertTrue(candidate["documentary_token_match_under_candidate_key"])
+        self.assertTrue(candidate["raw_nfc_exact_documentary_token_attestation"])
         self.assertFalse(candidate["candidate_adds_exact_surface_evidence"])
         self.assertFalse(candidate["candidate_promotes_analysis_status"])
         self.assertFalse(candidate["candidate_resolves_token"])
@@ -86,7 +111,12 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertTrue(entry["root_analysis_raw"])
         self.assertTrue(entry["matching_documented_pdlma_variants"])
         self.assertEqual(entry["comparison_policy"]["operation"], COMPARISON_OPERATION)
-        self.assertTrue(entry["comparison_policy"]["ascii_hyphen_removed"])
+        self.assertEqual(entry["comparison_policy"]["candidate_key_policy"], CANDIDATE_KEY_POLICY)
+        self.assertTrue(entry["comparison_policy"]["ascii_hyphen_removed_from_pdlma"])
+        self.assertTrue(entry["comparison_policy"]["unicode_nfc"])
+        self.assertTrue(entry["comparison_policy"]["casefold_for_candidate_comparison"])
+        self.assertTrue(entry["comparison_policy"]["apostrophe_typography_unified_for_candidate_comparison"])
+        self.assertFalse(entry["comparison_policy"]["candidate_is_exact_surface_evidence"])
         self.assertFalse(entry["comparison_policy"]["tone_stripping"])
         self.assertFalse(entry["comparison_policy"]["diacritic_stripping"])
         self.assertFalse(entry["comparison_policy"]["glottal_7_to_apostrophe"])
