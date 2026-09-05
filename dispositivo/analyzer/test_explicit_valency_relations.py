@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regressions for ExplicitValencyRelationBridge v0.1 / Analyzer v0.35.12.
+"""Regressions for ExplicitValencyRelationBridge v0.1 under Analyzer v0.35.13.
 
 Fixtures come only from the versioned PB2015 relation crosswalk and the existing
 2,385-record Dictionaria derivative. No NEW_WRITTEN_ANALYSIS_TARGET or COR001
@@ -47,9 +47,10 @@ class ExplicitValencyRelationBridgeTests(unittest.TestCase):
 
     def test_index_stats_are_exactly_the_measured_strict_crosswalk(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.12")
+        self.assertEqual(state["current_adapter_version"], "0.35.13")
         self.assertTrue(state["explicit_valency_relation_bridge_enabled"])
         self.assertEqual(state["explicit_valency_relation_bridge_version"], "0.1")
+        self.assertTrue(state["verb_morphological_hypothesis_view_enabled"])
         stats = state["explicit_valency_relation_index_stats"]
         self.assertEqual(stats["selected_relation_members"], 65)
         self.assertEqual(stats["selected_relation_sets"], 26)
@@ -78,6 +79,7 @@ class ExplicitValencyRelationBridgeTests(unittest.TestCase):
         self.assertGreaterEqual(len(memberships), 3)
         self.assertFalse(rows[0]["relation_asserted_from_surface_morphology"])
         self.assertFalse(rows[0]["pdlma_to_ap_assertion"])
+        self.assertFalse(result["verb_morphological_hypothesis_changes_analysis_status"])
 
     def test_fully_resolved_set_exposes_both_documented_members(self):
         surface = self._single_token_headword("ruku")
@@ -171,6 +173,7 @@ class ExplicitValencyRelationBridgeTests(unittest.TestCase):
             result["explicit_valency_relation_observations"][0]["status"],
             "NO_ELIGIBLE_IDENTIFIED_VERB_ENTRY",
         )
+        self.assertEqual(result["verb_morphological_hypothesis_informative_token_indexes"], [])
         self.assertFalse(result["automatic_pb2015_group_assignment_enabled"])
         self.assertFalse(result["surface_valency_relation_inference_enabled"])
         self.assertFalse(result["explicit_valency_relation_generation_enabled"])
