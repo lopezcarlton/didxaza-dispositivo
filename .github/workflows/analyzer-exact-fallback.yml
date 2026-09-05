@@ -89,3 +89,10 @@ jobs:
         with:
           name: real-text-probe-001-after-current-analyzer-${{ github.sha }}
           path: ${{ runner.temp }}/REAL_TEXT_PROBE_001_AFTER_FALLBACK.json
+
+      - name: Upload ephemeral executable checkout bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: analyzer-executable-bundle-${{ github.sha }}
+          path: dispositivo
+          compression-level: 0
