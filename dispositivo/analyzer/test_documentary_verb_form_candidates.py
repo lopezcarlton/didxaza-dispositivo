@@ -3,8 +3,7 @@
 
 No NEW_WRITTEN_ANALYSIS_TARGET is used as benchmark, regression source or rule
 source. Positive fixtures are discovered from the already-versioned Dictionaria
-snapshot/derived association registry and the 2,385-record verb inventory;
-negatives are synthetic.
+examples and 2,385-record verb inventory; negatives are synthetic.
 """
 
 from __future__ import annotations
@@ -13,6 +12,8 @@ import unittest
 
 from analyzer_v0_35_10_documentary_verb_form_candidates import (
     CANDIDATE_STATUS,
+    COMPARISON_OPERATION,
+    pdlma_hyphen_collapse_candidate_key,
     strict_documentary_key,
 )
 from analyzer_v0_35_migrated_adapter import build_migrated_analyzer, migrated_execution_state
@@ -33,17 +34,17 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertEqual(state["verb_analysis_bridge_version"], "0.2")
         self.assertTrue(state["documentary_verb_form_candidate_layer_enabled"])
         stats = state["documentary_verb_form_candidate_index_stats"]
-        self.assertTrue(stats["association_registry_present"])
-        self.assertGreater(stats["association_registry_rows"], 0)
-        self.assertGreater(stats["used_association_rows"], 0)
         self.assertGreater(stats["verb_sense_links"], 0)
-        self.assertGreater(stats["tam_tagged_examples"], 0)
+        self.assertGreater(stats["single_verb_linked_examples"], 0)
+        self.assertGreater(stats["examples_with_literal_hyphen_collapse_match"], 0)
+        self.assertGreater(stats["candidate_relations"], 0)
         self.assertGreater(stats["indexed_token_keys"], 0)
+        self.assertEqual(stats["comparison_operation"], COMPARISON_OPERATION)
         policy = state["verb_analysis_bridge_policy"]
         self.assertTrue(policy["documentary_nonheadword_form_candidates"])
         self.assertTrue(policy["candidate_requires_exact_ap_example_token"])
         self.assertTrue(policy["candidate_requires_unique_linked_verb_entry"])
-        self.assertTrue(policy["candidate_requires_explicit_tam_feature"])
+        self.assertTrue(policy["candidate_requires_literal_pdlma_match_after_ascii_hyphen_removal_only"])
         self.assertFalse(policy["candidate_token_role_asserted"])
         self.assertFalse(policy["candidate_tam_of_observed_surface_asserted"])
         self.assertFalse(policy["candidate_promotes_analysis_status"])
@@ -55,6 +56,14 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertNotEqual(strict_documentary_key("xí"), strict_documentary_key("xi"))
         self.assertEqual(strict_documentary_key("gu’yu’"), strict_documentary_key("gu'yu'"))
         self.assertNotEqual(strict_documentary_key("gu'yu'"), strict_documentary_key("guyu"))
+
+    def test_pdlma_candidate_comparison_removes_only_ascii_hyphen(self):
+        target = strict_documentary_key("gundani")
+        self.assertEqual(pdlma_hyphen_collapse_candidate_key("gu-ndani"), target)
+        self.assertNotEqual(pdlma_hyphen_collapse_candidate_key("gu.ndani"), target)
+        self.assertNotEqual(pdlma_hyphen_collapse_candidate_key("gu-nda!ni"), target)
+        self.assertNotEqual(pdlma_hyphen_collapse_candidate_key("gu-nda7ni"), target)
+        self.assertNotEqual(pdlma_hyphen_collapse_candidate_key("gú-ndani"), target)
 
     def test_indexed_candidate_exposes_only_analytical_coordinates(self):
         candidate = None
@@ -75,6 +84,15 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         entry = candidate["compatible_verb_entries"][0]
         self.assertTrue(entry["tam_candidates"])
         self.assertTrue(entry["root_analysis_raw"])
+        self.assertTrue(entry["matching_documented_pdlma_variants"])
+        self.assertEqual(entry["comparison_policy"]["operation"], COMPARISON_OPERATION)
+        self.assertTrue(entry["comparison_policy"]["ascii_hyphen_removed"])
+        self.assertFalse(entry["comparison_policy"]["tone_stripping"])
+        self.assertFalse(entry["comparison_policy"]["diacritic_stripping"])
+        self.assertFalse(entry["comparison_policy"]["glottal_7_to_apostrophe"])
+        self.assertFalse(entry["comparison_policy"]["bang_removal"])
+        self.assertFalse(entry["comparison_policy"]["dot_removal"])
+        self.assertFalse(entry["comparison_policy"]["segment_substitution"])
         self.assertFalse(entry["observed_token_is_verb_assertion"])
         self.assertFalse(entry["tam_of_observed_surface_assertion"])
         self.assertFalse(entry["root_segmentation_of_observed_token_assertion"])
@@ -85,10 +103,10 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
     def test_real_snapshot_has_nonheadword_candidate_without_promoting_analysis(self):
         chosen = None
         base_result = None
-        # Find a documentary token independently of the blind target that is not
-        # already recognized by v0.1 as an exact verb headword and is not the
+        # Find a documentary candidate independently of the blind target that is
+        # not already recognized by v0.1 as an exact verb headword and is not the
         # separately promoted 1SG person-fusion case.
-        for rows in list(self.engine._example_token_index.values())[:500]:
+        for rows in self.engine._example_token_index.values():
             if not rows:
                 continue
             token = rows[0]["token_surface_in_example"]
@@ -103,7 +121,7 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
             base_result = candidate_base
             break
 
-        self.assertIsNotNone(chosen, "No non-headword documentary candidate found in first 500 indexed keys")
+        self.assertIsNotNone(chosen, "No non-headword structural candidate found in documentary snapshot")
         self.assertIsNotNone(base_result)
         result = self.engine.analyze(chosen, item_id="TECHNICAL_V02_INTEGRATION")
         self.assertEqual(result["current_adapter_version"], "0.35.10")
@@ -112,8 +130,8 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         candidate = result["documentary_verb_form_candidates"][0]
         self.assertFalse(candidate["candidate_resolves_token"])
 
-        # v0.2 enriches research coordinates only.  Whatever exact/analysis
-        # state v0.1 had must remain unchanged.
+        # v0.2 enriches research coordinates only. Whatever v0.1 had must remain
+        # unchanged in exact coverage and promoted analysis state.
         self.assertEqual(
             result["unresolved_token_indexes_after_documentary_verb_form_candidates"],
             base_result["unresolved_token_indexes_after_documented_morphology"],
