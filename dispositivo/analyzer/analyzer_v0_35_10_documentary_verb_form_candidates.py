@@ -4,36 +4,38 @@
 This wrapper extends VerbAnalysisBridge v0.1 without changing exact-evidence
 metrics or promoting a token to a resolved morphological analysis.
 
-For a token that lacks an already documented exact verb-headword analysis (and
-has not been resolved by the separately licensed person-fusion rule), it may
-surface a *research candidate* when all of the following are true:
+The pinned Dictionaria snapshot does *not* contain populated example↔TAM links
+(`sense_field_example` has zero rows) and its examples contain AP text but no
+parallel PDLMA transcription.  Therefore v0.2 does not manufacture either kind
+of missing association.
 
-1. the token is exactly attested in a Dictionaria AP Primary_Text example under
-   a strict documentary key (NFC + case + apostrophe typography only);
-2. the pinned upstream `sense_field_example` relation associates that example
-   through a TAM field with exactly one verb entry in the 2,385-record inventory;
-3. the TAM field is explicit: HAB/POT/CMP/PRG/PRF/FUT/CTF/AND.
+Instead, it uses only relations that are actually present and independently
+anchored:
 
-The granular example↔sense-field relation is loaded from the static technical
-registry derived by `derive_dictionaria_example_field_associations.py`.  The
-public CLDF ExampleTable itself does not retain this granular field association.
+1. an AP token occurs exactly in a Dictionaria Primary_Text example;
+2. that example is associated through Sense_IDs with exactly one verb entry in
+   the 2,385-record verb inventory;
+3. one documented PDLMA TAM variant of that *same verb entry* becomes literally
+   identical to the AP token after removing ASCII hyphen U+002D only.
 
-The candidate exposes the compatible verb entry, class, analytical root/citation
-and PDLMA paradigm coordinates for the TAM labels associated with the example.
-It does NOT assert that the observed token is necessarily the verb in that
-sentence, does NOT assert the TAM of the observed token, does NOT map PDLMA to
-Alfabeto Popular, and does NOT license correction or generation.
+The third operation is deliberately a comparison operation, not an orthographic
+rewrite.  No `7`→apostrophe mapping, tone/diacritic stripping, `!` removal, dot
+removal, vowel change, segment substitution, edit distance or general
+PDLMA→Alfabeto Popular conversion is permitted.
 
-This implements the recovery-coordinate use allowed by Voces HALL-0073,
-HALL-0074 and HALL-0076 while preserving HALL-0076's explicit prohibition on
-blind PDLMA -> Alfabeto Popular rewriting.
+A successful match is therefore exposed only as a research candidate connecting
+observed AP token → candidate TAM → analytical root → compatible verb entry →
+verb class. It does NOT assert token identity, TAM, root segmentation, spelling,
+semantic equivalence, correction or generation.
+
+This uses the recovery-coordinate role allowed by Voces HALL-0073/HALL-0074 and
+HALL-0076 while preserving HALL-0076's explicit prohibition on blind
+PDLMA→Alfabeto Popular rewriting.
 """
 
 from __future__ import annotations
 
 from collections import defaultdict
-import csv
-from pathlib import Path
 import re
 import unicodedata
 from typing import Any
@@ -41,31 +43,16 @@ from typing import Any
 ADAPTER_VERSION = "0.35.10"
 BRIDGE_VERSION = "0.2"
 
-CANDIDATE_STATUS = "DOCUMENTARY_VERB_FORM_CONTEXTUAL_CANDIDATE"
+CANDIDATE_STATUS = "DOCUMENTARY_VERB_FORM_STRUCTURAL_CANDIDATE"
+COMPARISON_OPERATION = "PDLMA_REMOVE_ASCII_MORPHEME_HYPHEN_ONLY"
 
 VOCES_KNOWLEDGE_COMMIT = "5a5a76eca11966b7df79edb76cf51ab94507bda1"
 DICTIONARIA_SOURCE_ID = "SRC-DICTIONARIA-DIDXAZA-SPANISH-ENGLISH-DICTIONARY"
 DICTIONARIA_COMMIT = "76c22cf30c23d8f4bc5c83c11013a8cb24fe0f85"
-RAW_SQLITE_GIT_BLOB_SHA1 = "4722551b56bb219c1cad354d1bfa9077d657aada"
 PBK_SOURCE_ID = "SRC-PEREZ-BAEZ-KAUFMAN-2016-VERB-CLASSES"
 HALL_IDS = ("HALL-0073", "HALL-0074", "HALL-0076")
 
-HERE = Path(__file__).resolve().parent
-DEFAULT_ASSOCIATION_REGISTRY_PATH = (
-    HERE.parent / "sources" / "DICTIONARIA_EXAMPLE_FIELD_ASSOCIATIONS_v0_1.csv"
-)
-
 APOSTROPHE_EQUIVALENTS = ("'", "’", "ʼ", "ꞌ")
-TAM_FIELD_ID_MAP = {
-    "HAB": "HABITUAL",
-    "POT": "POTENTIAL",
-    "CMP": "COMPLETIVE",
-    "PRG": "PROGRESSIVE",
-    "PRF": "PERFECT",
-    "FUT": "FUTURE",
-    "CTF": "COUNTERFACTUAL",
-    "AND": "ANDATIVE",
-}
 
 
 def strict_documentary_key(text: str) -> str:
@@ -74,6 +61,16 @@ def strict_documentary_key(text: str) -> str:
     for apostrophe in APOSTROPHE_EQUIVALENTS[1:]:
         value = value.replace(apostrophe, "'")
     return re.sub(r"\s+", " ", value.strip())
+
+
+def pdlma_hyphen_collapse_candidate_key(text: str) -> str:
+    """Remove only literal ASCII hyphens, then apply the documentary key.
+
+    This intentionally leaves PDLMA symbols such as `.`, `=`, `!`, `7`, `*`,
+    parentheses and spaces untouched.  It is a candidate-comparison coordinate,
+    never a PDLMA→AP conversion function.
+    """
+    return strict_documentary_key(str(text or "").replace("-", ""))
 
 
 def tokenize_documentary_surface(text: str) -> tuple[str, ...]:
@@ -109,40 +106,10 @@ def _root_analysis_raw(record: Any) -> str:
     return raw[1:] if raw.startswith("-") else raw
 
 
-def load_association_registry(path: str | Path) -> list[dict[str, str]]:
-    path = Path(path)
-    if not path.exists():
-        return []
-    with path.open("r", encoding="utf-8-sig", newline="") as f:
-        rows = list(csv.DictReader(f))
-    required = {
-        "example_id", "sense_id", "field_id", "tam_label",
-        "dictionaria_commit", "raw_sqlite_git_blob_sha1",
-    }
-    if rows and not required.issubset(rows[0]):
-        missing = sorted(required - set(rows[0]))
-        raise ValueError(f"Association registry missing columns: {', '.join(missing)}")
-    for row in rows:
-        if row["dictionaria_commit"] != DICTIONARIA_COMMIT:
-            raise ValueError("Association registry Dictionaria commit mismatch")
-        if row["raw_sqlite_git_blob_sha1"] != RAW_SQLITE_GIT_BLOB_SHA1:
-            raise ValueError("Association registry raw SQLite blob mismatch")
-        expected_tam = TAM_FIELD_ID_MAP.get(row["field_id"])
-        if expected_tam is None or row["tam_label"] != expected_tam:
-            raise ValueError(
-                f"Invalid TAM association row: {row.get('field_id')} -> {row.get('tam_label')}"
-            )
-    return rows
-
-
 class DocumentaryVerbFormCandidateAnalyzer:
-    """Add non-licensing documentary verb-form research candidates."""
+    """Add non-licensing documentary verb-form structural candidates."""
 
-    def __init__(
-        self,
-        base_analyzer: Any,
-        association_registry_path: str | Path | None = None,
-    ):
+    def __init__(self, base_analyzer: Any):
         self.base = base_analyzer
         for name in (
             "retrieval", "bound", "morph2", "morph1", "db", "verb_meta",
@@ -151,16 +118,6 @@ class DocumentaryVerbFormCandidateAnalyzer:
         ):
             if hasattr(base_analyzer, name):
                 setattr(self, name, getattr(base_analyzer, name))
-
-        self.association_registry_path = Path(
-            association_registry_path or DEFAULT_ASSOCIATION_REGISTRY_PATH
-        )
-        self._association_registry_rows = load_association_registry(
-            self.association_registry_path
-        )
-        self._association_rows_by_example: dict[str, list[dict[str, str]]] = defaultdict(list)
-        for row in self._association_registry_rows:
-            self._association_rows_by_example[row["example_id"]].append(row)
 
         self._sense_to_verb_entry: dict[str, str] = {}
         for entry_id, rows in self.retrieval.senses.items():
@@ -172,39 +129,45 @@ class DocumentaryVerbFormCandidateAnalyzer:
                     self._sense_to_verb_entry[sense_id] = entry_id
 
         self._example_token_index: dict[str, list[dict[str, Any]]] = defaultdict(list)
-        self._indexed_example_ids: set[str] = set()
-        self._used_association_row_count = 0
+        self._linked_single_verb_example_count = 0
+        self._matched_structural_example_count = 0
+        self._candidate_relation_count = 0
 
         for example in self.retrieval.examples:
-            example_id = str(example.get("ID", "") or "").strip()
-            if not example_id:
-                continue
-            registry_rows = self._association_rows_by_example.get(example_id, ())
-            if not registry_rows:
-                continue
-
-            exported_sense_ids = set(_sense_ids(example.get("Sense_IDs", "") or ""))
-            by_entry: dict[str, list[dict[str, str]]] = defaultdict(list)
-            for registry_row in registry_rows:
-                sense_id = registry_row["sense_id"]
-                # Integrity join: the granular raw relation must agree with the
-                # sense link preserved in the exported ExampleTable.
-                if sense_id not in exported_sense_ids:
-                    continue
-                entry_id = self._sense_to_verb_entry.get(sense_id)
-                if entry_id is None:
-                    continue
-                by_entry[entry_id].append(registry_row)
-
-            # v0.2 is deliberately conservative: examples whose explicit TAM
-            # associations point to more than one verb entry are not indexed.
-            if len(by_entry) != 1:
-                continue
-            linked_entry_id, entry_rows = next(iter(by_entry.items()))
-            tam_labels = tuple(
-                dict.fromkeys(row["tam_label"] for row in entry_rows)
+            sense_ids = _sense_ids(example.get("Sense_IDs", "") or "")
+            linked_entries = sorted(
+                {
+                    self._sense_to_verb_entry[sense_id]
+                    for sense_id in sense_ids
+                    if sense_id in self._sense_to_verb_entry
+                }
             )
-            if not tam_labels:
+            # One example linked to multiple verb entries is too ambiguous for
+            # this first bridge; preserve abstention instead of choosing.
+            if len(linked_entries) != 1:
+                continue
+            entry_id = linked_entries[0]
+            record = self.morph1.records[entry_id]
+            self._linked_single_verb_example_count += 1
+
+            pdlma_candidates_by_key: dict[str, list[dict[str, str]]] = defaultdict(list)
+            for tam, variants in record.tam_forms.items():
+                for variant in variants:
+                    variant_raw = str(variant or "").strip()
+                    if not variant_raw:
+                        continue
+                    candidate_key = pdlma_hyphen_collapse_candidate_key(variant_raw)
+                    if not candidate_key:
+                        continue
+                    pdlma_candidates_by_key[candidate_key].append(
+                        {
+                            "tam": str(tam),
+                            "pdlma_variant_raw": variant_raw,
+                            "comparison_operation": COMPARISON_OPERATION,
+                        }
+                    )
+
+            if not pdlma_candidates_by_key:
                 continue
 
             primary_text = str(example.get("Primary_Text", "") or "").strip()
@@ -212,27 +175,33 @@ class DocumentaryVerbFormCandidateAnalyzer:
             if not tokens:
                 continue
 
-            association = {
-                "example_id": example_id,
-                "primary_text_raw": primary_text,
-                "sense_ids": sorted({row["sense_id"] for row in entry_rows}),
-                "linked_verb_entry_id": linked_entry_id,
-                "association_field_ids": sorted({row["field_id"] for row in entry_rows}),
-                "tam_candidates_from_example_association": list(tam_labels),
-                "attribution_raw": example.get("Attribution", "") or "",
-                "source_id": DICTIONARIA_SOURCE_ID,
-                "dictionaria_commit": DICTIONARIA_COMMIT,
-                "raw_sqlite_git_blob_sha1": RAW_SQLITE_GIT_BLOB_SHA1,
-                "token_role_within_example_assertion": False,
-            }
-            self._indexed_example_ids.add(example_id)
-            self._used_association_row_count += len(entry_rows)
+            example_matched = False
             for token in dict.fromkeys(tokens):
-                key = strict_documentary_key(token)
-                if key:
-                    row = dict(association)
-                    row["token_surface_in_example"] = token
-                    self._example_token_index[key].append(row)
+                token_key = strict_documentary_key(token)
+                structural_matches = pdlma_candidates_by_key.get(token_key, ())
+                if not structural_matches:
+                    continue
+                example_matched = True
+                for structural_match in structural_matches:
+                    association = {
+                        "example_id": str(example.get("ID", "") or "") or None,
+                        "primary_text_raw": primary_text,
+                        "sense_ids": list(sense_ids),
+                        "linked_verb_entry_id": entry_id,
+                        "token_surface_in_example": token,
+                        "tam_candidate": structural_match["tam"],
+                        "pdlma_variant_raw": structural_match["pdlma_variant_raw"],
+                        "comparison_operation": COMPARISON_OPERATION,
+                        "attribution_raw": example.get("Attribution", "") or "",
+                        "source_id": DICTIONARIA_SOURCE_ID,
+                        "dictionaria_commit": DICTIONARIA_COMMIT,
+                        "token_role_within_example_assertion": False,
+                        "pdlma_to_ap_assertion": False,
+                    }
+                    self._example_token_index[token_key].append(association)
+                    self._candidate_relation_count += 1
+            if example_matched:
+                self._matched_structural_example_count += 1
 
     @property
     def biyubi_source_status(self) -> str:
@@ -244,13 +213,12 @@ class DocumentaryVerbFormCandidateAnalyzer:
     @property
     def documentary_candidate_index_stats(self) -> dict[str, int | str | bool]:
         return {
-            "association_registry_present": self.association_registry_path.exists(),
-            "association_registry_path": str(self.association_registry_path),
-            "association_registry_rows": len(self._association_registry_rows),
-            "used_association_rows": self._used_association_row_count,
             "verb_sense_links": len(self._sense_to_verb_entry),
-            "tam_tagged_examples": len(self._indexed_example_ids),
+            "single_verb_linked_examples": self._linked_single_verb_example_count,
+            "examples_with_literal_hyphen_collapse_match": self._matched_structural_example_count,
+            "candidate_relations": self._candidate_relation_count,
             "indexed_token_keys": len(self._example_token_index),
+            "comparison_operation": COMPARISON_OPERATION,
         }
 
     def _candidate_payload(self, raw_token: str, token_index: int) -> dict[str, Any] | None:
@@ -268,18 +236,12 @@ class DocumentaryVerbFormCandidateAnalyzer:
             record = self.morph1.records.get(entry_id)
             if record is None:
                 continue
-            tam_candidates = sorted(
-                {
-                    tam
-                    for row in rows
-                    for tam in row["tam_candidates_from_example_association"]
-                }
-            )
-            pdlma_coordinates = {
-                tam: list(record.tam_forms.get(tam, ()))
-                for tam in tam_candidates
-                if record.tam_forms.get(tam)
-            }
+            tam_candidates = sorted({row["tam_candidate"] for row in rows})
+            pdlma_coordinates: dict[str, list[str]] = defaultdict(list)
+            for row in rows:
+                variant = row["pdlma_variant_raw"]
+                if variant not in pdlma_coordinates[row["tam_candidate"]]:
+                    pdlma_coordinates[row["tam_candidate"]].append(variant)
             example_ids = sorted(
                 {row["example_id"] for row in rows if row.get("example_id")}
             )
@@ -294,19 +256,33 @@ class DocumentaryVerbFormCandidateAnalyzer:
                     "pdlma_citation_raw": record.pdlma_raw,
                     "root_analysis_raw": _root_analysis_raw(record),
                     "tam_candidates": tam_candidates,
-                    "compatible_documented_pdlma_coordinates": pdlma_coordinates,
+                    "matching_documented_pdlma_variants": dict(pdlma_coordinates),
                     "supporting_example_ids": example_ids,
                     "supporting_example_count": len(example_ids),
                     "supporting_associations": rows,
                     "association_strength": (
-                        "MULTIPLE_EXACT_EXAMPLE_ASSOCIATIONS"
+                        "MULTIPLE_DOCUMENTARY_EXAMPLES_PLUS_LITERAL_PDLMA_BOUNDARY_COLLAPSE"
                         if len(example_ids) > 1
-                        else "SINGLE_EXACT_EXAMPLE_ASSOCIATION"
+                        else "SINGLE_DOCUMENTARY_EXAMPLE_PLUS_LITERAL_PDLMA_BOUNDARY_COLLAPSE"
                     ),
+                    "comparison_policy": {
+                        "operation": COMPARISON_OPERATION,
+                        "ascii_hyphen_removed": True,
+                        "tone_stripping": False,
+                        "diacritic_stripping": False,
+                        "glottal_7_to_apostrophe": False,
+                        "bang_removal": False,
+                        "dot_removal": False,
+                        "equals_removal": False,
+                        "asterisk_removal": False,
+                        "segment_substitution": False,
+                        "vowel_change": False,
+                        "near_match": False,
+                        "edit_distance": False,
+                    },
                     "provenance": {
                         "documentary_source": DICTIONARIA_SOURCE_ID,
                         "dictionaria_commit": DICTIONARIA_COMMIT,
-                        "raw_sqlite_git_blob_sha1": RAW_SQLITE_GIT_BLOB_SHA1,
                         "verb_class_system_authority": PBK_SOURCE_ID,
                         "voces_hall_ids": list(HALL_IDS),
                         "voces_knowledge_commit": VOCES_KNOWLEDGE_COMMIT,
@@ -337,8 +313,8 @@ class DocumentaryVerbFormCandidateAnalyzer:
             "candidate_promotes_analysis_status": False,
             "candidate_resolves_token": False,
             "interpretation": (
-                "EXACT_TOKEN_ATTESTED_INSIDE_TAM_FIELD_ASSOCIATED_EXAMPLE_"
-                "COMPATIBLE_VERB_ENTRY_IDENTIFIED_TOKEN_ROLE_WITHIN_EXAMPLE_NOT_PROVEN"
+                "AP_TOKEN_OCCURS_IN_EXAMPLE_LINKED_TO_VERB_ENTRY_AND_LITERAL_PDLMA_TAM_"
+                "VARIANT_MATCHES_AFTER_ASCII_HYPHEN_REMOVAL_ONLY_CANDIDATE_NOT_ANALYSIS"
             ),
         }
 
@@ -396,7 +372,7 @@ class DocumentaryVerbFormCandidateAnalyzer:
                 "documentary_verb_form_candidate_requires_no_existing_exact_verb_headword_analysis": True,
                 "documentary_verb_form_candidate_requires_exact_ap_example_token": True,
                 "documentary_verb_form_candidate_requires_unique_linked_verb_entry_per_example": True,
-                "documentary_verb_form_candidate_requires_explicit_tam_field_association": True,
+                "documentary_verb_form_candidate_requires_literal_pdlma_tam_match_after_ascii_hyphen_removal_only": True,
                 "documentary_verb_form_candidate_token_role_is_not_asserted": True,
                 "documentary_verb_form_candidate_pdlma_is_recovery_coordinate_only": True,
                 "documentary_verb_form_candidate_pdlma_to_ap": False,
@@ -410,6 +386,7 @@ class DocumentaryVerbFormCandidateAnalyzer:
                 "DOCUMENTARY_VERB_FORM_CANDIDATE_DOES_NOT_PROVE_TOKEN_ROLE_WITHIN_EXAMPLE",
                 "DOCUMENTARY_VERB_FORM_CANDIDATE_DOES_NOT_PROVE_TAM_OF_OBSERVED_SURFACE",
                 "DOCUMENTARY_VERB_FORM_CANDIDATE_DOES_NOT_SEGMENT_OBSERVED_TOKEN",
+                "ASCII_HYPHEN_COLLAPSE_IS_COMPARISON_ONLY_NOT_PDLMA_TO_AP_CONVERSION",
                 "PDLMA_COORDINATES_ARE_ANALYTICAL_RECOVERY_COORDINATES_NOT_AP_SURFACE_FORMS",
             ]
         )
