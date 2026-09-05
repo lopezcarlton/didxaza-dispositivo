@@ -2,8 +2,10 @@
 """Regressions for the v0.35.13 verb morphological hypothesis view.
 
 Positive fixtures are discovered from the already-versioned v0.35.10
-Dictionaria candidate index. No COR001 or NEW_WRITTEN_ANALYSIS_TARGET material
-is used as benchmark, regression fixture, or rule source.
+Dictionaria candidate index and must survive into the current Analyzer's
+`documentary_verb_form_candidates` output. No COR001 or
+NEW_WRITTEN_ANALYSIS_TARGET material is used as benchmark, regression fixture,
+or rule source.
 """
 
 from __future__ import annotations
@@ -31,22 +33,32 @@ class VerbMorphologicalHypothesisViewTests(unittest.TestCase):
         cls.engine.close()
 
     def _discover_unique_candidate(self):
+        seen_tokens = set()
         for rows in self.v02._example_token_index.values():
             if not rows:
                 continue
             token = rows[0]["token_surface_in_example"]
-            payload = self.v02._candidate_payload(token, 0)
-            if not payload:
+            if token in seen_tokens:
                 continue
-            if len(payload["compatible_verb_entries"]) != 1:
-                continue
-            entry = payload["compatible_verb_entries"][0]
-            if len(entry["tam_candidates"]) != 1:
-                continue
-            if not payload["raw_nfc_exact_documentary_token_attestation"]:
-                continue
-            return token, entry
-        self.fail("No independent unique documentary TAM/root/class candidate found")
+            seen_tokens.add(token)
+            # Require the candidate to survive all layers through v0.35.12.
+            # Earlier resolution is a valid reason for it not to appear here.
+            current = self.engine.base.analyze(
+                token, item_id="TECHNICAL_MORPH_HYPOTHESIS_FIXTURE_DISCOVERY"
+            )
+            candidates = current.get("documentary_verb_form_candidates", ())
+            for payload in candidates:
+                if int(payload.get("token_index", -1)) != 0:
+                    continue
+                if len(payload.get("compatible_verb_entries", ())) != 1:
+                    continue
+                entry = payload["compatible_verb_entries"][0]
+                if len(entry.get("tam_candidates", ())) != 1:
+                    continue
+                if not payload.get("raw_nfc_exact_documentary_token_attestation"):
+                    continue
+                return token, entry
+        self.fail("No surviving unique documentary TAM/root/class candidate found")
 
     def test_unique_documentary_candidate_becomes_explicit_hypothesis_not_fact(self):
         surface, upstream_entry = self._discover_unique_candidate()
