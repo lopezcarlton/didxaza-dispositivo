@@ -17,13 +17,18 @@ then layers:
 - v0.35.10 VerbAnalysisBridge v0.2, exposing documentary non-headword verb-form
   candidates under a deliberately restricted AP/PDLMA comparison policy;
 - v0.35.11 ValencyCompatibilityBridge v0.1, attaching only adjudicated lexical
-  valency codes to verb entry IDs already linked by earlier layers.
+  valency codes to verb entry IDs already linked by earlier layers;
+- v0.35.12 ExplicitValencyRelationBridge v0.1, exposing only source-explicit
+  PB2015 relation sets whose member has been strictly resolved to an already
+  identified Dictionaria entry.
 
 Exact surface evidence remains separate from rule-based morphological analysis.
-The v0.35.11 layer does not infer valency from visible prefixes, does not assign
-PB2015 V1–V3/C1–C4 groups, does not infer numeric valence from transitivity, and
-does not reconstruct basic↔derived relations. No layer grants correction,
-orthographic authority, generation license, or rule-discovery authority.
+The v0.35.11 layer does not infer valency from visible prefixes. The v0.35.12
+layer may retrieve PB2015 V1–V3/C1–C4 membership only from HALL-0193's explicit
+relation registry; it does not assign groups from surface form, resolve
+MULTIPLE_STRICT rows, or treat NO_STRICT as negative evidence. No layer grants
+correction, orthographic authority, generation license, or rule-discovery
+authority.
 """
 
 from __future__ import annotations
@@ -55,9 +60,14 @@ from analyzer_v0_35_10_documentary_verb_form_candidates import (
     DocumentaryVerbFormCandidateAnalyzer,
 )
 from analyzer_v0_35_11_valency_compatibility_bridge import (
-    ADAPTER_VERSION,
     BRIDGE_VERSION as VALENCY_COMPATIBILITY_BRIDGE_VERSION,
     ValencyCompatibilityBridgeAnalyzer,
+)
+from analyzer_v0_35_12_explicit_valency_relations import (
+    ADAPTER_VERSION,
+    BRIDGE_VERSION as EXPLICIT_VALENCY_RELATION_BRIDGE_VERSION,
+    DEFAULT_CROSSWALK_PATH as EXPLICIT_VALENCY_RELATION_CROSSWALK_PATH,
+    ExplicitValencyRelationBridgeAnalyzer,
 )
 from biyubi_exact_source import (
     BiyubiControlledSource,
@@ -88,7 +98,7 @@ def build_migrated_analyzer(
     biyubi_path: str | Path | None = None,
     *,
     require_biyubi: bool = False,
-) -> ValencyCompatibilityBridgeAnalyzer:
+) -> ExplicitValencyRelationBridgeAnalyzer:
     """Instantiate the current Analyzer over repository/source artifacts."""
 
     historical = NonLicensingAnalyzerOrchestrator(
@@ -120,7 +130,8 @@ def build_migrated_analyzer(
     documented_person = DocumentedPersonFusionAnalysisAnalyzer(person_candidates)
     verb_bridge_v01 = VerbAnalysisBridgeAnalyzer(documented_person)
     verb_bridge_v02 = DocumentaryVerbFormCandidateAnalyzer(verb_bridge_v01)
-    return ValencyCompatibilityBridgeAnalyzer(verb_bridge_v02)
+    valency_v01 = ValencyCompatibilityBridgeAnalyzer(verb_bridge_v02)
+    return ExplicitValencyRelationBridgeAnalyzer(valency_v01)
 
 
 def migrated_execution_state(
@@ -131,7 +142,7 @@ def migrated_execution_state(
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
-            "current_adapter": "analyzer_v0_35_11_valency_compatibility_bridge.py",
+            "current_adapter": "analyzer_v0_35_12_explicit_valency_relations.py",
             "current_adapter_version": ADAPTER_VERSION,
             "exact_existing_layer_fallback_enabled": True,
             "punctuation_light_fallback_lookup_enabled": True,
@@ -143,10 +154,14 @@ def migrated_execution_state(
             "verb_analysis_bridge_enabled": True,
             "verb_analysis_bridge_version": VERB_ANALYSIS_BRIDGE_VERSION,
             "documentary_verb_form_candidate_layer_enabled": True,
-            "documentary_verb_form_candidate_index_stats": engine.base.documentary_candidate_index_stats,
+            "documentary_verb_form_candidate_index_stats": engine.base.base.documentary_candidate_index_stats,
             "valency_compatibility_bridge_enabled": True,
             "valency_compatibility_bridge_version": VALENCY_COMPATIBILITY_BRIDGE_VERSION,
-            "valency_compatibility_index_stats": engine.valency_compatibility_index_stats,
+            "valency_compatibility_index_stats": engine.base.valency_compatibility_index_stats,
+            "explicit_valency_relation_bridge_enabled": True,
+            "explicit_valency_relation_bridge_version": EXPLICIT_VALENCY_RELATION_BRIDGE_VERSION,
+            "explicit_valency_relation_crosswalk_path": str(EXPLICIT_VALENCY_RELATION_CROSSWALK_PATH),
+            "explicit_valency_relation_index_stats": engine.explicit_valency_relation_index_stats,
             "verb_analysis_bridge_policy": {
                 "documented_single_token_headword_records": True,
                 "exposes_documented_class": True,
@@ -207,6 +222,28 @@ def migrated_execution_state(
                 "orthographic_authority": False,
                 "rule_discovery_authority": False,
             },
+            "explicit_valency_relation_policy": {
+                "knowledge_authority": "HALL-0193",
+                "knowledge_commit": "f17c5363caada6f8beb18fa99c39e37cd72c6f09",
+                "requires_preexisting_documented_entry_identity": True,
+                "eligible_entry_link_routes": [
+                    "DOCUMENTED_EXACT_VERB_HEADWORD_ENTRY_LINK",
+                    "SOURCE_DOCUMENTED_PERSON_FUSION_LEMMA_ENTRY_LINK",
+                ],
+                "structural_candidate_route_eligible": False,
+                "strict_crosswalk_statuses": ["UNIQUE_STRICT", "NO_STRICT", "MULTIPLE_STRICT"],
+                "unique_strict_can_assign_source_member_to_entry": True,
+                "multiple_strict_auto_disambiguation": False,
+                "no_strict_is_negative_evidence": False,
+                "source_explicit_group_retrieval": True,
+                "automatic_group_assignment": False,
+                "surface_relation_inference": False,
+                "pdlma_to_ap": False,
+                "generation_license": False,
+                "correction_authority": False,
+                "orthographic_authority": False,
+                "rule_discovery_authority": False,
+            },
             "documented_morphology_policy": {
                 "exact_surface_evidence_kept_separate": True,
                 "requires_documented_lemma": True,
@@ -237,6 +274,7 @@ def migrated_execution_state(
                     "GP_1SG_FINAL_I_TO_E_GLOTTAL_REVERSE_LINK_CANDIDATE",
                     "DICTIONARIA_AP_EXAMPLE_TOKEN_CANDIDATE_KEY_PLUS_UNIQUE_VERB_LINK_PLUS_PDLMA_TAM_ASCII_HYPHEN_COLLAPSE_CANDIDATE",
                     "DICTIONARIA_LITERAL_LEXICAL_VALENCY_CODE_COMPATIBILITY",
+                    "PB2015_SOURCE_EXPLICIT_VALENCY_RELATION_RETRIEVAL",
                 ],
             },
             "fallback_layers": [
