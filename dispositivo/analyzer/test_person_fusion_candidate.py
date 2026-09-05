@@ -33,7 +33,7 @@ class PersonFusionCandidateTests(unittest.TestCase):
         result = self.engine.analyze("Rinite'", item_id="TECHNICAL_GP_1SG_RINITI")
         rows = result["supplemental_documented_person_fusion_candidates"]
 
-        self.assertEqual(result["current_adapter_version"], "0.35.8")
+        self.assertEqual(result["current_adapter_version"], "0.35.9")
         self.assertEqual(len(rows), 1)
         row = rows[0]
         self.assertEqual(row["token_raw"], "Rinite'")
@@ -50,8 +50,6 @@ class PersonFusionCandidateTests(unittest.TestCase):
         self.assertFalse(row["full_person_resolution_assertion"])
         self.assertFalse(row["correction_assertion"])
 
-        # Candidate relation does not alter exact state, even though the later
-        # documented-morphology layer can separately analyze it.
         self.assertEqual(result["matched_token_count"], 0)
         self.assertEqual(result["effective_evidence_after_biyubi_token_count"], 0)
         self.assertEqual(result["still_exactly_unresolved_token_indexes"], [0])
