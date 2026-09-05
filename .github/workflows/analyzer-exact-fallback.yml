@@ -10,9 +10,11 @@ on:
       - "feature/analyzer-documented-1sg-fusion-*"
       - "feature/voces-exact-documentary-attestation-*"
       - "feature/verb-analysis-bridge-*"
+      - "feature/valency-compatibility-bridge-*"
     paths:
       - "dispositivo/analyzer/**"
       - "dispositivo/sources/**"
+      - "KNOWLEDGE_SOURCE_PIN.md"
       - ".github/workflows/analyzer-exact-fallback.yml"
   pull_request:
     branches:
@@ -20,6 +22,7 @@ on:
     paths:
       - "dispositivo/analyzer/**"
       - "dispositivo/sources/**"
+      - "KNOWLEDGE_SOURCE_PIN.md"
       - ".github/workflows/analyzer-exact-fallback.yml"
 
 permissions:
@@ -48,6 +51,9 @@ jobs:
           fi
           if [ -f dispositivo/analyzer/test_documentary_verb_form_candidates.py ]; then
             python dispositivo/analyzer/test_documentary_verb_form_candidates.py -v
+          fi
+          if [ -f dispositivo/analyzer/test_valency_compatibility_bridge.py ]; then
+            python dispositivo/analyzer/test_valency_compatibility_bridge.py -v
           fi
 
       - name: Re-run first real-text probe through current Analyzer
@@ -89,6 +95,9 @@ jobs:
               'candidate_layer_is_non_exact': True,
               'documented_morphology_is_separate_from_exact_evidence': True,
               'documentary_verb_form_candidates_are_non_resolving': True,
+              'valency_compatibility_is_non_inferential': True,
+              'valency_group_assignment_enabled': False,
+              'valency_generation_enabled': False,
               'results': rows,
           }, ensure_ascii=False, indent=2, sort_keys=True))
           PY

@@ -3,7 +3,8 @@
 
 No NEW_WRITTEN_ANALYSIS_TARGET is used as benchmark, regression source or rule
 source. Positive fixtures are discovered from the already-versioned Dictionaria
-examples and 2,385-record verb inventory; negatives are synthetic.
+examples and 2,385-record verb inventory; negatives are synthetic. v0.2 remains
+independently inspectable beneath later wrappers such as valency compatibility.
 """
 
 from __future__ import annotations
@@ -25,6 +26,8 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.engine = build_migrated_analyzer()
+        cls.v02 = cls.engine.base
+        cls.v01 = cls.v02.base
 
     @classmethod
     def tearDownClass(cls):
@@ -32,9 +35,10 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
 
     def test_execution_state_declares_candidate_only_v02(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.10")
+        self.assertEqual(state["current_adapter_version"], "0.35.11")
         self.assertEqual(state["verb_analysis_bridge_version"], "0.2")
         self.assertTrue(state["documentary_verb_form_candidate_layer_enabled"])
+        self.assertTrue(state["valency_compatibility_bridge_enabled"])
         stats = state["documentary_verb_form_candidate_index_stats"]
         self.assertGreater(stats["verb_sense_links"], 0)
         self.assertGreater(stats["single_verb_linked_examples"], 0)
@@ -56,6 +60,7 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertFalse(policy["candidate_tam_of_observed_surface_asserted"])
         self.assertFalse(policy["candidate_promotes_analysis_status"])
         self.assertFalse(policy["pdlma_to_ap"])
+        self.assertFalse(policy["valency_analysis_in_v02"])
         self.assertFalse(policy["generation_license"])
         self.assertFalse(policy["correction_authority"])
 
@@ -73,11 +78,9 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertNotEqual(pdlma_hyphen_collapse_candidate_key("gú-ndani"), target)
 
     def test_candidate_key_match_is_not_exact_surface_evidence(self):
-        # Find a query variant that preserves the candidate key while differing
-        # in raw NFC form from every documentary token attached to that key.
         chosen = None
         candidate = None
-        for key, rows in self.engine._example_token_index.items():
+        for key, rows in self.v02._example_token_index.items():
             if not rows:
                 continue
             raw_forms = {
@@ -98,7 +101,7 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
                     continue
                 if unicodedata.normalize("NFC", variant) in raw_forms:
                     continue
-                payload = self.engine._candidate_payload(variant, 0)
+                payload = self.v02._candidate_payload(variant, 0)
                 if payload is not None:
                     chosen = variant
                     candidate = payload
@@ -114,11 +117,11 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
 
     def test_indexed_candidate_exposes_only_analytical_coordinates(self):
         candidate = None
-        for rows in self.engine._example_token_index.values():
+        for rows in self.v02._example_token_index.values():
             if not rows:
                 continue
             token = rows[0]["token_surface_in_example"]
-            candidate = self.engine._candidate_payload(token, 0)
+            candidate = self.v02._candidate_payload(token, 0)
             if candidate:
                 break
         self.assertIsNotNone(candidate)
@@ -156,14 +159,11 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
     def test_real_snapshot_has_nonheadword_candidate_without_promoting_analysis(self):
         chosen = None
         base_result = None
-        # Find a documentary candidate independently of the blind target that is
-        # not already recognized by v0.1 as an exact verb headword and is not the
-        # separately promoted 1SG person-fusion case.
-        for rows in self.engine._example_token_index.values():
+        for rows in self.v02._example_token_index.values():
             if not rows:
                 continue
             token = rows[0]["token_surface_in_example"]
-            candidate_base = self.engine.base.analyze(
+            candidate_base = self.v01.analyze(
                 token, item_id="TECHNICAL_V02_DISCOVERY"
             )
             if candidate_base.get("documented_exact_verb_token_indexes"):
@@ -177,14 +177,12 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertIsNotNone(chosen, "No non-headword structural candidate found in documentary snapshot")
         self.assertIsNotNone(base_result)
         result = self.engine.analyze(chosen, item_id="TECHNICAL_V02_INTEGRATION")
-        self.assertEqual(result["current_adapter_version"], "0.35.10")
+        self.assertEqual(result["current_adapter_version"], "0.35.11")
         self.assertEqual(result["documentary_verb_form_candidate_token_indexes"], [0])
         self.assertTrue(result["documentary_verb_form_candidates"])
         candidate = result["documentary_verb_form_candidates"][0]
         self.assertFalse(candidate["candidate_resolves_token"])
 
-        # v0.2 enriches research coordinates only. Whatever v0.1 had must remain
-        # unchanged in exact coverage and promoted analysis state.
         self.assertEqual(
             result["unresolved_token_indexes_after_documentary_verb_form_candidates"],
             base_result["unresolved_token_indexes_after_documented_morphology"],
@@ -197,6 +195,8 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertEqual(result["analysis_status"], base_result["analysis_status"])
         self.assertFalse(result["documentary_verb_form_candidates_change_exact_evidence_metrics"])
         self.assertFalse(result["documentary_verb_form_candidates_change_analysis_status"])
+        self.assertFalse(result["valency_compatibility_changes_exact_evidence_metrics"])
+        self.assertFalse(result["valency_compatibility_changes_analysis_status"])
         self.assertFalse(result["generation_license_assertion"])
         self.assertFalse(result["correction_assertion"])
 
@@ -207,6 +207,7 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         )
         self.assertEqual(result["documentary_verb_form_candidate_token_indexes"], [])
         self.assertEqual(result["documentary_verb_form_candidates"], [])
+        self.assertEqual(result["valency_compatibility_informative_token_indexes"], [])
 
 
 if __name__ == "__main__":

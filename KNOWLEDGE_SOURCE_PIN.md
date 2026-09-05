@@ -1,11 +1,11 @@
 # Knowledge source pin
 
 **Estado:** `CURRENT_CANONICAL_KNOWLEDGE_PIN / DERIVED_SYSTEM`
-**Actualizado:** 2026-09-04
+**Actualizado:** 2026-09-05
 
 ```text
 KNOWLEDGE_SOURCE_REPOSITORY = lopezcarlton/vocesdelasnubes
-KNOWLEDGE_SOURCE_COMMIT = 5a5a76eca11966b7df79edb76cf51ab94507bda1
+KNOWLEDGE_SOURCE_COMMIT = 59653cc283d2fceea968031e1b554192ff7b3a27
 KNOWLEDGE_SOURCE_REF = main
 ```
 
@@ -31,6 +31,8 @@ El pin incorpora el systematic semantic backfill completado hasta las fuentes pr
 - Cardona 2020 + Cardona–Vicente 2025 P1 variación/escritura (`HALL-0179`–`HALL-0183`);
 - cierre dirigido del Alfabeto Popular de 1956 hasta `HALL-0185`;
 - recuperación independiente posterior a un hueco de análisis: atestación documental conservadora de `binnilaanu` en Xneza/Teria (`HALL-0186`) y separación AP/PDLMA + evidencia `ndani`/`gundani` en Dictionaria (`HALL-0187`);
+- adjudicación directa de Pérez Báez 2015 sobre cambio morfológico de valencia: separación TAM/derivación (`HALL-0188`), grupos vocálicos V1–V3 (`HALL-0189`), grupos consonánticos C1–C4 (`HALL-0190`) y variación/productividad/equipolencia (`HALL-0191`);
+- semántica explícita de códigos gramaticales Dictionaria para causativo, intransitivo y transitivo (`HALL-0192`);
 - checkpoint `SEMANTIC_BACKFILL_CHECKPOINT_2026-09-04` con estado `SYSTEMATIC_BACKFILL_PASS_COMPLETE_TO_AVAILABLE_SOURCES / NORMA_2016_BLOCKED_BY_ACCESS`.
 
 Reglas de precedencia relevantes:
@@ -40,6 +42,15 @@ VOCES_AT_PIN = CANONICAL_KNOWLEDGE
 DEVICE_DERIVED_FORMULATION_MUST_NOT_OVERRIDE_PINNED_VOCES = true
 HALL_0186_EXACT_SURFACE_ATTESTATION != MORPHOLOGICAL_SEGMENTATION
 HALL_0187_PDLMA_INFLECTION != AUTOMATIC_AP_SURFACE_EQUIVALENCE
+HALL_0188_TAM_MARKER != VALENCY_DERIVATION
+HALL_0189_ROOT_SHAPE != AUTOMATIC_V1_V2_V3_ASSIGNMENT
+HALL_0190_PREFIX_RESEMBLANCE != AUTOMATIC_C1_C2_C3_C4_ASSIGNMENT
+HALL_0191_DOCUMENTED_DERIVATIONAL_PATTERN != PRODUCTIVE_RULE
+HALL_0192_LITERAL_DEFINED_CODE = LEXICAL_DOCUMENTARY_PROPERTY_ONLY
+HALL_0192_CAUSATIVE_CODE != BASIC_CAUSATIVE_RELATION
+HALL_0192_TRANSITIVITY_CODE != AUTOMATIC_NUMERIC_VALENCE
+vers = UNADJUDICATED
+VALENCY_COMPATIBILITY != CORRECTION_OR_GENERATION_LICENSE
 ```
 
 Contradicciones abiertas que el dispositivo no debe resolver unilateralmente:
