@@ -15,6 +15,7 @@ on:
       - "feature/verb-morphological-hypothesis-view-*"
       - "feature/causative-group-coordinate-view-*"
       - "feature/contextual-documentary-support-*"
+      - "feature/contextually-supported-component-analysis-*"
     paths:
       - "dispositivo/analyzer/**"
       - "dispositivo/sources/**"
@@ -71,6 +72,9 @@ jobs:
           if [ -f dispositivo/analyzer/test_contextual_documentary_support.py ]; then
             python dispositivo/analyzer/test_contextual_documentary_support.py -v
           fi
+          if [ -f dispositivo/analyzer/test_adjudicated_component_analysis_bridge.py ]; then
+            python dispositivo/analyzer/test_adjudicated_component_analysis_bridge.py -v
+          fi
 
       - name: Re-run first real-text probe through current Analyzer
         shell: bash
@@ -121,6 +125,8 @@ jobs:
               'causative_visible_prefix_detection_enabled': False,
               'contextual_documentary_support_is_nonresolving': True,
               'contextual_documentary_support_rewrites_local_evidence': False,
+              'adjudicated_component_analysis_discovery_enabled': False,
+              'adjudicated_component_analysis_rewrites_local_evidence': False,
               'valency_generation_enabled': False,
               'results': rows,
           }, ensure_ascii=False, indent=2, sort_keys=True))

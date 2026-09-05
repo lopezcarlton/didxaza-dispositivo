@@ -5,7 +5,7 @@
 
 ```text
 KNOWLEDGE_SOURCE_REPOSITORY = lopezcarlton/vocesdelasnubes
-KNOWLEDGE_SOURCE_COMMIT = f17c5363caada6f8beb18fa99c39e37cd72c6f09
+KNOWLEDGE_SOURCE_COMMIT = f3af4a4e490b2d211c24f764b29d8ec29b5b61dc
 KNOWLEDGE_SOURCE_REF = main
 ```
 
@@ -34,6 +34,7 @@ El pin incorpora el systematic semantic backfill completado hasta las fuentes pr
 - adjudicación directa de Pérez Báez 2015 sobre cambio morfológico de valencia: separación TAM/derivación (`HALL-0188`), grupos vocálicos V1–V3 (`HALL-0189`), grupos consonánticos C1–C4 (`HALL-0190`) y variación/productividad/equipolencia (`HALL-0191`);
 - semántica explícita de códigos gramaticales Dictionaria para causativo, intransitivo y transitivo (`HALL-0192`);
 - relaciones concretas fuente-explícitas de Pérez Báez 2015 entre miembros de díadas/tríadas y equipolentes (`HALL-0193`), con derivado selectivo de 65 miembros / 26 conjuntos y auditoría que confirma que el snapshot fijado de Dictionaria no contiene campos de relación poblados;
+- adjudicación contextual independiente de `binnilaanu` como `binni + laanu`, conservando simultáneamente superficies unida/espaciada documentadas y sin fijar una frontera normativa ni diagnosticar por ello un compuesto morfológico (`HALL-0218`);
 - checkpoint `SEMANTIC_BACKFILL_CHECKPOINT_2026-09-04` con estado `SYSTEMATIC_BACKFILL_PASS_COMPLETE_TO_AVAILABLE_SOURCES / NORMA_2016_BLOCKED_BY_ACCESS`.
 
 Reglas de precedencia relevantes:
@@ -54,6 +55,11 @@ HALL_0193_SOURCE_TABLE_MEMBERSHIP = EXPLICIT_VALENCY_RELATION
 HALL_0193_V1_MORE_ACTIVE != AUTOMATIC_CAUSATIVE
 HALL_0193_PDLMA_MEMBER != AP_SURFACE
 HALL_0193_SELECTED_REGISTRY != EXHAUSTIVE_SOURCE_TRANSCRIPTION
+HALL_0218_COMPONENT_ANALYSIS = CONTEXTUALLY_SUPPORTED
+HALL_0218_STRING_OVERLAP_ALONE != COMPONENT_ANALYSIS
+HALL_0218_COMPONENT_ANALYSIS != MORPHOLOGICAL_COMPOUND_DIAGNOSIS
+HALL_0218_JOINED_OR_SPACED_DOCUMENTATION != AUTOMATIC_ERROR
+HALL_0218_CONTEXTUAL_SUPPORT != CORRECTION_OR_GENERATION_LICENSE
 STRICT_PDLMA_CROSSWALK_NO_MATCH != LINGUISTIC_ABSENCE
 STRICT_PDLMA_CROSSWALK_MULTIPLE_MATCH != AUTOMATIC_DISAMBIGUATION
 STRICT_PDLMA_ENTRY_LINK != OBSERVED_SURFACE_PDLMA_TO_AP_INFERENCE
