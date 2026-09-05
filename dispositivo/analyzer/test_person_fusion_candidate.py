@@ -3,7 +3,8 @@
 
 The candidate layer remains independently inspectable under later adapters. These
 tests assert only the v0.35.5 relation and its non-authority guarantees; later
-adapters may separately promote a candidate when independent evidence exists.
+adapters may separately promote a candidate or attach lexical valency metadata
+when independent evidence exists.
 """
 
 from __future__ import annotations
@@ -33,7 +34,7 @@ class PersonFusionCandidateTests(unittest.TestCase):
         result = self.engine.analyze("Rinite'", item_id="TECHNICAL_GP_1SG_RINITI")
         rows = result["supplemental_documented_person_fusion_candidates"]
 
-        self.assertEqual(result["current_adapter_version"], "0.35.10")
+        self.assertEqual(result["current_adapter_version"], "0.35.11")
         self.assertEqual(len(rows), 1)
         row = rows[0]
         self.assertEqual(row["token_raw"], "Rinite'")
@@ -57,6 +58,8 @@ class PersonFusionCandidateTests(unittest.TestCase):
         self.assertTrue(result["exact_evidence_state_unchanged_by_person_fusion_candidates"])
         self.assertEqual(result["analysis_status"], "PARTIAL_ANALYSIS_NON_LICENSING")
         self.assertEqual(result["documented_person_fusion_analyzed_token_indexes"], [0])
+        self.assertFalse(result["valency_compatibility_changes_exact_evidence_metrics"])
+        self.assertFalse(result["valency_compatibility_changes_analysis_status"])
 
     def test_missing_glottal_does_not_trigger_i_to_e1sg_candidate(self):
         result = self.engine.analyze("Rinite", item_id="TECHNICAL_GP_1SG_NEGATIVE_NO_GLOTTAL")
@@ -74,6 +77,8 @@ class PersonFusionCandidateTests(unittest.TestCase):
         self.assertFalse(result["correction_assertion"])
         self.assertFalse(result["orthographic_authority_assertion"])
         self.assertFalse(result["rule_discovery_assertion"])
+        self.assertFalse(result["valency_generation_enabled"])
+        self.assertFalse(result["valency_correction_enabled"])
         policy = result["fallback_policy"]
         self.assertTrue(policy["person_fusion_candidate_requires_documented_habitual_headword"])
         self.assertTrue(policy["person_fusion_candidate_requires_prosodic_confirmation_for_resolution"])
