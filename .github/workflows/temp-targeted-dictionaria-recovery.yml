@@ -1,0 +1,102 @@
+name: temp-targeted-dictionaria-recovery
+
+on:
+  push:
+    branches:
+      - "feature/analyzer-exact-fallback-runtime-bundle-temp"
+    paths:
+      - ".github/workflows/temp-targeted-dictionaria-recovery.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout device repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Checkout published Dictionaria source data at exact commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: dictionaria/didxazageneral
+          ref: 76c22cf30c23d8f4bc5c83c11013a8cb24fe0f85
+          path: _external_didxazageneral
+
+      - name: Recover linked lexical, sense and example records
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' > "${RUNNER_TEMP}/DICTIONARIA_LINKED_TARGETED_SOURCE_RECORDS.json"
+          import csv, json
+          from pathlib import Path
+
+          root = Path('_external_didxazageneral/cldf')
+          needles = ('rindani', 'gundani')
+
+          def read_rows(filename):
+              with (root / filename).open(encoding='utf-8-sig', newline='') as f:
+                  return [dict(row) for row in csv.DictReader(f)]
+
+          entries = read_rows('entries.csv')
+          senses = read_rows('senses.csv')
+          examples = read_rows('examples.csv')
+
+          matched_entries = [
+              row for row in entries
+              if any(n in '\n'.join(str(v) for v in row.values()).casefold() for n in needles)
+          ]
+          matched_examples = [
+              row for row in examples
+              if any(n in '\n'.join(str(v) for v in row.values()).casefold() for n in needles)
+          ]
+
+          entry_ids = {row.get('ID', '') for row in matched_entries if row.get('ID')}
+          example_sense_ids = set()
+          for row in matched_examples:
+              raw = row.get('Sense_IDs', '')
+              for value in raw.replace(';', ' ').replace(',', ' ').split():
+                  if value:
+                      example_sense_ids.add(value)
+
+          linked_senses = [
+              row for row in senses
+              if row.get('Entry_ID') in entry_ids or row.get('ID') in example_sense_ids
+          ]
+          linked_entry_ids = {row.get('Entry_ID', '') for row in linked_senses if row.get('Entry_ID')}
+          linked_entries = [row for row in entries if row.get('ID') in (entry_ids | linked_entry_ids)]
+
+          all_linked_sense_ids = {row.get('ID', '') for row in linked_senses if row.get('ID')}
+          linked_examples = [
+              row for row in examples
+              if any(
+                  sid in all_linked_sense_ids
+                  for sid in row.get('Sense_IDs', '').replace(';', ' ').replace(',', ' ').split()
+              )
+          ]
+
+          out = {
+              'source_repository': 'dictionaria/didxazageneral',
+              'source_commit': '76c22cf30c23d8f4bc5c83c11013a8cb24fe0f85',
+              'source_role': 'PUBLISHED_PRIMARY_DICTIONARY_DATA',
+              'query_role': 'INDEPENDENT_TARGETED_SOURCE_RECOVERY_AFTER_OBSERVED_GAP',
+              'analysis_target_is_not_source': True,
+              'benchmark_use': False,
+              'regression_source_use': False,
+              'rule_discovery_from_analysis_target': False,
+              'matched_entry_ids': sorted(entry_ids),
+              'matched_example_sense_ids': sorted(example_sense_ids),
+              'entries': linked_entries,
+              'senses': linked_senses,
+              'examples': linked_examples,
+          }
+          print(json.dumps(out, ensure_ascii=False, indent=2, sort_keys=True))
+          PY
+          cat "${RUNNER_TEMP}/DICTIONARIA_LINKED_TARGETED_SOURCE_RECORDS.json"
+
+      - name: Upload linked targeted source records
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: dictionaria-linked-targeted-source-records-${{ github.sha }}
+          path: ${{ runner.temp }}/DICTIONARIA_LINKED_TARGETED_SOURCE_RECORDS.json
