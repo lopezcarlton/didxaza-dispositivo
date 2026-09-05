@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Technical regressions for Analyzer v0.35.6 documented 1SG fusion analysis.
+"""Technical regressions for documented 1SG fusion analysis.
 
 These tests verify source-constrained analysis behavior only. They do not make
-REAL_TEXT_PROBE_002 a benchmark or rule source.
+any real-text analysis target a benchmark or rule source. The v0.35.6 helper is
+kept independently testable under the current v0.35.8 wrapper.
 """
 
 from __future__ import annotations
@@ -66,9 +67,9 @@ class CurrentAnalyzerDocumentedFusionTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.engine.close()
 
-    def test_execution_state_declares_v0356_and_knowledge_rule(self):
+    def test_execution_state_declares_v0358_and_knowledge_rule(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.6")
+        self.assertEqual(state["current_adapter_version"], "0.35.8")
         self.assertTrue(state["documented_person_fusion_analysis_enabled"])
         rules = state["documented_morphology_policy"]["implemented_rules"]
         self.assertEqual(len(rules), 1)
@@ -111,7 +112,7 @@ class CurrentAnalyzerDocumentedFusionTests(unittest.TestCase):
         self.assertFalse(analysis["correction_assertion"])
         self.assertFalse(analysis["generation_license_assertion"])
 
-    def test_other_probe_002_candidates_are_not_promoted_by_this_rule(self):
+    def test_other_candidates_are_not_promoted_by_this_rule(self):
         for surface in ("rucuidxiilu'", "quidxu'", "xquendasicarulu'", "binebiaya'"):
             result = self.engine.analyze(surface, item_id="TECHNICAL_NONPROMOTION_CONTROL")
             self.assertEqual(result["documented_person_fusion_analyses"], [])
