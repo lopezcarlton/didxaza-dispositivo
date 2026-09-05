@@ -8,6 +8,11 @@ person/possession shapes already recognized provisionally by the runtime.
 
 This wrapper exposes those candidates WITHOUT changing exact evidence coverage,
 analysis status, or unresolved indexes. Candidate != evidence != correction.
+
+The candidate layer is deliberately agnostic about how many exact-evidence
+layers precede it. When the Voces promoted-documentary layer is present it uses
+that layer's unresolved indexes; otherwise it falls back to the older Biyubi
+boundary for backwards-compatible tests.
 """
 
 from __future__ import annotations
@@ -16,8 +21,8 @@ import re
 from dataclasses import asdict
 from typing import Any
 
-from analyzer_v0_35_3_biyubi_exact_fallback_adapter import (
-    BiyubiExactFallbackAnalyzer,
+from analyzer_v0_35_7_voces_documentary_exact_adapter import (
+    VocesDocumentaryExactFallbackAnalyzer,
 )
 from documentary_candidate_layer_v0_1 import DocumentaryCandidateIndex
 
@@ -29,7 +34,7 @@ STATUS_NONE = "NO_CONSTRAINED_CANDIDATE"
 class DocumentaryCandidateAnalyzer:
     """Add candidate-only observation after all exact evidence layers."""
 
-    def __init__(self, base_analyzer: BiyubiExactFallbackAnalyzer):
+    def __init__(self, base_analyzer: VocesDocumentaryExactFallbackAnalyzer):
         self.base = base_analyzer
         self.biyubi_source = base_analyzer.biyubi_source
 
@@ -99,7 +104,12 @@ class DocumentaryCandidateAnalyzer:
             context_segments=context_segments,
         )
         tokens = [match.group(0) for match in re.finditer(r"\S+", surface or "")]
-        exact_unresolved = list(result.get("unresolved_token_indexes_after_biyubi", []))
+        exact_unresolved = list(
+            result.get(
+                "unresolved_token_indexes_after_voces_documentary_exact",
+                result.get("unresolved_token_indexes_after_biyubi", []),
+            )
+        )
 
         rows = [
             self._candidate_for_token(tokens[index], index)
@@ -123,6 +133,7 @@ class DocumentaryCandidateAnalyzer:
         result.setdefault("fallback_policy", {}).update(
             {
                 "candidate_layer_runs_after_exact_layers": True,
+                "candidate_layer_uses_latest_exact_unresolved_boundary": True,
                 "candidate_layer_does_not_promote_analysis_status": True,
                 "candidate_layer_does_not_increase_effective_evidence_coverage": True,
                 "candidate_layer_generic_edit_distance": False,
