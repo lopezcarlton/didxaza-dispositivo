@@ -29,7 +29,9 @@ then layers:
   established for an identified entry;
 - v0.35.15 ContextualDocumentarySupportView v0.1, using explicitly supplied
   Didxazá context only to report overlap with Dictionaria examples that already
-  support an existing verb hypothesis.
+  support an existing verb hypothesis;
+- v0.35.16 AdjudicatedComponentAnalysisBridge v0.1, exposing only component
+  analyses already promoted in pinned Voces under NFC-exact registered surface.
 
 Exact surface evidence remains separate from rule-based morphological analysis.
 The v0.35.11 layer does not infer valency from visible prefixes. The v0.35.12
@@ -43,8 +45,10 @@ C4 larger concatenations are source-level analytical coordinates, not project
 surface parses or generation recipes. The v0.35.15 layer can corroborate an
 existing hypothesis with overlap inside its already-linked documentary examples,
 but cannot create, rank or resolve hypotheses and cannot rewrite local evidence.
-No layer grants correction, orthographic authority, generation license, or
-rule-discovery authority.
+The v0.35.16 layer does not discover splits from substrings or runtime context:
+it only exposes a component analysis after that mapping already exists in the
+pinned Voces-derived registry. No layer grants correction, orthographic
+authority, generation license, or rule-discovery authority.
 """
 
 from __future__ import annotations
@@ -93,9 +97,13 @@ from analyzer_v0_35_14_causative_group_coordinates import (
     CausativeGroupCoordinateViewAnalyzer,
 )
 from analyzer_v0_35_15_contextual_documentary_support import (
-    ADAPTER_VERSION,
     VIEW_VERSION as CONTEXTUAL_DOCUMENTARY_SUPPORT_VIEW_VERSION,
     ContextualDocumentarySupportViewAnalyzer,
+)
+from analyzer_v0_35_16_adjudicated_component_analysis_bridge import (
+    ADAPTER_VERSION,
+    BRIDGE_VERSION as ADJUDICATED_COMPONENT_ANALYSIS_BRIDGE_VERSION,
+    AdjudicatedComponentAnalysisBridgeAnalyzer,
 )
 from biyubi_exact_source import (
     BiyubiControlledSource,
@@ -105,6 +113,10 @@ from biyubi_exact_source import (
     SOURCE_ID as BIYUBI_SOURCE_ID,
 )
 from non_licensing_analyzer_orchestrator_v0_35 import NonLicensingAnalyzerOrchestrator
+from voces_component_analysis_source import (
+    DEFAULT_REGISTRY_PATH as COMPONENT_ANALYSIS_REGISTRY_PATH,
+    EXPECTED_VOCES_COMMIT as CURRENT_VOCES_KNOWLEDGE_COMMIT,
+)
 
 
 HERE = Path(__file__).resolve().parent
@@ -126,7 +138,7 @@ def build_migrated_analyzer(
     biyubi_path: str | Path | None = None,
     *,
     require_biyubi: bool = False,
-) -> ContextualDocumentarySupportViewAnalyzer:
+) -> AdjudicatedComponentAnalysisBridgeAnalyzer:
     """Instantiate the current Analyzer over repository/source artifacts."""
 
     historical = NonLicensingAnalyzerOrchestrator(
@@ -162,7 +174,8 @@ def build_migrated_analyzer(
     explicit_relations = ExplicitValencyRelationBridgeAnalyzer(valency_v01)
     hypotheses = VerbMorphologicalHypothesisViewAnalyzer(explicit_relations)
     causative_coordinates = CausativeGroupCoordinateViewAnalyzer(hypotheses)
-    return ContextualDocumentarySupportViewAnalyzer(causative_coordinates)
+    contextual_support = ContextualDocumentarySupportViewAnalyzer(causative_coordinates)
+    return AdjudicatedComponentAnalysisBridgeAnalyzer(contextual_support)
 
 
 def migrated_execution_state(
@@ -173,8 +186,9 @@ def migrated_execution_state(
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
-            "current_adapter": "analyzer_v0_35_15_contextual_documentary_support.py",
+            "current_adapter": "analyzer_v0_35_16_adjudicated_component_analysis_bridge.py",
             "current_adapter_version": ADAPTER_VERSION,
+            "current_knowledge_source_commit": CURRENT_VOCES_KNOWLEDGE_COMMIT,
             "exact_existing_layer_fallback_enabled": True,
             "punctuation_light_fallback_lookup_enabled": True,
             "voces_documentary_exact_layer_enabled": True,
@@ -185,20 +199,24 @@ def migrated_execution_state(
             "verb_analysis_bridge_enabled": True,
             "verb_analysis_bridge_version": VERB_ANALYSIS_BRIDGE_VERSION,
             "documentary_verb_form_candidate_layer_enabled": True,
-            "documentary_verb_form_candidate_index_stats": engine.base.base.base.base.base.documentary_candidate_index_stats,
+            "documentary_verb_form_candidate_index_stats": engine.documentary_candidate_index_stats,
             "valency_compatibility_bridge_enabled": True,
             "valency_compatibility_bridge_version": VALENCY_COMPATIBILITY_BRIDGE_VERSION,
-            "valency_compatibility_index_stats": engine.base.base.base.base.valency_compatibility_index_stats,
+            "valency_compatibility_index_stats": engine.valency_compatibility_index_stats,
             "explicit_valency_relation_bridge_enabled": True,
             "explicit_valency_relation_bridge_version": EXPLICIT_VALENCY_RELATION_BRIDGE_VERSION,
             "explicit_valency_relation_crosswalk_path": str(EXPLICIT_VALENCY_RELATION_CROSSWALK_PATH),
-            "explicit_valency_relation_index_stats": engine.base.base.base.explicit_valency_relation_index_stats,
+            "explicit_valency_relation_index_stats": engine.explicit_valency_relation_index_stats,
             "verb_morphological_hypothesis_view_enabled": True,
             "verb_morphological_hypothesis_view_version": VERB_MORPHOLOGICAL_HYPOTHESIS_VIEW_VERSION,
             "causative_group_coordinate_view_enabled": True,
             "causative_group_coordinate_view_version": CAUSATIVE_GROUP_COORDINATE_VIEW_VERSION,
             "contextual_documentary_support_view_enabled": True,
             "contextual_documentary_support_view_version": CONTEXTUAL_DOCUMENTARY_SUPPORT_VIEW_VERSION,
+            "adjudicated_component_analysis_bridge_enabled": True,
+            "adjudicated_component_analysis_bridge_version": ADJUDICATED_COMPONENT_ANALYSIS_BRIDGE_VERSION,
+            "adjudicated_component_analysis_registry_path": str(COMPONENT_ANALYSIS_REGISTRY_PATH),
+            "adjudicated_component_analysis_registry_stats": engine.component_analysis_registry_stats,
             "verb_analysis_bridge_policy": {
                 "documented_single_token_headword_records": True,
                 "exposes_documented_class": True,
@@ -343,6 +361,30 @@ def migrated_execution_state(
                 "orthographic_authority": False,
                 "rule_discovery_authority": False,
             },
+            "adjudicated_component_analysis_policy": {
+                "knowledge_authority": "VOCES_PINNED_REGISTRY",
+                "knowledge_commit": CURRENT_VOCES_KNOWLEDGE_COMMIT,
+                "requires_voces_adjudicated_registry_row": True,
+                "surface_match_policy": "NFC_RAW_TOKEN_ONLY",
+                "substring_discovery": False,
+                "runtime_context_can_create_analysis": False,
+                "runtime_context_can_resolve_analysis": False,
+                "casefold": False,
+                "apostrophe_unification": False,
+                "tone_stripping": False,
+                "diacritic_stripping": False,
+                "near_match": False,
+                "edit_distance": False,
+                "pdlma_to_ap": False,
+                "morphological_compound_assertion": False,
+                "orthographic_boundary_preference_assertion": False,
+                "rewrites_local_evidence": False,
+                "changes_analysis_status": False,
+                "generation_license": False,
+                "correction_authority": False,
+                "orthographic_authority": False,
+                "rule_discovery_authority": False,
+            },
             "documented_morphology_policy": {
                 "exact_surface_evidence_kept_separate": True,
                 "requires_documented_lemma": True,
@@ -377,6 +419,7 @@ def migrated_execution_state(
                     "DOCUMENTARY_TAM_ROOT_CLASS_HYPOTHESIS_VIEW",
                     "PB2015_SOURCE_EXPLICIT_C1_C4_CAUSATIVE_GROUP_ANALYTICAL_COORDINATE",
                     "DICTIONARIA_SUPPORTING_EXAMPLE_CONTEXT_OVERLAP_FOR_EXISTING_HYPOTHESIS",
+                    "VOCES_ADJUDICATED_CONTEXTUALLY_SUPPORTED_COMPONENT_ANALYSIS",
                 ],
             },
             "fallback_layers": [
