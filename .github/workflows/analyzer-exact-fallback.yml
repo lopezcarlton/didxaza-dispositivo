@@ -96,3 +96,48 @@ jobs:
           name: analyzer-executable-bundle-${{ github.sha }}
           path: dispositivo
           compression-level: 0
+
+      - name: Checkout published Dictionaria source data at exact commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: dictionaria/didxazageneral
+          ref: 76c22cf30c23d8f4bc5c83c11013a8cb24fe0f85
+          path: _external_didxazageneral
+
+      - name: Extract targeted independent Dictionaria source records
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' > "${RUNNER_TEMP}/DICTIONARIA_TARGETED_SOURCE_RECORDS.json"
+          import csv, json
+          from pathlib import Path
+
+          root = Path('_external_didxazageneral/cldf')
+          needles = ('rindani', 'gundani')
+          out = {
+              'source_repository': 'dictionaria/didxazageneral',
+              'source_commit': '76c22cf30c23d8f4bc5c83c11013a8cb24fe0f85',
+              'source_role': 'PUBLISHED_PRIMARY_DICTIONARY_DATA',
+              'query_role': 'INDEPENDENT_TARGETED_SOURCE_RECOVERY',
+              'rule_discovery_from_analysis_target': False,
+              'files': {},
+          }
+          for filename in ('entries.csv', 'senses.csv', 'examples.csv'):
+              matches = []
+              path = root / filename
+              with path.open(encoding='utf-8-sig', newline='') as f:
+                  reader = csv.DictReader(f)
+                  for row in reader:
+                      haystack = '\n'.join(str(v) for v in row.values()).casefold()
+                      if any(n in haystack for n in needles):
+                          matches.append(dict(row))
+              out['files'][filename] = matches
+          print(json.dumps(out, ensure_ascii=False, indent=2, sort_keys=True))
+          PY
+          cat "${RUNNER_TEMP}/DICTIONARIA_TARGETED_SOURCE_RECORDS.json"
+
+      - name: Upload targeted Dictionaria source records
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: dictionaria-targeted-source-records-${{ github.sha }}
+          path: ${{ runner.temp }}/DICTIONARIA_TARGETED_SOURCE_RECORDS.json
