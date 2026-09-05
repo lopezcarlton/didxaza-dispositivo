@@ -31,10 +31,11 @@ class VerbAnalysisBridgeTests(unittest.TestCase):
 
     def test_execution_state_exposes_v01_invariants_under_latest_wrapper(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.11")
+        self.assertEqual(state["current_adapter_version"], "0.35.12")
         self.assertTrue(state["verb_analysis_bridge_enabled"])
         self.assertEqual(state["verb_analysis_bridge_version"], "0.2")
         self.assertTrue(state["valency_compatibility_bridge_enabled"])
+        self.assertTrue(state["explicit_valency_relation_bridge_enabled"])
         policy = state["verb_analysis_bridge_policy"]
         self.assertTrue(policy["exposes_documented_class"])
         self.assertTrue(policy["exposes_documented_pdlma_paradigm_fields"])
@@ -46,10 +47,11 @@ class VerbAnalysisBridgeTests(unittest.TestCase):
         self.assertFalse(policy["correction_authority"])
         self.assertFalse(state["valency_compatibility_policy"]["surface_prefix_inference"])
         self.assertFalse(state["valency_compatibility_policy"]["pb2015_group_assignment"])
+        self.assertFalse(state["explicit_valency_relation_policy"]["surface_relation_inference"])
 
     def test_known_class_a_headword_exposes_record_and_paradigm(self):
         result = self.engine.analyze("ra", item_id="TECHNICAL_VERB_BRIDGE_A")
-        self.assertEqual(result["current_adapter_version"], "0.35.11")
+        self.assertEqual(result["current_adapter_version"], "0.35.12")
         self.assertIn(0, result["documented_exact_verb_token_indexes"])
         row = result["documented_exact_verb_analyses"][0]
         self.assertEqual(row["verb_headword_status"], STATUS_RAW)
@@ -68,6 +70,7 @@ class VerbAnalysisBridgeTests(unittest.TestCase):
         self.assertFalse(record["generation_license_assertion"])
         self.assertFalse(record["correction_assertion"])
         self.assertFalse(result["valency_compatibility_changes_analysis_status"])
+        self.assertFalse(result["explicit_valency_relation_changes_analysis_status"])
 
     def test_homographic_headword_preserves_multiple_records(self):
         result = self.engine.analyze("ra'sa'", item_id="TECHNICAL_VERB_BRIDGE_HOMOGRAPH")
@@ -98,6 +101,7 @@ class VerbAnalysisBridgeTests(unittest.TestCase):
         self.assertFalse(row["verb_category_documented"])
         self.assertEqual(row["documented_records"], [])
         self.assertEqual(result["valency_compatibility_informative_token_indexes"], [])
+        self.assertEqual(result["explicit_valency_relation_informative_token_indexes"], [])
 
     def test_twenty_record_panel_covers_classes_a_b_c_d(self):
         """Five pre-existing records per PBK class, selected independently of target text."""
@@ -130,6 +134,7 @@ class VerbAnalysisBridgeTests(unittest.TestCase):
                 self.assertEqual(matching_records[0]["verb_class"], expected_class)
                 self.assertFalse(matching_records[0]["pdlma_to_ap_assertion"])
                 self.assertFalse(result["valency_compatibility_changes_exact_evidence_metrics"])
+                self.assertFalse(result["explicit_valency_relation_changes_exact_evidence_metrics"])
                 checked += 1
         self.assertEqual(checked, 20)
 
