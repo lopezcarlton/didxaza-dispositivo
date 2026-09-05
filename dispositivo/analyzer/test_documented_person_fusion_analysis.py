@@ -58,11 +58,12 @@ class CurrentAnalyzerDocumentedFusionTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.engine.close()
 
-    def test_execution_state_keeps_documented_fusion_under_v0359(self):
+    def test_execution_state_keeps_documented_fusion_under_latest_wrapper(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.9")
+        self.assertEqual(state["current_adapter_version"], "0.35.10")
         self.assertTrue(state["documented_person_fusion_analysis_enabled"])
         self.assertTrue(state["verb_analysis_bridge_enabled"])
+        self.assertTrue(state["documentary_verb_form_candidate_layer_enabled"])
         rules = state["documented_morphology_policy"]["implemented_rules"]
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0]["knowledge_rule_id"], "HALL-0022")
@@ -99,6 +100,7 @@ class CurrentAnalyzerDocumentedFusionTests(unittest.TestCase):
             result = self.engine.analyze(surface, item_id="TECHNICAL_NONPROMOTION_CONTROL")
             self.assertEqual(result["documented_person_fusion_analyses"], [])
             self.assertEqual(result["unresolved_token_indexes_after_documented_morphology"], [0])
+            self.assertEqual(result["unresolved_token_indexes_after_documentary_verb_form_candidates"], [0])
             self.assertEqual(result["effective_analysis_token_count_after_documented_morphology"], 0)
 
 
