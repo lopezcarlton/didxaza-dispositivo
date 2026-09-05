@@ -26,9 +26,9 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.engine = build_migrated_analyzer()
-        # Current chain: v0.35.13 -> v0.35.12 -> v0.35.11 -> v0.35.10 -> v0.35.9.
+        # Current chain: v0.35.14 -> v0.35.13 -> v0.35.12 -> v0.35.11 -> v0.35.10 -> v0.35.9.
         # This suite intentionally inspects v0.35.10 itself.
-        cls.v02 = cls.engine.base.base.base
+        cls.v02 = cls.engine.base.base.base.base
         cls.v01 = cls.v02.base
 
     @classmethod
@@ -37,12 +37,13 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
 
     def test_execution_state_declares_candidate_only_v02(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.13")
+        self.assertEqual(state["current_adapter_version"], "0.35.14")
         self.assertEqual(state["verb_analysis_bridge_version"], "0.2")
         self.assertTrue(state["documentary_verb_form_candidate_layer_enabled"])
         self.assertTrue(state["valency_compatibility_bridge_enabled"])
         self.assertTrue(state["explicit_valency_relation_bridge_enabled"])
         self.assertTrue(state["verb_morphological_hypothesis_view_enabled"])
+        self.assertTrue(state["causative_group_coordinate_view_enabled"])
         stats = state["documentary_verb_form_candidate_index_stats"]
         self.assertGreater(stats["verb_sense_links"], 0)
         self.assertGreater(stats["single_verb_linked_examples"], 0)
@@ -181,7 +182,7 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertIsNotNone(chosen, "No non-headword structural candidate found in documentary snapshot")
         self.assertIsNotNone(base_result)
         result = self.engine.analyze(chosen, item_id="TECHNICAL_V02_INTEGRATION")
-        self.assertEqual(result["current_adapter_version"], "0.35.13")
+        self.assertEqual(result["current_adapter_version"], "0.35.14")
         self.assertEqual(result["documentary_verb_form_candidate_token_indexes"], [0])
         self.assertTrue(result["documentary_verb_form_candidates"])
         candidate = result["documentary_verb_form_candidates"][0]
@@ -205,6 +206,8 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertFalse(result["explicit_valency_relation_changes_analysis_status"])
         self.assertFalse(result["verb_morphological_hypothesis_changes_exact_evidence_metrics"])
         self.assertFalse(result["verb_morphological_hypothesis_changes_analysis_status"])
+        self.assertFalse(result["causative_group_coordinate_changes_exact_evidence_metrics"])
+        self.assertFalse(result["causative_group_coordinate_changes_analysis_status"])
         self.assertFalse(result["generation_license_assertion"])
         self.assertFalse(result["correction_assertion"])
 
@@ -218,6 +221,7 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertEqual(result["valency_compatibility_informative_token_indexes"], [])
         self.assertEqual(result["explicit_valency_relation_informative_token_indexes"], [])
         self.assertEqual(result["verb_morphological_hypothesis_informative_token_indexes"], [])
+        self.assertEqual(result["causative_group_coordinate_informative_token_indexes"], [])
 
 
 if __name__ == "__main__":
