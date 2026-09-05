@@ -90,11 +90,12 @@ class VocesDocumentaryExactLayerTest(unittest.TestCase):
             )
             self.assertTrue(result["fallback_policy"]["voces_documentary_attestation_not_morphological_analysis"])
 
-    def test_current_builder_reaches_v0358(self) -> None:
+    def test_current_builder_keeps_documentary_layer_under_latest_wrapper(self) -> None:
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.8")
+        self.assertEqual(state["current_adapter_version"], "0.35.9")
         self.assertTrue(state["voces_documentary_exact_layer_enabled"])
         self.assertTrue(state["documented_person_fusion_analysis_enabled"])
+        self.assertTrue(state["verb_analysis_bridge_enabled"])
         self.assertFalse(state["generation_license_assertion"])
         self.assertFalse(state["correction_assertion"])
 
