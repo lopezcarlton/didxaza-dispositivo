@@ -13,12 +13,16 @@ then layers:
 - v0.35.8 documented 1SG fusion analysis when lemma + person rule + prosodic
   condition are independently licensed;
 - v0.35.9 VerbAnalysisBridge v0.1, exposing already-documented exact verb
-  headword records with class, paradigm availability and provenance.
+  headword records with class, paradigm availability and provenance;
+- v0.35.10 VerbAnalysisBridge v0.2, exposing documentary non-headword verb-form
+  candidates from exact AP example tokens linked to one verb entry and explicit
+  TAM feature associations.
 
 Exact surface evidence remains separate from rule-based morphological analysis.
 PDLMA paradigm fields remain analytical documentary fields and are not projected
-onto AP surface. No layer grants correction, orthographic authority, generation
-license, or rule-discovery authority.
+onto AP surface. Documentary verb-form candidates do not resolve token identity
+or TAM. No layer grants correction, orthographic authority, generation license,
+or rule-discovery authority.
 """
 
 from __future__ import annotations
@@ -44,10 +48,11 @@ from analyzer_v0_35_5_person_fusion_candidate_adapter import PersonFusionCandida
 from analyzer_v0_35_8_documented_person_fusion_analysis_adapter import (
     DocumentedPersonFusionAnalysisAnalyzer,
 )
-from analyzer_v0_35_9_verb_analysis_bridge import (
+from analyzer_v0_35_9_verb_analysis_bridge import VerbAnalysisBridgeAnalyzer
+from analyzer_v0_35_10_documentary_verb_form_candidates import (
     ADAPTER_VERSION,
     BRIDGE_VERSION as VERB_ANALYSIS_BRIDGE_VERSION,
-    VerbAnalysisBridgeAnalyzer,
+    DocumentaryVerbFormCandidateAnalyzer,
 )
 from biyubi_exact_source import (
     BiyubiControlledSource,
@@ -78,7 +83,7 @@ def build_migrated_analyzer(
     biyubi_path: str | Path | None = None,
     *,
     require_biyubi: bool = False,
-) -> VerbAnalysisBridgeAnalyzer:
+) -> DocumentaryVerbFormCandidateAnalyzer:
     """Instantiate the current Analyzer over repository/source artifacts."""
 
     historical = NonLicensingAnalyzerOrchestrator(
@@ -108,7 +113,8 @@ def build_migrated_analyzer(
     documentary = DocumentaryCandidateAnalyzer(voces_documentary_exact)
     person_candidates = PersonFusionCandidateAnalyzer(documentary)
     documented_person = DocumentedPersonFusionAnalysisAnalyzer(person_candidates)
-    return VerbAnalysisBridgeAnalyzer(documented_person)
+    verb_bridge_v01 = VerbAnalysisBridgeAnalyzer(documented_person)
+    return DocumentaryVerbFormCandidateAnalyzer(verb_bridge_v01)
 
 
 def migrated_execution_state(
@@ -119,7 +125,7 @@ def migrated_execution_state(
         return {
             "status": "REPRODUCIBLE_NON_LICENSING_PARTIAL_ANALYZER",
             "historical_implementation": "non_licensing_analyzer_orchestrator_v0_35.py",
-            "current_adapter": "analyzer_v0_35_9_verb_analysis_bridge.py",
+            "current_adapter": "analyzer_v0_35_10_documentary_verb_form_candidates.py",
             "current_adapter_version": ADAPTER_VERSION,
             "exact_existing_layer_fallback_enabled": True,
             "punctuation_light_fallback_lookup_enabled": True,
@@ -130,14 +136,23 @@ def migrated_execution_state(
             "documented_person_fusion_analysis_enabled": True,
             "verb_analysis_bridge_enabled": True,
             "verb_analysis_bridge_version": VERB_ANALYSIS_BRIDGE_VERSION,
+            "documentary_verb_form_candidate_layer_enabled": True,
+            "documentary_verb_form_candidate_index_stats": engine.documentary_candidate_index_stats,
             "verb_analysis_bridge_policy": {
                 "documented_single_token_headword_records": True,
                 "exposes_documented_class": True,
                 "exposes_documented_pdlma_paradigm_fields": True,
                 "preserves_homography": True,
+                "documentary_nonheadword_form_candidates": True,
+                "candidate_requires_exact_ap_example_token": True,
+                "candidate_requires_unique_linked_verb_entry": True,
+                "candidate_requires_explicit_tam_feature": True,
+                "candidate_token_role_asserted": False,
+                "candidate_tam_of_observed_surface_asserted": False,
+                "candidate_promotes_analysis_status": False,
+                "pdlma_recovery_coordinate_only": True,
                 "tone_stripping": False,
                 "diacritic_stripping": False,
-                "apostrophe_normalization": False,
                 "near_match": False,
                 "pdlma_to_ap": False,
                 "nonheadword_tam_inference": False,
@@ -174,6 +189,7 @@ def migrated_execution_state(
                     "EXISTING_GRAPHICAL_PERSON_SUFFIX_CANDIDATE",
                     "EXISTING_GRAPHICAL_POSSESSION_PREFIX_CANDIDATE",
                     "GP_1SG_FINAL_I_TO_E_GLOTTAL_REVERSE_LINK_CANDIDATE",
+                    "DICTIONARIA_EXACT_AP_EXAMPLE_TOKEN_TO_UNIQUE_VERB_TAM_ASSOCIATION_CANDIDATE",
                 ],
             },
             "fallback_layers": [
