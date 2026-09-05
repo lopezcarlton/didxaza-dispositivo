@@ -92,7 +92,7 @@ class VocesDocumentaryExactLayerTest(unittest.TestCase):
 
     def test_current_builder_keeps_documentary_layer_under_latest_wrapper(self) -> None:
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.14")
+        self.assertEqual(state["current_adapter_version"], "0.35.15")
         self.assertTrue(state["voces_documentary_exact_layer_enabled"])
         self.assertTrue(state["documented_person_fusion_analysis_enabled"])
         self.assertTrue(state["verb_analysis_bridge_enabled"])
@@ -101,6 +101,7 @@ class VocesDocumentaryExactLayerTest(unittest.TestCase):
         self.assertTrue(state["explicit_valency_relation_bridge_enabled"])
         self.assertTrue(state["verb_morphological_hypothesis_view_enabled"])
         self.assertTrue(state["causative_group_coordinate_view_enabled"])
+        self.assertTrue(state["contextual_documentary_support_view_enabled"])
         self.assertFalse(state["generation_license_assertion"])
         self.assertFalse(state["correction_assertion"])
 

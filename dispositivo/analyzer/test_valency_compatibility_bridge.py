@@ -65,13 +65,14 @@ class ValencyCompatibilityBridgeTests(unittest.TestCase):
 
     def test_execution_state_exposes_measured_inventory_and_hard_limits(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.14")
+        self.assertEqual(state["current_adapter_version"], "0.35.15")
         self.assertEqual(state["verb_analysis_bridge_version"], "0.2")
         self.assertTrue(state["valency_compatibility_bridge_enabled"])
         self.assertEqual(state["valency_compatibility_bridge_version"], "0.1")
         self.assertTrue(state["explicit_valency_relation_bridge_enabled"])
         self.assertTrue(state["verb_morphological_hypothesis_view_enabled"])
         self.assertTrue(state["causative_group_coordinate_view_enabled"])
+        self.assertTrue(state["contextual_documentary_support_view_enabled"])
 
         stats = state["valency_compatibility_index_stats"]
         print("VALENCY_INDEX_STATS=" + json.dumps(stats, sort_keys=True))
@@ -166,9 +167,9 @@ class ValencyCompatibilityBridgeTests(unittest.TestCase):
     def test_structural_nonheadword_route_is_compatibility_only(self):
         chosen_surface = None
         chosen_entry = None
-        # Current chain: v0.35.14 -> v0.35.13 -> v0.35.12 -> v0.35.11 -> v0.35.10 -> v0.35.9.
+        # Current chain: v0.35.15 -> v0.35.14 -> v0.35.13 -> v0.35.12 -> v0.35.11 -> v0.35.10 -> v0.35.9.
         # The example index belongs to v0.35.10; _lookup_token belongs to v0.35.9.
-        v02 = self.engine.base.base.base.base
+        v02 = self.engine.base.base.base.base.base
         v01 = v02.base
         for rows in v02._example_token_index.values():
             if not rows:
@@ -218,6 +219,8 @@ class ValencyCompatibilityBridgeTests(unittest.TestCase):
         self.assertFalse(result["verb_morphological_hypothesis_changes_analysis_status"])
         self.assertFalse(result["causative_group_coordinate_changes_exact_evidence_metrics"])
         self.assertFalse(result["causative_group_coordinate_changes_analysis_status"])
+        self.assertFalse(result["contextual_documentary_support_changes_exact_evidence_metrics"])
+        self.assertFalse(result["contextual_documentary_support_changes_analysis_status"])
 
     def test_unknown_surface_receives_no_valency_entry_link(self):
         result = self.engine.analyze(
@@ -232,6 +235,7 @@ class ValencyCompatibilityBridgeTests(unittest.TestCase):
         self.assertEqual(result["explicit_valency_relation_informative_token_indexes"], [])
         self.assertEqual(result["verb_morphological_hypothesis_informative_token_indexes"], [])
         self.assertEqual(result["causative_group_coordinate_informative_token_indexes"], [])
+        self.assertEqual(result["contextual_documentary_support_informative_token_indexes"], [])
         self.assertFalse(result["valency_generation_enabled"])
         self.assertFalse(result["valency_correction_enabled"])
 

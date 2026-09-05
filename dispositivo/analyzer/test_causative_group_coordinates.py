@@ -38,9 +38,10 @@ class CausativeGroupCoordinateViewTests(unittest.TestCase):
 
     def test_execution_state_declares_source_constrained_view(self):
         state = migrated_execution_state()
-        self.assertEqual(state["current_adapter_version"], "0.35.14")
+        self.assertEqual(state["current_adapter_version"], "0.35.15")
         self.assertTrue(state["causative_group_coordinate_view_enabled"])
         self.assertEqual(state["causative_group_coordinate_view_version"], "0.1")
+        self.assertTrue(state["contextual_documentary_support_view_enabled"])
         policy = state["causative_group_coordinate_policy"]
         self.assertTrue(policy["requires_source_explicit_c1_c4_membership"])
         self.assertEqual(
@@ -53,6 +54,7 @@ class CausativeGroupCoordinateViewTests(unittest.TestCase):
         self.assertFalse(policy["token_level_causative_parse_from_group_resource"])
         self.assertFalse(policy["pdlma_to_ap"])
         self.assertFalse(policy["productive_generation"])
+        self.assertFalse(state["contextual_documentary_support_policy"]["resolves_hypothesis"])
 
     def test_group_resource_map_matches_adjudicated_c1_c4_coordinates(self):
         expected = {
@@ -77,7 +79,7 @@ class CausativeGroupCoordinateViewTests(unittest.TestCase):
     def test_chuku_preserves_c1_and_c2_group_coordinates_without_surface_parse(self):
         surface = self._single_token_headword("chuku")
         result = self.engine.analyze(surface, item_id="TECHNICAL_CAUSATIVE_GROUP_CHUKU")
-        self.assertEqual(result["current_adapter_version"], "0.35.14")
+        self.assertEqual(result["current_adapter_version"], "0.35.15")
         self.assertEqual(result["causative_group_coordinate_informative_token_indexes"], [0])
         observation = result["causative_group_coordinate_observations"][0]
         self.assertEqual(observation["status"], STATUS_AVAILABLE)
@@ -105,6 +107,8 @@ class CausativeGroupCoordinateViewTests(unittest.TestCase):
 
         self.assertFalse(result["causative_group_coordinate_changes_exact_evidence_metrics"])
         self.assertFalse(result["causative_group_coordinate_changes_analysis_status"])
+        self.assertFalse(result["contextual_documentary_support_changes_exact_evidence_metrics"])
+        self.assertFalse(result["contextual_documentary_support_changes_analysis_status"])
 
     def test_visible_prefix_resemblance_alone_never_creates_group_coordinate(self):
         result = self.engine.analyze(
@@ -115,6 +119,7 @@ class CausativeGroupCoordinateViewTests(unittest.TestCase):
         self.assertEqual(observation["status"], STATUS_NONE)
         self.assertEqual(observation["coordinates"], [])
         self.assertEqual(result["causative_group_coordinate_informative_token_indexes"], [])
+        self.assertEqual(result["contextual_documentary_support_informative_token_indexes"], [])
         self.assertFalse(result["causative_visible_prefix_detection_enabled"])
         self.assertFalse(result["causative_group_surface_assignment_enabled"])
 
@@ -124,8 +129,11 @@ class CausativeGroupCoordinateViewTests(unittest.TestCase):
             item_id="TECHNICAL_CAUSATIVE_GROUP_NEGATIVE",
         )
         self.assertEqual(result["causative_group_coordinate_informative_token_indexes"], [])
+        self.assertEqual(result["contextual_documentary_support_informative_token_indexes"], [])
         self.assertFalse(result["causative_group_generation_enabled"])
         self.assertFalse(result["causative_group_correction_enabled"])
+        self.assertFalse(result["contextual_documentary_support_generation_enabled"])
+        self.assertFalse(result["contextual_documentary_support_correction_enabled"])
         self.assertFalse(result["generation_license_assertion"])
         self.assertFalse(result["correction_assertion"])
         self.assertFalse(result["orthographic_authority_assertion"])

@@ -24,8 +24,8 @@ class VerbMorphologicalHypothesisViewTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.engine = build_migrated_analyzer()
-        # v0.35.14 -> v0.35.13 -> v0.35.12 -> v0.35.11 -> v0.35.10.
-        cls.v02 = cls.engine.base.base.base.base
+        # v0.35.15 -> v0.35.14 -> v0.35.13 -> v0.35.12 -> v0.35.11 -> v0.35.10.
+        cls.v02 = cls.engine.base.base.base.base.base
 
     @classmethod
     def tearDownClass(cls):
@@ -40,7 +40,7 @@ class VerbMorphologicalHypothesisViewTests(unittest.TestCase):
             if token in seen_tokens:
                 continue
             seen_tokens.add(token)
-            # Require the candidate to survive all layers through v0.35.13.
+            # Require the candidate to survive all layers through v0.35.14.
             # Earlier resolution is a valid reason for it not to appear here.
             current = self.engine.base.analyze(
                 token, item_id="TECHNICAL_MORPH_HYPOTHESIS_FIXTURE_DISCOVERY"
@@ -64,7 +64,7 @@ class VerbMorphologicalHypothesisViewTests(unittest.TestCase):
         result = self.engine.analyze(
             surface, item_id="TECHNICAL_VERB_MORPH_HYPOTHESIS_UNIQUE"
         )
-        self.assertEqual(result["current_adapter_version"], "0.35.14")
+        self.assertEqual(result["current_adapter_version"], "0.35.15")
         self.assertEqual(result["verb_morphological_hypothesis_informative_token_indexes"], [0])
         view = result["verb_morphological_hypothesis_views"][0]
         self.assertEqual(view["status"], STATUS_UNIQUE)
@@ -85,6 +85,7 @@ class VerbMorphologicalHypothesisViewTests(unittest.TestCase):
         self.assertFalse(view["candidate_is_fact"])
         self.assertFalse(view["candidate_resolves_token"])
         self.assertFalse(result["causative_group_coordinate_changes_analysis_status"])
+        self.assertFalse(result["contextual_documentary_support_changes_analysis_status"])
 
     def test_multiple_coordinates_remain_multiple_hypotheses(self):
         candidate = {
@@ -129,6 +130,7 @@ class VerbMorphologicalHypothesisViewTests(unittest.TestCase):
         self.assertEqual(view["hypotheses"], [])
         self.assertEqual(result["verb_morphological_hypothesis_informative_token_indexes"], [])
         self.assertEqual(result["causative_group_coordinate_informative_token_indexes"], [])
+        self.assertEqual(result["contextual_documentary_support_informative_token_indexes"], [])
         self.assertFalse(result["verb_morphological_hypothesis_changes_exact_evidence_metrics"])
         self.assertFalse(result["verb_morphological_hypothesis_changes_analysis_status"])
         self.assertFalse(result["verb_morphological_hypothesis_generation_enabled"])
@@ -142,6 +144,7 @@ class VerbMorphologicalHypothesisViewTests(unittest.TestCase):
         self.assertFalse(result["fallback_policy"]["verb_morphological_hypothesis_visible_prefix_segmentation"])
         self.assertFalse(result["fallback_policy"]["verb_morphological_hypothesis_pdlma_to_ap"])
         self.assertFalse(result["fallback_policy"]["causative_group_coordinate_visible_prefix_detection"])
+        self.assertFalse(result["fallback_policy"]["contextual_documentary_support_rewrites_local_evidence"])
 
 
 if __name__ == "__main__":
