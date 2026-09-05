@@ -8,6 +8,7 @@ examples and 2,385-record verb inventory; negatives are synthetic.
 
 from __future__ import annotations
 
+import unicodedata
 import unittest
 
 from analyzer_v0_35_10_documentary_verb_form_candidates import (
@@ -72,21 +73,43 @@ class DocumentaryVerbFormCandidateTests(unittest.TestCase):
         self.assertNotEqual(pdlma_hyphen_collapse_candidate_key("gú-ndani"), target)
 
     def test_candidate_key_match_is_not_exact_surface_evidence(self):
-        # Candidate comparison may unify sentence capitalization/apostrophe typography,
-        # but that must never be represented as raw exact evidence.
-        rows = None
-        for candidate_rows in self.engine._example_token_index.values():
-            if candidate_rows:
-                rows = candidate_rows
+        # Find a query variant that preserves the candidate key while differing
+        # in raw NFC form from every documentary token attached to that key.
+        chosen = None
+        candidate = None
+        for key, rows in self.engine._example_token_index.items():
+            if not rows:
+                continue
+            raw_forms = {
+                unicodedata.normalize("NFC", row["token_surface_in_example"])
+                for row in rows
+            }
+            token = rows[0]["token_surface_in_example"]
+            variants = [token.swapcase(), token.upper(), token.lower()]
+            for apostrophe in ("'", "’", "ʼ", "ꞌ"):
+                variants.append(
+                    token.replace("'", apostrophe)
+                    .replace("’", apostrophe)
+                    .replace("ʼ", apostrophe)
+                    .replace("ꞌ", apostrophe)
+                )
+            for variant in variants:
+                if not variant or strict_documentary_key(variant) != key:
+                    continue
+                if unicodedata.normalize("NFC", variant) in raw_forms:
+                    continue
+                payload = self.engine._candidate_payload(variant, 0)
+                if payload is not None:
+                    chosen = variant
+                    candidate = payload
+                    break
+            if candidate is not None:
                 break
-        self.assertIsNotNone(rows)
-        token = rows[0]["token_surface_in_example"]
-        variant = token[:1].upper() + token[1:] if token else token
-        candidate = self.engine._candidate_payload(variant, 0)
+
+        self.assertIsNotNone(chosen, "No non-raw-exact candidate-key variant found")
         self.assertIsNotNone(candidate)
         self.assertTrue(candidate["documentary_token_match_under_candidate_key"])
-        if variant != token:
-            self.assertFalse(candidate["raw_nfc_exact_documentary_token_attestation"])
+        self.assertFalse(candidate["raw_nfc_exact_documentary_token_attestation"])
         self.assertFalse(candidate["candidate_adds_exact_surface_evidence"])
 
     def test_indexed_candidate_exposes_only_analytical_coordinates(self):
